@@ -22,7 +22,7 @@ public class SiteSettings
 
 public class ConnectionStrings
 {
-    public string ApplicationDbContextConnection { get; set; } = null!;
+    public string SQLDbContextConnection { get; set; } = null!;
 }
 
 public class CookieOptions

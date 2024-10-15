@@ -23,7 +23,7 @@ namespace EShop.Infrastucture
         {
             var siteSettings = configuration.Get<SiteSettings>(configuration.Bind);
 
-            services.AddDataBase(siteSettings.ConnectionStrings.ApplicationDbContextConnection);
+            services.AddDataBase(siteSettings.ConnectionStrings.SQLDbContextConnection);
 
             services.AddIdentityServices();
             services.AddIdentityOptions(siteSettings);
