@@ -7,6 +7,16 @@ namespace EShop.Domain.Entities.Identity
     {
         [MaxLength(11)]
         public override string? PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
+
+        public DateTime SendCodeLastTime { get; set; }
+        public bool IsActive { get; set; }
+
+        [MaxLength(40)]
+        public string? Avatar { get; set; }
+        [Required]
+        [MaxLength(64)]
+        public byte[] PasswordSalt { get; set; } = null!;
+
         #region Relations
 
         public virtual ICollection<UserClaim>? UserClaims { get; set; }
