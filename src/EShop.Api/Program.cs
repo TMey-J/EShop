@@ -21,9 +21,11 @@ try
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddInfrastructureServices(builder.Configuration);
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+    builder.Services.AddInfrastructureServices(builder.Configuration);
+    builder.Services.AddApplicationServices(builder.Configuration);
+
 
     var app = builder.Build();
 
@@ -34,6 +36,7 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseSerilogRequestLogging();
     app.UseHttpsRedirection();
 
     app.UseAuthentication();
