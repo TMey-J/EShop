@@ -1,16 +1,20 @@
-﻿using EShop.Application.Common.Helpers;
+﻿using Blogger.Application.Common.Exceptions;
+using EShop.Application.Common.Helpers;
 using EShop.Application.Contracts.Identity;
 using EShop.Application.Features.Authorize.Requests.Commands;
 using EShop.Domain.Entities.Identity;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Restaurant.Application.Models;
 
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
-public class RegisterCommandHandler(IApplicationUserManager userManager,IOptionsMonitor<SiteSettings> siteSettings) : IRequestHandler<RegisterCommandRequest, RegisterCommandRespinse>
+public class RegisterCommandHandler(IApplicationUserManager userManager
+    ,IOptionsMonitor<SiteSettings> siteSettings,ILogger<RegisterCommandHandler> logger) : IRequestHandler<RegisterCommandRequest, RegisterCommandRespinse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
+    private readonly ILogger<RegisterCommandHandler> _logger = logger;
     private readonly SiteSettings _siteSettings = siteSettings.CurrentValue;
 
     public async Task<RegisterCommandRespinse> Handle(RegisterCommandRequest request, CancellationToken cancellationToken)
@@ -21,8 +25,7 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,IOptions
             await _userManager.FindByNameAsync(request.EmailOrPhoneNumber);
         if (user is not null)
         {
-            //TODO throw custom exception
-            throw new Exception();
+            throw new DuplicateException("ایمیل/شماره تلفن");
         }
         user = new User
         {
@@ -36,9 +39,8 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,IOptions
         var result = await _userManager.CreateAsync(user);
         if (!result.Succeeded)
         {
-            //TODO Log
-            //TODO throw exception
-            throw new Exception();
+            _logger.LogError("Create user faild");
+            throw new CustomInternalServerException("مشکلی در ثبت نام کاربر به وجود آمده");
 
         }
         if (isEmail)
