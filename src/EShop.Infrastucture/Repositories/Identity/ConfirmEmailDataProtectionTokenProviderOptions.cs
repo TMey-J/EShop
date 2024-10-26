@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Restaurant.Persistence.Services.Identity;
+namespace EShop.Infrastucture.Repositories.Identity;
 
 public class ConfirmEmailDataProtectionTokenProviderOptions : DataProtectionTokenProviderOptions
 {
@@ -18,7 +18,7 @@ public class ConfirmEmailDataProtectorTokenProvider<TUser> : DataProtectorTokenP
         IDataProtectionProvider dataProtectionProvider,
         IOptions<ConfirmEmailDataProtectionTokenProviderOptions> options,
         ILogger<DataProtectorTokenProvider<TUser>> logger)
-        : base(dataProtectionProvider,options,logger)
+        : base(dataProtectionProvider, options, logger)
     {
         // NOTE: DataProtectionTokenProviderOptions.TokenLifespan is set to TimeSpan.FromDays(1)
         // which is low for the `ConfirmEmail` task.

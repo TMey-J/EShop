@@ -1,20 +1,13 @@
 ﻿using Blog.Core.Application.Constants;
 using EShop.Application.Configs.MediatR;
-using EShop.Application.Contracts.Identity;
-using EShop.Domain.Entities.Identity;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Restaurant.Application.Contracts.Identity;
 using Restaurant.Application.Models;
 using System.Reflection;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
 
 namespace EShop.Infrastucture

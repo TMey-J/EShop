@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Restaurant.Persistence.Services.Identity;
+namespace EShop.Infrastucture.Repositories.Identity;
 
 public class ApplicationRoleManager(
     IRoleStore<Role> store,
@@ -14,8 +14,8 @@ public class ApplicationRoleManager(
     IdentityErrorDescriber errors,
     ILogger<ApplicationRoleManager> logger,
     SQLDbContext context)
-    : RoleManager<Role>(store,roleValidators,keyNormalizer,errors,logger),
+    : RoleManager<Role>(store, roleValidators, keyNormalizer, errors, logger),
     IApplicationRoleManager
 {
-   
+
 }

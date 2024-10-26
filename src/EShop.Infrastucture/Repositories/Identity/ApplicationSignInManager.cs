@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Restaurant.Application.Contracts.Identity;
 
-namespace Restaurant.Persistence.Services.Identity;
+namespace EShop.Infrastucture.Repositories.Identity;
 
 public class ApplicationSignInManager(
     UserManager<User> userManager,
@@ -17,7 +17,7 @@ public class ApplicationSignInManager(
     ILogger<SignInManager<User>> logger,
     IAuthenticationSchemeProvider schemes,
     IUserConfirmation<User> confirmation)
-    : SignInManager<User>(userManager,contextAccessor,claimsFactory,optionsAccessor,logger,schemes,confirmation),
+    : SignInManager<User>(userManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation),
     IApplicationSignInManager
 {
 }

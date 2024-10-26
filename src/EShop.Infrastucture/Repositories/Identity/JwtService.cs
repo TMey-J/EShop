@@ -8,9 +8,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace Restaurant.Persistence.Services.Identity;
+namespace EShop.Infrastucture.Repositories.Identity;
 
-public class JwtService(IOptionsMonitor<SiteSettings> options,IApplicationSignInManager signInManager) : IJwtService
+public class JwtService(IOptionsMonitor<SiteSettings> options, IApplicationSignInManager signInManager) : IJwtService
 {
     private readonly JwtConfigs _jwtConfigs = options.CurrentValue.JwtConfigs;
     private readonly IApplicationSignInManager _signInManager = signInManager;
@@ -18,7 +18,7 @@ public class JwtService(IOptionsMonitor<SiteSettings> options,IApplicationSignIn
     public async Task<string> Generate(User user)
     {
         var secretKey = Encoding.UTF8.GetBytes(_jwtConfigs.SecretKey);
-        var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey),SecurityAlgorithms.HmacSha256Signature);
+        var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256Signature);
 
         var claims = await GetClaims(user);
         var tokenOptions = new JwtSecurityToken(
@@ -37,7 +37,7 @@ public class JwtService(IOptionsMonitor<SiteSettings> options,IApplicationSignIn
         var result = await _signInManager.ClaimsFactory.CreateAsync(user);
         var claims = new List<Claim>(result.Claims)
         {
-            
+
         };
         return claims;
     }

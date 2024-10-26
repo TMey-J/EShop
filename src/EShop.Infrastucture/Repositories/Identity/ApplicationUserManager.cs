@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Restaurant.Persistence.Services.Identity;
+namespace EShop.Infrastucture.Repositories.Identity;
 
 public class ApplicationUserManager(
     IUserStore<User> store,
@@ -13,12 +13,12 @@ public class ApplicationUserManager(
     IPasswordHasher<User> passwordHasher,
     IEnumerable<IUserValidator<User>> userValidators,
     IEnumerable<IPasswordValidator<User>> passwordValidators,
-    ILookupNormalizer keyNormalizer,IdentityErrorDescriber errors,
+    ILookupNormalizer keyNormalizer, IdentityErrorDescriber errors,
     IServiceProvider services,
     ILogger<UserManager<User>> logger,
     SQLDbContext context)
-    : UserManager<User>(store,optionsAccessor,passwordHasher,userValidators,passwordValidators,keyNormalizer,errors,services,logger),
+    : UserManager<User>(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger),
     IApplicationUserManager
 {
-    
+
 }

@@ -1,6 +1,7 @@
 ﻿using EShop.Application.Contracts.Identity;
 using EShop.Domain.Entities.Identity;
 using EShop.Infrastucture.Databases;
+using EShop.Infrastucture.Repositories.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +10,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Restaurant.Application.Contracts.Identity;
 using Restaurant.Application.Models;
-using Restaurant.Persistence.Services.Identity;
 using System.Security.Claims;
 using System.Security.Principal;
 
