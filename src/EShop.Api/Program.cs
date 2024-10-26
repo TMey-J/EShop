@@ -1,5 +1,6 @@
 using Serilog.Events;
 using Serilog;
+using Blogger.Api.Middlewares;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File(path: Path.Combine(Directory.GetCurrentDirectory(), "logs", "log-.log"),
@@ -36,9 +37,10 @@ try
         app.UseSwaggerUI();
     }
 
+    app.UseStaticFiles();
     app.UseSerilogRequestLogging();
     app.UseHttpsRedirection();
-
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
     app.UseAuthentication();
     app.UseAuthorization();
 
