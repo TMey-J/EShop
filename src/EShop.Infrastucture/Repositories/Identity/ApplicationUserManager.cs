@@ -19,6 +19,12 @@ public class ApplicationUserManager(
     SQLDbContext context)
     : UserManager<User>(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger),
     IApplicationUserManager
+    
 {
+    private readonly DbSet<User> _user = context.Set<User>();
 
+    public async Task<User?> FindByPhoneNumberAsync(string phoneNumber)
+    {
+        return await _user.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
+    }
 }
