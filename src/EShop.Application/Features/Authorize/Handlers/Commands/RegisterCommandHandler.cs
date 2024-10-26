@@ -22,10 +22,10 @@ public class RegisterCommandHandler(IApplicationUserManager userManager
         var isEmail = request.EmailOrPhoneNumber.IsEmail();
         var user = isEmail ?
             await _userManager.FindByEmailAsync(request.EmailOrPhoneNumber) :
-            await _userManager.FindByNameAsync(request.EmailOrPhoneNumber);
+            await _userManager.FindByPhoneNumberAsync(request.EmailOrPhoneNumber);
         if (user is not null)
         {
-            throw new DuplicateException("ایمیل/شماره تلفن");
+            throw new DuplicateException("ایمیل / شماره تلفن");
         }
         user = new User
         {
@@ -39,9 +39,7 @@ public class RegisterCommandHandler(IApplicationUserManager userManager
         var result = await _userManager.CreateAsync(user);
         if (!result.Succeeded)
         {
-            _logger.LogError("Create user faild");
             throw new CustomInternalServerException("مشکلی در ثبت نام کاربر به وجود آمده");
-
         }
         if (isEmail)
         {
