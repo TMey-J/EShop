@@ -1,4 +1,4 @@
-﻿namespace Blog.Core.Application.Constants;
+﻿namespace EShop.Application.Constants;
 
 public static class PolicyNames
 {
