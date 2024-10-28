@@ -1,9 +1,9 @@
 ﻿using EShop.Application.Contracts.Identity;
+using EShop.Application.Model;
 using EShop.Domain.Entities.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Restaurant.Application.Contracts.Identity;
-using Restaurant.Application.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

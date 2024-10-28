@@ -1,19 +1,14 @@
-﻿using Blogger.Application.Common.Exceptions;
-using EShop.Application.Common.Helpers;
-using EShop.Application.Contracts.Identity;
-using EShop.Application.Features.Authorize.Requests.Commands;
-using EShop.Domain.Entities.Identity;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Restaurant.Application.Models;
+﻿using EShop.Application.Features.Authorize.Requests.Commands;
 
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
-public class RegisterCommandHandler(IApplicationUserManager userManager
-    ,IOptionsMonitor<SiteSettings> siteSettings,ILogger<RegisterCommandHandler> logger) : IRequestHandler<RegisterCommandRequest, RegisterCommandRespinse>
+public class RegisterCommandHandler(IApplicationUserManager userManager,
+    IOptionsMonitor<SiteSettings> siteSettings,
+    [FromKeyedServices("gmail")]IEmailSenderService emailSender,
+    ILogger<RegisterCommandHandler> logger) : IRequestHandler<RegisterCommandRequest, RegisterCommandRespinse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
+    private readonly IEmailSenderService _emailSender = emailSender;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
     private readonly SiteSettings _siteSettings = siteSettings.CurrentValue;
 
@@ -41,10 +36,11 @@ public class RegisterCommandHandler(IApplicationUserManager userManager
         {
             throw new CustomInternalServerException("مشکلی در ثبت نام کاربر به وجود آمده");
         }
-        if (isEmail)
+        if (user.Email is not null)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            //TODO send email
+            var emailBody=EmailTemplates.VerifyUserCodeEmail(code,user.Email);
+            await _emailSender.SendEmailAsync(user.Email, Messages.Subjects.VeryfyCodeMailSubject, emailBody);
         }
         else
         {
