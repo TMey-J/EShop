@@ -1,7 +1,10 @@
 ﻿using EShop.Application.Contracts.Identity;
+using EShop.Application.Contracts.Services;
+using EShop.Application.Model;
 using EShop.Domain.Entities.Identity;
 using EShop.Infrastucture.Databases;
 using EShop.Infrastucture.Repositories.Identity;
+using EShop.Infrastucture.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Restaurant.Application.Contracts.Identity;
-using Restaurant.Application.Models;
 using System.Security.Claims;
 using System.Security.Principal;
 
@@ -30,7 +32,7 @@ namespace EShop.Infrastucture
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IPrincipal>(provider => provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.User ?? ClaimsPrincipal.Current!);
-
+            services.ConfigureServices();
             return services;
         }
         private static IServiceCollection AddDataBase(this IServiceCollection services, string connectionString)
@@ -40,6 +42,10 @@ namespace EShop.Infrastucture
                 options.UseSqlServer(connectionString);
             });
             return services;
+        }
+        private static void ConfigureServices(this IServiceCollection services)
+        {
+            services.AddKeyedScoped<IEmailSenderService, GmailSenderService>("gmail");
         }
         private static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {

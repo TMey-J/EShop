@@ -13,6 +13,10 @@
 
 
         }
+        public static class Subjects
+        {
+            public const string VeryfyCodeMailSubject = "کد ثبت حساب کاربری";
+        }
         public static class Errors
         {
             public const string InternalServer = "خطایی در برنامه رخ داده لطفا بعدا امتحان کنید";

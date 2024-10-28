@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace Restaurant.Application.Models;
+namespace EShop.Application.Model;
 
 public class SiteSettings
 {
