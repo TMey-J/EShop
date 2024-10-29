@@ -22,6 +22,7 @@
             public const string InternalServer = "خطایی در برنامه رخ داده لطفا بعدا امتحان کنید";
             public const string Validation = "مقادیر را به درستی وارد کنید";
             public const string BadRequest = "درخواست نامعتر است";
+            public const string InvalidToken = "کد فعال ساز نا معتبر است";
 
             public static string DuplicatedValue(string name)
             {

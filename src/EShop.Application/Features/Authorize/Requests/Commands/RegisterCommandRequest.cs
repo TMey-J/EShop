@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace EShop.Application.Features.Authorize.Requests.Commands;
 
-public record RegisterCommandRequest():IRequest<RegisterCommandRespinse>
+public record RegisterCommandRequest():IRequest<RegisterCommandResponse>
 {
     [DisplayName("نام کاربری")]
     public string UserName { get; set; } = string.Empty;
@@ -17,4 +17,4 @@ public record RegisterCommandRequest():IRequest<RegisterCommandRespinse>
     [DisplayName("تکرار کلمه عبور")]
     public string ConfirmPassword { get; set; } = string.Empty;
 }
-public record RegisterCommandRespinse(string EmailOrPhoneNumber,int ResendCodeSeconds,DateTime SendCodeLastTime);
+public record RegisterCommandResponse(string EmailOrPhoneNumber,int ResendCodeSeconds,DateTime SendCodeLastTime);

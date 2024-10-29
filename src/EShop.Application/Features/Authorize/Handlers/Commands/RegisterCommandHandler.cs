@@ -1,18 +1,22 @@
 ﻿using EShop.Application.Features.Authorize.Requests.Commands;
+using MediatR;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class RegisterCommandHandler(IApplicationUserManager userManager,
     IOptionsMonitor<SiteSettings> siteSettings,
     [FromKeyedServices("gmail")]IEmailSenderService emailSender,
-    ILogger<RegisterCommandHandler> logger) : IRequestHandler<RegisterCommandRequest, RegisterCommandRespinse>
+    ILogger<RegisterCommandHandler> logger,IHttpContextAccessor httpContext) : IRequestHandler<RegisterCommandRequest, RegisterCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IEmailSenderService _emailSender = emailSender;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
+    private readonly IHttpContextAccessor _httpContext = httpContext;
     private readonly SiteSettings _siteSettings = siteSettings.CurrentValue;
 
-    public async Task<RegisterCommandRespinse> Handle(RegisterCommandRequest request, CancellationToken cancellationToken)
+    public async Task<RegisterCommandResponse> Handle(RegisterCommandRequest request, CancellationToken cancellationToken)
     {
         var isEmail = request.EmailOrPhoneNumber.IsEmail();
         var user = isEmail ?
@@ -39,7 +43,7 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
         if (user.Email is not null)
         {
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var emailBody=EmailTemplates.VerifyUserCodeEmail(code,user.Email);
+            var emailBody=EmailTemplates.VerifyUserCodeEmail(string.Empty,code,user.Email);// the url should be filled based on the address of the front-end page
             await _emailSender.SendEmailAsync(user.Email, Messages.Subjects.VeryfyCodeMailSubject, emailBody);
         }
         else
@@ -47,7 +51,7 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user,user.PhoneNumber!);
             //TODO send sms
         }
-        return new RegisterCommandRespinse(request.EmailOrPhoneNumber, _siteSettings.WaitForSendCodeSeconds, user.SendCodeLastTime);
+        return new RegisterCommandResponse(request.EmailOrPhoneNumber, _siteSettings.WaitForSendCodeSeconds, user.SendCodeLastTime);
 
     }
 }
