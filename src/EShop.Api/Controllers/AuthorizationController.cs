@@ -16,8 +16,8 @@ namespace EShop.Api.Controllers
             var resonse = await _mediator.Send(request);
             return Ok(resonse);
         }
-        [HttpGet("{email}/{token}")]
-        public async Task<IActionResult> VerifyEmail(string email, string token)
+        [HttpGet]
+        public async Task<IActionResult> VerifyEmail([FromQuery]string token, [FromQuery] string email)
         {
             await _mediator.Send(new VerifyEmailCommandRequest { Email = email, Token = token });
             return Ok();

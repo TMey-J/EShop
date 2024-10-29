@@ -1,13 +1,14 @@
 ﻿using EShop.Application.Features.Authorize.Requests.Commands;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.WebUtilities;
 using System;
 
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class RegisterCommandHandler(IApplicationUserManager userManager,
     IOptionsMonitor<SiteSettings> siteSettings,
-    [FromKeyedServices("gmail")]IEmailSenderService emailSender,
+    [FromKeyedServices("email")]IEmailSenderService emailSender,
     ILogger<RegisterCommandHandler> logger,IHttpContextAccessor httpContext) : IRequestHandler<RegisterCommandRequest, RegisterCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
@@ -42,8 +43,14 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
         }
         if (user.Email is not null)
         {
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var emailBody=EmailTemplates.VerifyUserCodeEmail(string.Empty,code,user.Email);// the url should be filled based on the address of the front-end page
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var param = new Dictionary<string, string?>
+            {
+                {"token", token},
+                {"email", user.Email}
+            };
+            var url = QueryHelpers.AddQueryString(string.Empty, param);// the url should be filled based on the address of the front-end page
+            var emailBody=EmailTemplates.VerifyUserCodeEmail(url,user.Email);
             await _emailSender.SendEmailAsync(user.Email, Messages.Subjects.VeryfyCodeMailSubject, emailBody);
         }
         else

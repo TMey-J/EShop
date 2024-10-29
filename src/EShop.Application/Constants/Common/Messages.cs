@@ -23,6 +23,7 @@
             public const string Validation = "مقادیر را به درستی وارد کنید";
             public const string BadRequest = "درخواست نامعتر است";
             public const string InvalidToken = "کد فعال ساز نا معتبر است";
+            public const string EmailAlreadyVerified = "این ایمیل قبال فعال شده است";
 
             public static string DuplicatedValue(string name)
             {
