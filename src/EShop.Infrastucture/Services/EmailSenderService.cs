@@ -7,7 +7,7 @@ using EShop.Application.Model;
 
 namespace EShop.Infrastucture.Services;
 
-public class GmailSenderService(IOptionsSnapshot<SiteSettings> siteSettings) : IEmailSenderService
+public class EmailSenderService(IOptionsSnapshot<SiteSettings> siteSettings) : IEmailSenderService
 {
     private readonly EmailConfigs _emailConfigs = siteSettings.Value.EmailConfigs;
 

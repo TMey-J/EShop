@@ -26,4 +26,10 @@
     <ProjectReference Include="..\EShop.Infrastucture\EShop.Infrastucture.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\TempMail\" />
+    <Folder Include="wwwroot\TempSms\" />
+  </ItemGroup>
+
 </Project>

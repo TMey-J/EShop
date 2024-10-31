@@ -5,19 +5,16 @@ namespace EShop.Application.Model;
 public class SiteSettings
 {
     public ConnectionStrings ConnectionStrings { get; set; } = null!;
-
     public string UserDefaultAvatar { get; set; } = null!;
     public int WaitForSendCodeSeconds { get; set; }
-
     public EmailConfigs EmailConfigs { get; set; } = null!;
-
     public bool EnableEmailConfirmation { get; set; }
     public TimeSpan EmailConfirmationTokenProviderLifespan { get; set; }
     public PasswordOptions PasswordOptions { get; set; } = null!;
     public LockoutOptions LockoutOptions { get; set; } = null!;
     public CookieOptions CookieOptions { get; set; } = null!;
-
     public JwtConfigs JwtConfigs { get; set; } = null!;
+    public SmsSettings SmsSettings { get; set; } = null!;
 }
 
 public class ConnectionStrings
@@ -53,4 +50,11 @@ public class JwtConfigs
     public string Audience { get; set; }
     public int NotBeforeMinutes { get; set; }
     public int ExpirationMinutes { get; set; }
+}
+public class SmsSettings
+{
+    public string ApiKey { get; set; } = null!;
+    public string Sender { get; set; } = null!;
+    public string LoginCodeTemplateName { get; set; } = null!;
+    public string LocalWritePath { get; set; } = null!;
 }

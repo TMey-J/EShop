@@ -5,12 +5,16 @@ using EShop.Domain.Entities.Identity;
 using EShop.Infrastucture.Databases;
 using EShop.Infrastucture.Repositories.Identity;
 using EShop.Infrastucture.Services;
+using EShop.Infrastucture.Services.Sms;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using Restaurant.Application.Contracts.Identity;
 using System.Security.Claims;
 using System.Security.Principal;
@@ -21,7 +25,7 @@ namespace EShop.Infrastucture
     {
         private const string EmailConfirmationTokenProviderName = "ConfirmEmail";
 
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             var siteSettings = configuration.Get<SiteSettings>(configuration.Bind);
 
@@ -32,7 +36,7 @@ namespace EShop.Infrastucture
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IPrincipal>(provider => provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.User ?? ClaimsPrincipal.Current!);
-            services.ConfigureServices();
+            services.ConfigureServices(environment);
             return services;
         }
         private static IServiceCollection AddDataBase(this IServiceCollection services, string connectionString)
@@ -43,9 +47,19 @@ namespace EShop.Infrastucture
             });
             return services;
         }
-        private static void ConfigureServices(this IServiceCollection services)
+        private static void ConfigureServices(this IServiceCollection services,IWebHostEnvironment environment)
         {
-            services.AddKeyedScoped<IEmailSenderService, GmailSenderService>("gmail");
+            if (environment.IsDevelopment())
+            {
+                services.AddKeyedScoped<ISmsSenderService, LocalSmsSenderService>("sms");
+                services.AddKeyedScoped<IEmailSenderService, LocalEmailSenderService>("email");
+            }
+            else
+            {
+                services.AddKeyedScoped<IEmailSenderService, EmailSenderService>("email");
+                services.AddKeyedScoped<ISmsSenderService, KavenegarSmsSenderService>("sms");
+
+            }
         }
         private static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {
@@ -78,6 +92,8 @@ namespace EShop.Infrastucture
                 .AddErrorDescriber<CustomIdentityErrorDescriber>()
                 .AddDefaultTokenProviders()
                 .AddTokenProvider<ConfirmEmailDataProtectorTokenProvider<User>>(EmailConfirmationTokenProviderName);
+
+            services.Replace(ServiceDescriptor.Scoped<IUserValidator<User>, CustomUserValidator<User>>());
 
             services.ConfigureApplicationCookie(identityOptionsCookies =>
             {
