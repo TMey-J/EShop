@@ -5,6 +5,7 @@ using EShop.Domain.Entities.Identity;
 using EShop.Infrastucture.Databases;
 using EShop.Infrastucture.Repositories.Identity;
 using EShop.Infrastucture.Services;
+using EShop.Infrastucture.Services.Sms;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Restaurant.Application.Contracts.Identity;
 using System.Security.Claims;
@@ -49,11 +51,14 @@ namespace EShop.Infrastucture
         {
             if (environment.IsDevelopment())
             {
+                services.AddKeyedScoped<ISmsSenderService, LocalSmsSenderService>("sms");
                 services.AddKeyedScoped<IEmailSenderService, LocalEmailSenderService>("email");
             }
             else
             {
                 services.AddKeyedScoped<IEmailSenderService, EmailSenderService>("email");
+                services.AddKeyedScoped<ISmsSenderService, KavenegarSmsSenderService>("sms");
+
             }
         }
         private static IServiceCollection AddIdentityServices(this IServiceCollection services)
@@ -87,6 +92,8 @@ namespace EShop.Infrastucture
                 .AddErrorDescriber<CustomIdentityErrorDescriber>()
                 .AddDefaultTokenProviders()
                 .AddTokenProvider<ConfirmEmailDataProtectorTokenProvider<User>>(EmailConfirmationTokenProviderName);
+
+            services.Replace(ServiceDescriptor.Scoped<IUserValidator<User>, CustomUserValidator<User>>());
 
             services.ConfigureApplicationCookie(identityOptionsCookies =>
             {
