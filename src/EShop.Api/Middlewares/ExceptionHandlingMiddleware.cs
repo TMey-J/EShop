@@ -55,7 +55,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next,ILogger<ExceptionH
         }
         catch (CustomInternalServerException exception)
         {
-            _logger.LogError($"{exception.StackTrace?.Split("in")[0]}|{exception.Message}");
+            var errors=exception.Errors !=null? string.Join('|', exception.Errors):string.Empty;
+            _logger.LogError($"{exception.StackTrace?.Split("in")[0]}|{errors}");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             var result = new ApiResult(false, System.Net.HttpStatusCode.InternalServerError,
                 exception.Message);
