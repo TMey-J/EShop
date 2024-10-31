@@ -10,5 +10,8 @@ global using Microsoft.Extensions.Options;
 global using EShop.Application.Model;
 global using EShop.Application.Constants;
 global using EShop.Domain.Entities.Identity;
+global using static EShop.Application.Constants.Common.Messages;
+global using EShop.Application.Common.Exceptions;
+
 
 

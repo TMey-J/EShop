@@ -22,5 +22,19 @@ namespace EShop.Api.Controllers
             await _mediator.Send(new VerifyEmailCommandRequest { Email = email, Token = token });
             return Ok();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> VerifyPhoneNumber(VerifyPhoneNumberCommandRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok();
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> ReSendVerificationCode(ReSendSmsCommandRequest request)
+        {
+            var response= await _mediator.Send(request);
+            return Ok(response);
+        }
     }
 }

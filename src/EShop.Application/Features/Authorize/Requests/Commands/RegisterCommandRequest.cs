@@ -17,4 +17,4 @@ public record RegisterCommandRequest():IRequest<RegisterCommandResponse>
     [DisplayName("تکرار کلمه عبور")]
     public string ConfirmPassword { get; set; } = string.Empty;
 }
-public record RegisterCommandResponse(string EmailOrPhoneNumber,int ResendCodeSeconds,DateTime SendCodeLastTime);
+public record RegisterCommandResponse(string EmailOrPhoneNumber,int? ResendCodeSeconds,DateTime? SendCodeLastTime);

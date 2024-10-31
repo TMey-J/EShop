@@ -8,13 +8,14 @@ namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class RegisterCommandHandler(IApplicationUserManager userManager,
     IOptionsMonitor<SiteSettings> siteSettings,
-    [FromKeyedServices("email")]IEmailSenderService emailSender,
-    ILogger<RegisterCommandHandler> logger,IHttpContextAccessor httpContext) : IRequestHandler<RegisterCommandRequest, RegisterCommandResponse>
+    [FromKeyedServices("email")] IEmailSenderService emailSender,
+    ILogger<RegisterCommandHandler> logger,
+    [FromKeyedServices("sms")] ISmsSenderService smsSender) : IRequestHandler<RegisterCommandRequest, RegisterCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IEmailSenderService _emailSender = emailSender;
+    private readonly ISmsSenderService _smsSender = smsSender;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
-    private readonly IHttpContextAccessor _httpContext = httpContext;
     private readonly SiteSettings _siteSettings = siteSettings.CurrentValue;
 
     public async Task<RegisterCommandResponse> Handle(RegisterCommandRequest request, CancellationToken cancellationToken)
@@ -33,13 +34,12 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
             Email = isEmail ? request.EmailOrPhoneNumber : null,
             PhoneNumber = isEmail ? null : request.EmailOrPhoneNumber,
             PasswordHash = request.Password.HashPassword(out var salt),
-            PasswordSalt = salt,
-            SendCodeLastTime=DateTime.UtcNow,
+            PasswordSalt = salt
         };
         var result = await _userManager.CreateAsync(user);
         if (!result.Succeeded)
         {
-            throw new CustomInternalServerException("مشکلی در ثبت نام کاربر به وجود آمده");
+            throw new CustomInternalServerException(result.GetErrors(),Errors.InternalServer);
         }
         if (user.Email is not null)
         {
@@ -50,15 +50,18 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
                 {"email", user.Email}
             };
             var url = QueryHelpers.AddQueryString(string.Empty, param);// the url should be filled based on the address of the front-end page
-            var emailBody=EmailTemplates.VerifyUserCodeEmail(url,user.Email);
-            await _emailSender.SendEmailAsync(user.Email, Messages.Subjects.VeryfyCodeMailSubject, emailBody);
+            var emailBody = EmailTemplates.VerifyUserCodeEmail(url, user.Email);
+            await _emailSender.SendEmailAsync(user.Email, Subjects.VeryfyCodeMailSubject, emailBody);
+            return new RegisterCommandResponse(request.EmailOrPhoneNumber,null,null);
+
         }
         else
         {
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user,user.PhoneNumber!);
-            //TODO send sms
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber!);
+            await _smsSender.SendOTP(user.PhoneNumber!, _siteSettings.SmsSettings.LoginCodeTemplateName, code);
+            return new RegisterCommandResponse(request.EmailOrPhoneNumber, _siteSettings.WaitForSendCodeSeconds, user.SendCodeLastTime);
+
         }
-        return new RegisterCommandResponse(request.EmailOrPhoneNumber, _siteSettings.WaitForSendCodeSeconds, user.SendCodeLastTime);
 
     }
 }

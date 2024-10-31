@@ -203,7 +203,6 @@ public interface IApplicationUserManager : IDisposable
     #endregion BaseClass
 
     #region Custom
-
     Task<User?> FindByPhoneNumberAsync(string phoneNumber);
     #endregion Custom
 }

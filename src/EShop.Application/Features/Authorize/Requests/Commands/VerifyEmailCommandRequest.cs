@@ -7,7 +7,7 @@ namespace EShop.Application.Features.Authorize.Requests.Commands
         [DisplayName("ایمیل")]
         public string Email { get; set; } = string.Empty;
 
-        [DisplayName("کد فعال ساز")]
+        [DisplayName("لینک فعال سازی")]
         public string Token { get; set; } = string.Empty;
 
     }
