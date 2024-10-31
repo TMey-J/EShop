@@ -43,6 +43,7 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
         }
         if (user.Email is not null)
         {
+            _logger.LogInformation($"user with email: {user.Email} registered");
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var param = new Dictionary<string, string?>
             {
@@ -57,6 +58,7 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
         }
         else
         {
+            _logger.LogInformation($"user with phone number: {user.PhoneNumber} registered");
             var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber!);
             await _smsSender.SendOTP(user.PhoneNumber!, _siteSettings.SmsSettings.LoginCodeTemplateName, code);
             return new RegisterCommandResponse(request.EmailOrPhoneNumber, _siteSettings.WaitForSendCodeSeconds, user.SendCodeLastTime);

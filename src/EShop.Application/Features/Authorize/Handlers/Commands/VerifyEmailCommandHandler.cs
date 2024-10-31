@@ -25,8 +25,9 @@ public class VerifyEmailCommandHandler(IApplicationUserManager userManager,
         {
             throw new CustomBadRequestException([Messages.Errors.InvalidToken]);
         }
-
-        _logger.LogInformation("user with email: {0} verified", user.Email);
+        user.IsActive = true;
+        await _userManager.UpdateUserAsync(user);
+        _logger.LogInformation($"user with email: {user.Email} verified");
 
         return new();
     }

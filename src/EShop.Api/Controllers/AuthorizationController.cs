@@ -31,7 +31,7 @@ namespace EShop.Api.Controllers
         }
 
         [HttpPost()]
-        public async Task<IActionResult> ReSendVerificationCode(ReSendSmsCommandRequest request)
+        public async Task<IActionResult> ReSendVerificationCode(ReSendVerificationCideCommandRequest request)
         {
             var response= await _mediator.Send(request);
             return Ok(response);

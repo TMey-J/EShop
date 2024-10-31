@@ -4,12 +4,11 @@ using EShop.Application.Features.Authorize.Requests.Commands;
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class VerifyPhoneNumberCommandHandler(IApplicationUserManager userManager,
-    [FromKeyedServices("email")] IEmailSenderService emailSender,IOptionsSnapshot<SiteSettings> siteSettings,
+    [FromKeyedServices("email")] IEmailSenderService emailSender,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<VerifyPhoneNumberCommandRequest, VerifyPhoneNumberCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IEmailSenderService _emailSender = emailSender;
-    private readonly SiteSettings _siteSettings = siteSettings.Value;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
     public async Task<VerifyPhoneNumberCommandResponse> Handle(VerifyPhoneNumberCommandRequest request, CancellationToken cancellationToken)
@@ -27,11 +26,8 @@ public class VerifyPhoneNumberCommandHandler(IApplicationUserManager userManager
             throw new CustomBadRequestException([Errors.InvalidCode]);
         }
         user.PhoneNumberConfirmed = true;
-        var update= await _userManager.UpdateAsync(user);
-        if (!update.Succeeded)
-        {
-            throw new CustomInternalServerException(update.GetErrors());
-        }
+        user.IsActive = true;
+        await _userManager.UpdateUserAsync(user);
         _logger.LogInformation($"user with phone number: {user.PhoneNumber} verified");
 
         return new();

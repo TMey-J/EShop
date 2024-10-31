@@ -204,5 +204,6 @@ public interface IApplicationUserManager : IDisposable
 
     #region Custom
     Task<User?> FindByPhoneNumberAsync(string phoneNumber);
+    Task UpdateUserAsync(User user);
     #endregion Custom
 }
