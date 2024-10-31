@@ -20,48 +20,45 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
 
     public async Task<RegisterCommandResponse> Handle(RegisterCommandRequest request, CancellationToken cancellationToken)
     {
-        var isEmail = request.EmailOrPhoneNumber.IsEmail();
-        var user = isEmail ?
-            await _userManager.FindByEmailAsync(request.EmailOrPhoneNumber) :
-            await _userManager.FindByPhoneNumberAsync(request.EmailOrPhoneNumber);
-        if (user is not null)
+        (User? value,bool isEmail) user= await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
+        if (user.value is not null)
         {
-            throw new DuplicateException("ایمیل / شماره تلفن");
+            throw new DuplicateException("کاربر");
         }
-        user = new User
+        user.value=new()
         {
             UserName = request.UserName,
-            Email = isEmail ? request.EmailOrPhoneNumber : null,
-            PhoneNumber = isEmail ? null : request.EmailOrPhoneNumber,
+            Email = user.isEmail ? request.EmailOrPhoneNumber : null,
+            PhoneNumber = user.isEmail ? null : request.EmailOrPhoneNumber,
             PasswordHash = request.Password.HashPassword(out var salt),
             PasswordSalt = salt
         };
-        var result = await _userManager.CreateAsync(user);
+        var result = await _userManager.CreateAsync(user.value);
         if (!result.Succeeded)
         {
             throw new CustomInternalServerException(result.GetErrors(),Errors.InternalServer);
         }
-        if (user.Email is not null)
+        if (user.value.Email is not null)
         {
-            _logger.LogInformation($"user with email: {user.Email} registered");
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            _logger.LogInformation($"user with email: {user.value.Email} registered");
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user.value);
             var param = new Dictionary<string, string?>
             {
                 {"token", token},
-                {"email", user.Email}
+                {"email", user.value.Email}
             };
             var url = QueryHelpers.AddQueryString(string.Empty, param);// the url should be filled based on the address of the front-end page
-            var emailBody = EmailTemplates.VerifyUserCodeEmail(url, user.Email);
-            await _emailSender.SendEmailAsync(user.Email, Subjects.VeryfyCodeMailSubject, emailBody);
+            var emailBody = EmailTemplates.VerifyUserCodeEmail(url, user.value.Email);
+            await _emailSender.SendEmailAsync(user.value.Email, Subjects.VeryfyCodeMailSubject, emailBody);
             return new RegisterCommandResponse(request.EmailOrPhoneNumber,null,null);
 
         }
         else
         {
-            _logger.LogInformation($"user with phone number: {user.PhoneNumber} registered");
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber!);
-            await _smsSender.SendOTP(user.PhoneNumber!, _siteSettings.SmsSettings.LoginCodeTemplateName, code);
-            return new RegisterCommandResponse(request.EmailOrPhoneNumber, _siteSettings.WaitForSendCodeSeconds, user.SendCodeLastTime);
+            _logger.LogInformation($"user with phone number: {user.value.PhoneNumber} registered");
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user.value, user.value.PhoneNumber!);
+            await _smsSender.SendOTP(user.value.PhoneNumber!, _siteSettings.SmsSettings.LoginCodeTemplateName, code);
+            return new RegisterCommandResponse(request.EmailOrPhoneNumber, _siteSettings.WaitForSendCodeSeconds, user.value.SendCodeLastTime);
 
         }
 

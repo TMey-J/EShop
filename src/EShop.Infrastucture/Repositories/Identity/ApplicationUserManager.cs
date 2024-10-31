@@ -25,6 +25,15 @@ public class ApplicationUserManager(
 {
     private readonly DbSet<User> _user = context.Set<User>();
 
+    public async Task<(User?, bool)> FindByEmailOrPhoneNumberAsync(string emailOrPhoneNumber)
+    {
+        var isEmail = emailOrPhoneNumber.IsEmail();
+        var user = isEmail ?
+            await FindByEmailAsync(emailOrPhoneNumber) :
+            await FindByPhoneNumberAsync(emailOrPhoneNumber);
+        return (user,isEmail);
+    }
+
     public async Task<User?> FindByPhoneNumberAsync(string phoneNumber)
     {
         return await _user.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);

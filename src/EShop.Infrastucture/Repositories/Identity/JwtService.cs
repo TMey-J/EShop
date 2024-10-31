@@ -1,4 +1,5 @@
-﻿using EShop.Application.Contracts.Identity;
+﻿using EShop.Application.Constants;
+using EShop.Application.Contracts.Identity;
 using EShop.Application.Model;
 using EShop.Domain.Entities.Identity;
 using Microsoft.Extensions.Options;
@@ -15,7 +16,7 @@ public class JwtService(IOptionsMonitor<SiteSettings> options, IApplicationSignI
     private readonly JwtConfigs _jwtConfigs = options.CurrentValue.JwtConfigs;
     private readonly IApplicationSignInManager _signInManager = signInManager;
 
-    public async Task<string> Generate(User user)
+    public async Task<string> GenerateAsync(User user)
     {
         var secretKey = Encoding.UTF8.GetBytes(_jwtConfigs.SecretKey);
         var signingCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKey), SecurityAlgorithms.HmacSha256Signature);
@@ -35,10 +36,11 @@ public class JwtService(IOptionsMonitor<SiteSettings> options, IApplicationSignI
     private async Task<IEnumerable<Claim>> GetClaims(User user)
     {
         var result = await _signInManager.ClaimsFactory.CreateAsync(user);
-        var claims = new List<Claim>(result.Claims)
+        var claims = new List<Claim>(result.Claims);
+        if (user.PhoneNumber is not null)
         {
-
-        };
+            claims.Add(new(ClaimsName.PhoneNumber, user.PhoneNumber));
+        }
         return claims;
     }
 }
