@@ -1,9 +1,5 @@
-﻿using static EShop.Application.Constants.Common.Messages;
-
-namespace EShop.Application.Common.Exceptions
+﻿namespace EShop.Application.Common.Exceptions
 {
-    public class CustomBadRequestException(List<string> errors, string? message = Errors.BadRequest) : ApplicationException(message)
-    {
-        public List<string> Errors { get; set; } = errors;
-    }
+    public class CustomBadRequestException(List<string> errors, string message = Errors.BadRequest)
+        : BaseException<string>(errors, message);
 }
