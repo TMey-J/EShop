@@ -1,7 +1,6 @@
 ﻿using EShop.Application.Contracts.Identity;
 using EShop.Application.Contracts.Services;
 using EShop.Application.Model;
-using EShop.Domain.Entities.Identity;
 using EShop.Infrastucture.Databases;
 using EShop.Infrastucture.Repositories.Identity;
 using EShop.Infrastucture.Services;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -18,7 +16,6 @@ using Microsoft.Extensions.Hosting;
 using Restaurant.Application.Contracts.Identity;
 using System.Security.Claims;
 using System.Security.Principal;
-
 namespace EShop.Infrastucture
 {
     public static class DependencyInjection
@@ -28,6 +25,7 @@ namespace EShop.Infrastucture
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
             var siteSettings = configuration.Get<SiteSettings>(configuration.Bind);
+            ArgumentNullException.ThrowIfNull(siteSettings);
 
             services.AddDataBase(siteSettings.ConnectionStrings.SQLDbContextConnection);
 
@@ -42,8 +40,8 @@ namespace EShop.Infrastucture
         private static IServiceCollection AddDataBase(this IServiceCollection services, string connectionString)
         {
             services.AddDbContextPool<SQLDbContext>((sp, options) =>
-            {
-                options.UseSqlServer(connectionString);
+            {   
+                options.UseSqlServer(connectionString,x=>x.UseHierarchyId());
             });
             return services;
         }

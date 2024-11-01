@@ -1,4 +1,6 @@
-﻿using EShop.Domain.Entities.Identity;
+﻿using EShop.Domain.Entities;
+using EShop.Domain.Entities.Identity;
+using EShop.Infrastucture.Extentions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +13,8 @@ namespace EShop.Infrastucture.Databases
         {
             base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(SQLDbContext).Assembly);
-
+            builder.RegisterAllEntities(typeof(BaseEntity));
+            builder.AddIsDeleteQueryFilter<BaseEntity>();
         }
     }
 }
