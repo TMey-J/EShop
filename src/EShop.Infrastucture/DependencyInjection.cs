@@ -52,13 +52,13 @@ namespace EShop.Infrastucture
         {
             if (environment.IsDevelopment())
             {
-                services.AddKeyedScoped<ISmsSenderService, LocalSmsSenderService>("sms");
-                services.AddKeyedScoped<IEmailSenderService, LocalEmailSenderService>("email");
+                services.AddScoped<ISmsSenderService, LocalSmsSenderService>();
+                services.AddScoped<IEmailSenderService, LocalEmailSenderService>();
             }
             else
             {
-                services.AddKeyedScoped<IEmailSenderService, EmailSenderService>("email");
-                services.AddKeyedScoped<ISmsSenderService, KavenegarSmsSenderService>("sms");
+                services.AddScoped<IEmailSenderService, EmailSenderService>();
+                services.AddScoped<ISmsSenderService, KavenegarSmsSenderService>();
 
             }
         }

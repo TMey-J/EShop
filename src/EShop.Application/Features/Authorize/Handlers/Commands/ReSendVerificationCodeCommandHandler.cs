@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class ReSendVerificationCodeCommandHandler(IApplicationUserManager userManager,
-    [FromKeyedServices("sms")] ISmsSenderService smsSender,
-    [FromKeyedServices("email")] IEmailSenderService emailSender,
+    ISmsSenderService smsSender,
+    IEmailSenderService emailSender,
     IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<ReSendVerificationCideCommandRequest, ReSendVerificationCideCommandRespose>
 {

@@ -8,9 +8,9 @@ namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class RegisterCommandHandler(IApplicationUserManager userManager,
     IOptionsMonitor<SiteSettings> siteSettings,
-    [FromKeyedServices("email")] IEmailSenderService emailSender,
+    IEmailSenderService emailSender,
     ILogger<RegisterCommandHandler> logger,
-    [FromKeyedServices("sms")] ISmsSenderService smsSender) : IRequestHandler<RegisterCommandRequest, RegisterCommandResponse>
+    ISmsSenderService smsSender) : IRequestHandler<RegisterCommandRequest, RegisterCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IEmailSenderService _emailSender = emailSender;
