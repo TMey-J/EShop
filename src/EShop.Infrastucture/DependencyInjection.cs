@@ -1,7 +1,9 @@
-﻿using EShop.Application.Contracts.Identity;
+﻿using EShop.Application.Contracts;
+using EShop.Application.Contracts.Identity;
 using EShop.Application.Contracts.Services;
 using EShop.Application.Model;
 using EShop.Infrastucture.Databases;
+using EShop.Infrastucture.Repositories;
 using EShop.Infrastucture.Repositories.Identity;
 using EShop.Infrastucture.Services;
 using EShop.Infrastucture.Services.Sms;
@@ -35,6 +37,7 @@ namespace EShop.Infrastucture
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IPrincipal>(provider => provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.User ?? ClaimsPrincipal.Current!);
             services.ConfigureServices(environment);
+            services.ConfigureRepositories();
             return services;
         }
         private static IServiceCollection AddDataBase(this IServiceCollection services, string connectionString)
@@ -58,6 +61,10 @@ namespace EShop.Infrastucture
                 services.AddKeyedScoped<ISmsSenderService, KavenegarSmsSenderService>("sms");
 
             }
+        }
+        private static void ConfigureRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
         }
         private static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {

@@ -1,31 +1,32 @@
 ﻿using EShop.Application.Contracts;
 using EShop.Domain.Entities;
 using EShop.Infrastucture.Databases;
+using Marketplace.Common.Helpers;
 
 namespace EShop.Infrastucture.Repositories;
 
-internal class GenericRepository<TEntity>(SQLDbContext context) : IGenericRepository<TEntity> where TEntity : BaseEntity
+public class GenericRepository<TEntity>(SQLDbContext context) : IGenericRepository<TEntity> where TEntity : BaseEntity
 {
-    private readonly DbSet<TEntity> _dbSet=context.Set<TEntity>();
+    private readonly DbSet<TEntity> _entity=context.Set<TEntity>();
     private readonly SQLDbContext _context =context;
     public async Task CreateAsync(TEntity entity)
     {
-        await _dbSet.AddAsync(entity);
+        await _entity.AddAsync(entity);
     }
 
     public void Delete(TEntity entity)
     {
-         _dbSet.Remove(entity);
+         _entity.Remove(entity);
     }
 
     public async Task<TEntity?> FindByIdAsync(long id)
     {
-        return await _dbSet.SingleOrDefaultAsync(x => x.Id == id);
+        return await _entity.SingleOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
-        return await _dbSet.ToListAsync();
+        return await _entity.ToListAsync();
     }
 
     public async Task SaveChangesAsync()
@@ -41,6 +42,18 @@ internal class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposi
 
     public void Update(TEntity entity)
     {
-         _dbSet.Update(entity);
+         _entity.Update(entity);
+    }
+    public virtual async Task<bool> IsExistsByAsync(string propertyToFilter, object propertyValue, int? id = null)
+    {
+        var exp = ExperssionHelpers.CreateAnyExperssion<TEntity>(propertyToFilter, propertyValue);
+        return await _entity.Where(x => id == null || x.Id != id).AnyAsync(exp);
+    }
+
+    public virtual async Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue)
+    {
+        var exp = ExperssionHelpers.CreateFindByExperssion<TEntity>(propertyToFilter, propertyValue);
+        return await _entity.SingleOrDefaultAsync(exp);
+
     }
 }
