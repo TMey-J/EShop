@@ -42,6 +42,7 @@ public class EmailConfigs
     public string UserName { get; set; } = null!;
     public string Password { get; set; } = null!;
     public string LocalWritePath { get; set; } = null!;
+    public string AdminEmail { get; set; } = null!;
 }
 
 public class JwtConfigs
