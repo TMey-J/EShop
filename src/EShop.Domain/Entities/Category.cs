@@ -9,7 +9,8 @@ namespace EShop.Domain.Entities
         [MaxLength(100)]
         public string Title { get; set; }=string.Empty;
         [Required]
-        public HierarchyId Parent { get; set; }
+        public HierarchyId Parent { get; set; } = HierarchyId.Parse("/");
+
         [MaxLength(40)]
         public string? Picture { get; set; }
     }

@@ -1,5 +1,0 @@
-Receptor : 09017502156
-Template : 
-Token1   : 957698
-Token2   : 
-Token3   : 
