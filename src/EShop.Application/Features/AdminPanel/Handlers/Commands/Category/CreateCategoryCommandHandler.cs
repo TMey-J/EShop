@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Application.Features.AdminPanel.Handlers.Commands.Category;
 
-public class CreateCategoryCommandHandler(ICategoryRepository category,IOptionsSnapshot<SiteSettings> siteSettings) : IRequestHandler<CreateCategoryCommandRequest, CreateCategoryCommandResponse>
+public class CreateCategoryCommandHandler(ICategoryRepository category, IOptionsSnapshot<SiteSettings> siteSettings) : IRequestHandler<CreateCategoryCommandRequest, CreateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
@@ -19,8 +19,8 @@ public class CreateCategoryCommandHandler(ICategoryRepository category,IOptionsS
         category = new Domain.Entities.Category()
         {
             Title = request.Title,
-            Picture = request.PictureBase64 != null?
-            await request.PictureBase64.UploadFileAsync(_filesPath.Category):null
+            Picture = string.IsNullOrWhiteSpace(request.PictureBase64) ? null :
+            await request.PictureBase64.UploadFileAsync(_filesPath.Category)
         };
 
         if (request.Parent is not null)
@@ -30,8 +30,8 @@ public class CreateCategoryCommandHandler(ICategoryRepository category,IOptionsS
 
             var lastChild = await _category.GetLastChildHieaechyIdAsync(parentCategory!);
 
-            category.Parent = parentCategory.Parent.GetDescendant(lastChild,null);
-        }   
+            category.Parent = parentCategory.Parent.GetDescendant(lastChild, null);
+        }
         await _category.CreateAsync(category);
         await _category.SaveChangesAsync();
 
