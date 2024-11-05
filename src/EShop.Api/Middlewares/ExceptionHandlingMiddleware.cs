@@ -1,5 +1,4 @@
 ﻿using Blogger.Application.Common.Exceptions;
-using EShop.Api;
 using EShop.Application.Common.Exceptions;
 using EShop.Application.Constants.Common;
 using EShop.Application.Contracts.Services;
@@ -8,19 +7,17 @@ using Microsoft.Extensions.Options;
 using ValidationExp = Blog.Application.Common.Exceptions.CustomValidationException;
 
 
-namespace Blogger.Api.Middlewares;
+namespace EShop.Api.Middlewares;
 
-public class ExceptionHandlingMiddleware(RequestDelegate next
-    ,IEmailSenderService emailSender,
+public class ExceptionHandlingMiddleware(RequestDelegate next,
     IOptionsMonitor<SiteSettings> siteSettings,
     ILogger<ExceptionHandlingMiddleware> logger)
 {
     private readonly RequestDelegate _next = next;
-    private readonly IEmailSenderService _emailSender = emailSender;
     private readonly EmailConfigs _siteSettings = siteSettings.CurrentValue.EmailConfigs;
     private readonly ILogger<ExceptionHandlingMiddleware> _logger = logger;
 
-    public async Task InvokeAsync(HttpContext context)
+    public async Task InvokeAsync(HttpContext context,IEmailSenderService emailSender)
     {
         try
         {
@@ -65,7 +62,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next
         {
             var errors=exception.Errors !=null? string.Join('|', exception.Errors):string.Empty;
             _logger.LogError($"{exception.StackTrace?.Split("in")[0]}|{errors}");
-            await _emailSender.SendEmailAsync(_siteSettings.AdminEmail, "EShop Error",
+            await emailSender.SendEmailAsync(_siteSettings.AdminEmail, "EShop Error",
                 "An error occurred in EShop project.check the logs");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             var result = new ApiResult(false, System.Net.HttpStatusCode.InternalServerError,
@@ -76,7 +73,7 @@ public class ExceptionHandlingMiddleware(RequestDelegate next
         catch (Exception exception)
         {
             _logger.LogError(exception,$"{exception.StackTrace?.Split("in")[0]}|{exception.Message}");
-            await _emailSender.SendEmailAsync(_siteSettings.AdminEmail, "EShop Error",
+            await emailSender.SendEmailAsync(_siteSettings.AdminEmail, "EShop Error",
                 "An error occurred in EShop project.check the logs");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             var result =
