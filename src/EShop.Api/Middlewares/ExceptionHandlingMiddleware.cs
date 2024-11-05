@@ -60,8 +60,8 @@ public class ExceptionHandlingMiddleware(RequestDelegate next,
         }
         catch (CustomInternalServerException exception)
         {
-            var errors=exception.Errors !=null? string.Join('|', exception.Errors):string.Empty;
-            _logger.LogError($"{exception.StackTrace?.Split("in")[0]}|{errors}");
+            var errors=string.Join('|', exception.Errors);
+            _logger.LogError($"{exception.StackTrace?.Split("in")[0]} | {errors}");
             await emailSender.SendEmailAsync(_siteSettings.AdminEmail, "EShop Error",
                 "An error occurred in EShop project.check the logs");
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;

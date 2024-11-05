@@ -7,5 +7,6 @@ namespace EShop.Application.Contracts
     {
         Task<HierarchyId?> GetLastChildHierarchyIdAsync(Category parentCategory);
         Task<long?> GetParentIdWithHierarchyIdAsync(HierarchyId categoryHierarchyId);
+        Task<List<Category>> GetCategoryChildrenAsync(Category category);
     }
 }

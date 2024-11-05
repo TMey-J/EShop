@@ -4,7 +4,7 @@ using EShop.Application.Features.Authorize.Requests.Commands;
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class ReSendSmsCommandHandler(IApplicationUserManager userManager,
-    [FromKeyedServices("sms")] ISmsSenderService smsSender, IOptionsSnapshot<SiteSettings> siteSettings,
+    ISmsSenderService smsSender, IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<ReSendSmsCommandRequest, ReSendSmsCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;

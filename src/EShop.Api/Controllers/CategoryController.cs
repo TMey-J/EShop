@@ -17,6 +17,12 @@ namespace EShop.Api.Controllers
             await _mediator.Send(request);
             return Ok();
         }
+        [HttpPut]
+        public async Task<IActionResult> Update(UpdateCategoryCommandRequest request)
+        {
+            await _mediator.Send(request);
+            return Ok();
+        }
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {

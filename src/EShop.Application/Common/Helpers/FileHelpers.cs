@@ -22,10 +22,10 @@ public static class FileHelpers
     public static async Task<string> UploadFileAsync(this string base64, string path)
     {
         base64 = base64.RemoveBase64Header();
-        var fileExtesion = base64.GetBase64Extesion();
+        var fileExtension = base64.GetBase64Extesion();
         var fileName = StringHelpers.GenerateUniqueName();
-        await SaveFileBase64Async(new(base64, fileName, fileExtesion, path));
-        return $"{fileName}.{fileExtesion}";
+        await SaveFileBase64Async(new(base64, fileName, fileExtension, path));
+        return $"{fileName}.{fileExtension}";
     }
     private static string RemoveBase64Header(this string base64)
     {

@@ -24,5 +24,11 @@ namespace EShop.Infrastructure.Repositories
             return parentId != 0 ? parentId : null;
             ;
         }
+
+        public async Task<List<Category>> GetCategoryChildrenAsync(Category category)
+        {
+            return await _category.Where(x =>
+                x.Id != category.Id && x.Parent.IsDescendantOf(category.Parent)).ToListAsync();
+        }
     }
 }
