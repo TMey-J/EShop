@@ -5,6 +5,7 @@ namespace EShop.Application.Contracts
 {
     public interface ICategoryRepository:IGenericRepository<Category>
     {
-        Task<HierarchyId?> GetLastChildHieaechyIdAsync(Category parentCategory);
+        Task<HierarchyId?> GetLastChildHierarchyIdAsync(Category parentCategory);
+        Task<long?> GetParentIdWithHierarchyIdAsync(HierarchyId categoryHierarchyId);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using EShop.Api.Attributes;
 using EShop.Application.Features.AdminPanel.Requests.Commands.Category;
-using EShop.Application.Features.Authorize.Requests.Commands;
+using EShop.Application.Features.AdminPanel.Requests.Queries.Category;
 
 namespace EShop.Api.Controllers
 {
@@ -16,6 +16,12 @@ namespace EShop.Api.Controllers
         {
             await _mediator.Send(request);
             return Ok();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+           var response= await _mediator.Send(new GetAllCategoryQueryRequest());
+            return Ok(response);
         }
     }
 }

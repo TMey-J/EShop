@@ -26,8 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\AdminPanel\Handlers\Queries\" />
-    <Folder Include="Features\AdminPanel\Requests\Queries\" />
+    <Folder Include="Features\AdminPanel\Requests\Queries\Category\Validations\" />
   </ItemGroup>
 
 </Project>

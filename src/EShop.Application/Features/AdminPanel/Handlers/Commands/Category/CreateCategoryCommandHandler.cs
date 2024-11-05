@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Application.Features.AdminPanel.Handlers.Commands.Category;
 
-public class CreateCategoryCommandHandler(ICategoryRepository category, IOptionsSnapshot<SiteSettings> siteSettings) : IRequestHandler<CreateCategoryCommandRequest, CreateCategoryCommandResponse>
+public class CreateCategoryCommandHandler(ICategoryRepository category,
+    IOptionsSnapshot<SiteSettings> siteSettings)
+    : IRequestHandler<CreateCategoryCommandRequest, CreateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
@@ -28,7 +30,7 @@ public class CreateCategoryCommandHandler(ICategoryRepository category, IOptions
             var parentCategory = await _category.FindByIdAsync(request.Parent ?? 0)
                 ?? throw new CustomBadRequestException(["دسته بندی والد یافت نشد"]);
 
-            var lastChild = await _category.GetLastChildHieaechyIdAsync(parentCategory!);
+            var lastChild = await _category.GetLastChildHierarchyIdAsync(parentCategory!);
 
             category.Parent = parentCategory.Parent.GetDescendant(lastChild, null);
         }

@@ -1,6 +1,7 @@
+using EShop.Api.Middlewares;
 using Serilog.Events;
 using Serilog;
-using Blogger.Api.Middlewares;
+using EShop.Application;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.File(path: Path.Combine(Directory.GetCurrentDirectory(), "logs", "log-.log"),

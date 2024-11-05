@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EShop.Domain", "src\EShop.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EShop.Application", "src\EShop.Application\EShop.Application.csproj", "{01BBFC51-DA76-4960-B32D-4119ECA430AD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EShop.Infrastucture", "src\EShop.Infrastucture\EShop.Infrastucture.csproj", "{96DF7DF3-69CA-422A-A3F6-4C961B1B833D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EShop.Infrastructure", "src\EShop.Infrastructure\EShop.Infrastructure.csproj", "{96DF7DF3-69CA-422A-A3F6-4C961B1B833D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "tests\UnitTests\UnitTests.csproj", "{17E38925-283B-499D-997A-072DB0D8E1D7}"
 EndProject
