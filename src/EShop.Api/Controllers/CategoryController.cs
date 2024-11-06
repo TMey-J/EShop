@@ -29,5 +29,11 @@ namespace EShop.Api.Controllers
            var response= await _mediator.Send(new GetAllCategoryQueryRequest());
             return Ok(response);
         }
+        [HttpGet("{id:long}")]
+        public async Task<IActionResult> Get(long id)
+        {
+            var response= await _mediator.Send(new GetCategoryQueryRequest(){Id = id});
+            return Ok(response);
+        }
     }
 }

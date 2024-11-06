@@ -1,5 +1,4 @@
 ﻿using EShop.Application.Features.AdminPanel.Requests.Commands.Category;
-using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Application.Features.AdminPanel.Handlers.Commands.Category;
 
@@ -27,6 +26,7 @@ public class UpdateCategoryCommandHandler(
         {
             var newParentCategory = await _category.FindByIdAsync(request.NewParentId ?? 0) ??
                                  throw new NotFoundException("دسته بندی والد");
+            
             var categoryChildren = await _category.GetCategoryChildrenAsync(category);
 
             var lastChild = await _category.GetLastChildHierarchyIdAsync(newParentCategory);
@@ -38,7 +38,6 @@ public class UpdateCategoryCommandHandler(
             {
                 categoryChild.Parent = category.Parent.GetDescendant(lastChild);
                 lastChild = categoryChild.Parent;
-
             }
         }
 
