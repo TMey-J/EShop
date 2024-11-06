@@ -44,7 +44,7 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
     {
          _entity.Update(entity);
     }
-    public virtual async Task<bool> IsExistsByAsync(string propertyToFilter, object propertyValue, int? id = null)
+    public virtual async Task<bool> IsExistsByAsync(string propertyToFilter, object propertyValue, long? id = null)
     {
         var exp = ExperssionHelpers.CreateAnyExperssion<TEntity>(propertyToFilter, propertyValue);
         return await _entity.Where(x => id == null || x.Id != id).AnyAsync(exp);

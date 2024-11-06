@@ -10,7 +10,7 @@ public interface IGenericRepository<TEntity> where TEntity : BaseEntity
     void SoftDeleteAsync(TEntity entity);
     Task<TEntity?> FindByIdAsync(long id);
     Task<IEnumerable<TEntity>> GetAllAsync();
-    Task<bool> IsExistsByAsync(string propertyToFilter, object propertyValue, int? id = null);
+    Task<bool> IsExistsByAsync(string propertyToFilter, object propertyValue, long? id = null);
     Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue);
     Task SaveChangesAsync();
 
