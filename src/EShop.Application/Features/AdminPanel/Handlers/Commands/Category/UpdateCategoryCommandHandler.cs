@@ -14,7 +14,7 @@ public class UpdateCategoryCommandHandler(
         CancellationToken cancellationToken)
     {
         var category = await _category.FindByIdAsync(request.Id) ??
-                       throw new NotFoundException("دسته بندی");
+                       throw new NotFoundException(NameToReplaceInException.Category);
         category.Title = request.NewTitle;
         if (!string.IsNullOrWhiteSpace(request.NewPicture))
         {
@@ -25,7 +25,7 @@ public class UpdateCategoryCommandHandler(
         if (request.NewParentId is not null)
         {
             var newParentCategory = await _category.FindByIdAsync(request.NewParentId ?? 0) ??
-                                 throw new NotFoundException("دسته بندی والد");
+                                 throw new NotFoundException(NameToReplaceInException.ParentCategory);
             
             var categoryChildren = await _category.GetCategoryChildrenAsync(category);
 
@@ -40,8 +40,7 @@ public class UpdateCategoryCommandHandler(
                 lastChild = categoryChild.Parent;
             }
         }
-
-        _category.Update(category);
+        
         await _category.SaveChangesAsync();
         return new();
     }

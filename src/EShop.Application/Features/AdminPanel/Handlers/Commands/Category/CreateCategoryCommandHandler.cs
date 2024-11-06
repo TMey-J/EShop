@@ -16,7 +16,7 @@ public class CreateCategoryCommandHandler(ICategoryRepository category,
         var category = await _category.FindByAsync(nameof(Domain.Entities.Category.Title), request.Title);
         if (category is not null)
         {
-            throw new DuplicateException("دسته بندی");
+            throw new DuplicateException(NameToReplaceInException.Category);
         }
         category = new Domain.Entities.Category()
         {
@@ -28,7 +28,7 @@ public class CreateCategoryCommandHandler(ICategoryRepository category,
         if (request.Parent is not null)
         {
             var parentCategory = await _category.FindByIdAsync(request.Parent ?? 0)
-                ?? throw new CustomBadRequestException(["دسته بندی والد یافت نشد"]);
+                ?? throw new NotFoundException(NameToReplaceInException.ParentCategory);
 
             var lastChild = await _category.GetLastChildHierarchyIdAsync(parentCategory!);
 
