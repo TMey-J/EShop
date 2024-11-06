@@ -13,7 +13,7 @@ namespace EShop.Infrastructure.Repositories
         {
             return await _category.Where(x => x.Parent.GetAncestor(1) == category.Parent)
                 .OrderByDescending(x => x.Parent)
-                .Select(x => x.Parent).SingleOrDefaultAsync();
+                .Select(x => x.Parent).FirstOrDefaultAsync();
         }
 
         public async Task<long?> GetParentIdWithHierarchyIdAsync(HierarchyId categoryHierarchyId)
