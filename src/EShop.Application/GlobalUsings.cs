@@ -14,6 +14,8 @@ global using static EShop.Application.Constants.Common.Messages;
 global using EShop.Application.Common.Exceptions;
 global using EShop.Application.Contracts;
 global using System.ComponentModel;
+global using EShop.Domain.Entities;
+
 
 
 

@@ -25,4 +25,8 @@
     <ProjectReference Include="..\EShop.Domain\EShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\AdminPanel\Requests\Commands\Tag\Validations\" />
+  </ItemGroup>
+
 </Project>
