@@ -27,6 +27,7 @@
             public const string EmailAlreadyVerified = "این ایمیل قبلا فعال شده است";
             public const string PhoneNumberAlreadyVerified = "این شماره تلفن قبلا فعال شده است";
             public const string InvalidTimeToSendCode = "زمان ارسال مجدد کد نرسیده است.";
+            public const string UserNotActive = "حساب کاربری فعال نیست";
 
             public static string DuplicatedValue(string name)
             {

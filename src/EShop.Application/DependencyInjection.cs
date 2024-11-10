@@ -1,17 +1,13 @@
-﻿using EShop.Application.Configs.MediatR;
-using EShop.Application.Constants;
-using EShop.Application.Contracts.Services;
-using EShop.Application.Model;
+﻿using System.Reflection;
+using System.Text;
+using EShop.Application.Configs.MediatR;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
-using System.Text;
 
-namespace EShop.Infrastucture
+namespace EShop.Application
 {
     public static class DependencyInjection
     {

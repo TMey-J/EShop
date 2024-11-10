@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class ReSendVerificationCodeCommandHandler(IApplicationUserManager userManager,
-    [FromKeyedServices("sms")] ISmsSenderService smsSender,
-    [FromKeyedServices("email")] IEmailSenderService emailSender,
+    ISmsSenderService smsSender,
+    IEmailSenderService emailSender,
     IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<ReSendVerificationCideCommandRequest, ReSendVerificationCideCommandRespose>
 {
@@ -18,47 +18,48 @@ public class ReSendVerificationCodeCommandHandler(IApplicationUserManager userMa
 
     public async Task<ReSendVerificationCideCommandRespose> Handle(ReSendVerificationCideCommandRequest request, CancellationToken cancellationToken)
     {
-        var isEmail = request.EmailOrPhoneNumber.IsEmail();
-        var user = isEmail ?
-            await _userManager.FindByEmailAsync(request.EmailOrPhoneNumber) :
-            await _userManager.FindByPhoneNumberAsync(request.EmailOrPhoneNumber)
-            ?? throw new NotFoundException("کاربر");
+        (User? value, bool isEmail) user = await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
 
-        if (user.PhoneNumberConfirmed)
+        if (user.value is null)
+        {
+            throw new NotFoundException("کاربر");
+        }
+
+        if (user.value.PhoneNumberConfirmed)
         {
             throw new CustomBadRequestException([Errors.PhoneNumberAlreadyVerified]);
         }
         var dateTImeNow = DateTime.Now;
-        var sendCodeLastTime = user.SendCodeLastTime;
+        var sendCodeLastTime = user.value.SendCodeLastTime;
         if (dateTImeNow < sendCodeLastTime.AddSeconds(_siteSettings.WaitForSendCodeSeconds))
         {
             throw new CustomBadRequestException([Errors.InvalidTimeToSendCode]);
         }
-        if (isEmail)
+        if (user.isEmail)
         {
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user.value);
             var param = new Dictionary<string, string?>
             {
                 {"token", token},
-                {"email", user.Email}
+                {"email", user.value.Email}
             };
             var url = QueryHelpers.AddQueryString(string.Empty, param);// the url should be filled based on the address of the front-end page
-            var emailBody = EmailTemplates.VerifyUserCodeEmail(url, user.Email!);
-            await _emailSender.SendEmailAsync(user.Email!, Subjects.VeryfyCodeMailSubject, emailBody);
+            var emailBody = EmailTemplates.VerifyUserCodeEmail(url, user.value.Email!);
+            await _emailSender.SendEmailAsync(user.value.Email!, Subjects.VeryfyCodeMailSubject, emailBody);
         }
         else
         {
-            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user, user.PhoneNumber!);
-            await _smsSender.SendOTP(user.PhoneNumber!, _siteSettings.SmsSettings.LoginCodeTemplateName, code);
+            var code = await _userManager.GenerateChangePhoneNumberTokenAsync(user.value, user.value.PhoneNumber!);
+            await _smsSender.SendOTP(user.value.PhoneNumber!, _siteSettings.SmsSettings.LoginCodeTemplateName, code);
         }
         
-        user.SendCodeLastTime = dateTImeNow;
-        var result = await _userManager.UpdateAsync(user);
+        user.value.SendCodeLastTime = dateTImeNow;
+        var result = await _userManager.UpdateAsync(user.value);
         if (!result.Succeeded)
         {
             throw new CustomInternalServerException(result.GetErrors(), Errors.InternalServer);
         }
 
-        return new(user.PhoneNumber!, _siteSettings.WaitForSendCodeSeconds, dateTImeNow);
+        return new(user.value.PhoneNumber!, _siteSettings.WaitForSendCodeSeconds, dateTImeNow);
     }
 }

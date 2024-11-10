@@ -4,7 +4,7 @@ using EShop.Application.Features.Authorize.Requests.Commands;
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class VerifyPhoneNumberCommandHandler(IApplicationUserManager userManager,
-    [FromKeyedServices("email")] IEmailSenderService emailSender,
+    IEmailSenderService emailSender,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<VerifyPhoneNumberCommandRequest, VerifyPhoneNumberCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;

@@ -15,6 +15,7 @@ public class SiteSettings
     public CookieOptions CookieOptions { get; set; } = null!;
     public JwtConfigs JwtConfigs { get; set; } = null!;
     public SmsSettings SmsSettings { get; set; } = null!;
+    public FilesPath FilesPath { get; set; } = null!;
 }
 
 public class ConnectionStrings
@@ -24,11 +25,11 @@ public class ConnectionStrings
 
 public class CookieOptions
 {
-    public string AccessDeniedPath { get; set; }
-    public string CookieName { get; set; }
+    public string AccessDeniedPath { get; set; } = null!;
+    public string CookieName { get; set; } = null!;
     public TimeSpan ExpireTimeSpan { get; set; }
-    public string LoginPath { get; set; }
-    public string LogoutPath { get; set; }
+    public string LoginPath { get; set; } = null!;
+    public string LogoutPath { get; set; }=null!;
     public bool SlidingExpiration { get; set; }
 }
 
@@ -41,13 +42,14 @@ public class EmailConfigs
     public string UserName { get; set; } = null!;
     public string Password { get; set; } = null!;
     public string LocalWritePath { get; set; } = null!;
+    public string AdminEmail { get; set; } = null!;
 }
 
 public class JwtConfigs
 {
-    public string SecretKey { get; set; }
-    public string Issuer { get; set; }
-    public string Audience { get; set; }
+    public string SecretKey { get; set; } = null!;
+    public string Issuer { get; set; } = null!;
+    public string Audience { get; set; } = null!;
     public int NotBeforeMinutes { get; set; }
     public int ExpirationMinutes { get; set; }
 }
@@ -57,4 +59,8 @@ public class SmsSettings
     public string Sender { get; set; } = null!;
     public string LoginCodeTemplateName { get; set; } = null!;
     public string LocalWritePath { get; set; } = null!;
+}
+public class FilesPath
+{
+    public string Category { get; set; } = null!;
 }

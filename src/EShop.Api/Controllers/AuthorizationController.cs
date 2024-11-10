@@ -30,10 +30,17 @@ namespace EShop.Api.Controllers
             return Ok();
         }
 
-        [HttpPost()]
+        [HttpPost]
         public async Task<IActionResult> ReSendVerificationCode(ReSendVerificationCideCommandRequest request)
         {
             var response= await _mediator.Send(request);
+            return Ok(response);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginCommandRequest request)
+        {
+            var response = await _mediator.Send(request);
             return Ok(response);
         }
     }

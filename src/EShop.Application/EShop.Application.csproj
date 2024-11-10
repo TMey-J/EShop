@@ -8,8 +8,11 @@
 
   <ItemGroup>
     <Compile Remove="Features\Authorize\Handlers\Oueries\**" />
+    <Compile Remove="Features\Authorize\Requests\Queries\**" />
     <EmbeddedResource Remove="Features\Authorize\Handlers\Oueries\**" />
+    <EmbeddedResource Remove="Features\Authorize\Requests\Queries\**" />
     <None Remove="Features\Authorize\Handlers\Oueries\**" />
+    <None Remove="Features\Authorize\Requests\Queries\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,10 +23,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EShop.Domain\EShop.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\Authorize\Requests\Queries\" />
   </ItemGroup>
 
 </Project>
