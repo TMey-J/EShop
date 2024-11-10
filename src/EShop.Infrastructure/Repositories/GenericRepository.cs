@@ -1,7 +1,7 @@
 ﻿using EShop.Application.Contracts;
 using EShop.Domain.Entities;
 using EShop.Infrastructure.Databases;
-using Marketplace.Common.Helpers;
+using EShop.Application.Common.Helpers;
 
 namespace EShop.Infrastructure.Repositories;
 

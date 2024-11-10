@@ -24,9 +24,9 @@ namespace EShop.Api.Controllers
             return Ok();
         }
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll(GetAllCategoryQueryRequest request)
         {
-           var response= await _mediator.Send(new GetAllCategoryQueryRequest());
+           var response= await _mediator.Send(request);
             return Ok(response);
         }
         [HttpGet("{id:long}")]

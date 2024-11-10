@@ -1,6 +1,9 @@
 ﻿using EShop.Application.Contracts;
 using EShop.Domain.Entities;
-using System.Linq;
+using EShop.Application.Common;
+using EShop.Application.Common.Helpers;
+using EShop.Application.DTOs.Category;
+using EShop.Application.Features.AdminPanel.Requests.Queries.Category;
 using EShop.Infrastructure.Databases;
 
 namespace EShop.Infrastructure.Repositories
@@ -22,13 +25,46 @@ namespace EShop.Infrastructure.Repositories
             var parentId = await _category.Where(x => x.Parent == parentHierarchyId)
                 .Select(x => x.Id).SingleOrDefaultAsync();
             return parentId != 0 ? parentId : null;
-            ;
         }
 
         public async Task<List<Category>> GetCategoryChildrenAsync(Category category)
         {
             return await _category.Where(x =>
                 x.Id != category.Id && x.Parent.IsDescendantOf(category.Parent)).ToListAsync();
+        }
+
+        public async Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDTO search)
+        {
+            var category = _category.AsQueryable().IgnoreQueryFilters();
+
+            #region Search
+
+            category = category.CreateContainsExpression(nameof(Category.Title), search.Title);
+
+            #endregion
+
+            #region Sort
+
+            category = category.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+
+            category = category.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+
+            #endregion
+
+            #region Paging
+
+            (IQueryable<Category> query, int pageCount) pagination =
+                category.Page(search.Pagination.CurrentPage, search.Pagination.TakeRecord);
+            category = pagination.query;
+
+            #endregion
+
+            var categories = await category.Select
+            (x => new ShowCategoryDTO(x.Id, x.Title,
+                _category.SingleOrDefault(c => c.Parent == x.Parent.GetAncestor(1))!.Id,
+                x.Picture)).ToListAsync();
+
+            return new GetAllCategoryQueryResponse(categories, search, pagination.pageCount);
         }
     }
 }

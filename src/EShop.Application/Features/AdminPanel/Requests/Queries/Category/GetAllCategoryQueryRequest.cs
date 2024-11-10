@@ -1,4 +1,6 @@
-﻿namespace EShop.Application.Features.AdminPanel.Requests.Queries.Category;
+﻿using EShop.Application.DTOs.Category;
 
-public record GetAllCategoryQueryRequest:IRequest<List<GetAllCategoryQueryResponse>>;
-public record GetAllCategoryQueryResponse(long Id,string Title,long? ParentId,string? PictureName);
+namespace EShop.Application.Features.AdminPanel.Requests.Queries.Category;
+
+public record GetAllCategoryQueryRequest(SearchCategoryDTO Search):IRequest<GetAllCategoryQueryResponse>;
+public record GetAllCategoryQueryResponse(List<ShowCategoryDTO> categories,SearchCategoryDTO Search,int pageCount);
