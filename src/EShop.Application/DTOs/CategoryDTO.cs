@@ -1,8 +1,11 @@
 ﻿namespace EShop.Application.DTOs;
 
-public abstract record SearchCategoryDto : BaseSearchDTO
+public record SearchCategoryDto : BaseSearchDTO
 {
-    public SortingBy SortingBy { get; set; }
+    [DisplayName("مرتب کردن بر اساس")]
+    public SortingCategoryBy SortingBy { get; set; }
+    
+    [DisplayName("عنوان")]
     public string Title { get; init; }=string.Empty;
 }
 
@@ -11,7 +14,7 @@ public record ShowCategoryDto(
     string Title,
     long? ParentId,
     string? PictureName);
-public enum SortingBy
+public enum SortingCategoryBy
 {
     Id,
     Title

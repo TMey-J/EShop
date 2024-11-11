@@ -7,11 +7,13 @@ public record BaseSearchDTO
     /// 1=> show also deleted item
     /// 2=> show only deleted item
     /// </summary>
+    [DisplayName("وضعیت حذف شده")]
     public DeleteStatus DeleteStatus { get; set; }
     /// <summary>
     /// 0=> Ascending
     /// 1=> Descending
     /// </summary>
+    [DisplayName("مرتب سازی به صورت...")]
     public SortingAs SortingAs { get; set; }
 
     public Pagination Pagination { get; set; } = new();
