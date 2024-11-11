@@ -1,6 +1,4 @@
-﻿using EShop.Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 namespace EShop.Application.Contracts.Identity;

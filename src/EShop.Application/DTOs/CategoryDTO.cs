@@ -1,14 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿namespace EShop.Application.DTOs;
 
-namespace EShop.Application.DTOs.Category;
-
-public record SearchCategoryDTO : BaseSearchDTO
+public abstract record SearchCategoryDto : BaseSearchDTO
 {
     public SortingBy SortingBy { get; set; }
     public string Title { get; init; }=string.Empty;
 }
 
-public record ShowCategoryDTO(
+public record ShowCategoryDto(
     long Id,
     string Title,
     long? ParentId,

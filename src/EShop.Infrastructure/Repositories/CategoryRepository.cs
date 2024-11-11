@@ -2,7 +2,7 @@
 using EShop.Domain.Entities;
 using EShop.Application.Common;
 using EShop.Application.Common.Helpers;
-using EShop.Application.DTOs.Category;
+using EShop.Application.DTOs;
 using EShop.Application.Features.AdminPanel.Requests.Queries.Category;
 using EShop.Infrastructure.Databases;
 
@@ -33,7 +33,7 @@ namespace EShop.Infrastructure.Repositories
                 x.Id != category.Id && x.Parent.IsDescendantOf(category.Parent)).ToListAsync();
         }
 
-        public async Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDTO search)
+        public async Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDto search)
         {
             var category = _category.AsQueryable().IgnoreQueryFilters();
 
@@ -60,7 +60,7 @@ namespace EShop.Infrastructure.Repositories
             #endregion
 
             var categories = await category.Select
-            (x => new ShowCategoryDTO(x.Id, x.Title,
+            (x => new ShowCategoryDto(x.Id, x.Title,
                 _category.SingleOrDefault(c => c.Parent == x.Parent.GetAncestor(1))!.Id,
                 x.Picture)).ToListAsync();
 
