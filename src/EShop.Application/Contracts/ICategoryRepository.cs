@@ -1,6 +1,4 @@
-﻿using EShop.Application.DTOs;
-using EShop.Application.Features.AdminPanel.Requests.Queries.Category;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Application.Contracts
 {

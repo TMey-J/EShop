@@ -1,7 +1,4 @@
-﻿using EShop.Application.DTOs;
-using EShop.Application.Features.AdminPanel.Requests.Queries.Tag;
-
-namespace EShop.Application.Contracts
+﻿namespace EShop.Application.Contracts
 {
     public interface ITagRepository:IGenericRepository<Tag>
     {

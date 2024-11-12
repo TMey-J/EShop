@@ -1,5 +1,5 @@
 ﻿using EShop.Infrastructure.Databases;
-using EShop.Application.Features.AdminPanel.Requests.Queries.Tag;
+using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 
 namespace EShop.Infrastructure.Repositories
 {

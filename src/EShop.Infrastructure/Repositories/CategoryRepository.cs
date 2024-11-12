@@ -1,9 +1,4 @@
-﻿using EShop.Application.Contracts;
-using EShop.Domain.Entities;
-using EShop.Application.Common;
-using EShop.Application.Common.Helpers;
-using EShop.Application.DTOs;
-using EShop.Application.Features.AdminPanel.Requests.Queries.Category;
+﻿using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 using EShop.Infrastructure.Databases;
 
 namespace EShop.Infrastructure.Repositories

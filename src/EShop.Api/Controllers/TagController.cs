@@ -1,8 +1,6 @@
 ﻿using EShop.Api.Attributes;
-using EShop.Application.Features.AdminPanel.Requests.Commands.Category;
-using EShop.Application.Features.AdminPanel.Requests.Commands.Tag;
-using EShop.Application.Features.AdminPanel.Requests.Queries.Category;
-using EShop.Application.Features.AdminPanel.Requests.Queries.Tag;
+using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
+using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 
 namespace EShop.Api.Controllers
 {
