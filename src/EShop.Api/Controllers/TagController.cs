@@ -33,5 +33,12 @@ namespace EShop.Api.Controllers
             return Ok(response);
 
         }
+        [HttpGet("{id:long}")]
+        public async Task<IActionResult> Get(long id)
+        {
+            var response = await _mediator.Send(new GetTagQueryRequest{Id = id});
+            return Ok(response);
+
+        }
     }
 }

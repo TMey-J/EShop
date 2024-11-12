@@ -10,10 +10,10 @@ public class GetCategoryQueryHandler(ICategoryRepository category):
     public async Task<GetCategoryQueryResponse> Handle(GetCategoryQueryRequest request, CancellationToken cancellationToken)
     {
         var category = await _category.FindByIdAsync(request.Id)??
-                       throw new NotFoundException("دسته بندی");
+                       throw new NotFoundException(NameToReplaceInException.Category);
         
         var parentId=await _category.GetParentIdWithHierarchyIdAsync(category.Parent);
         
-        return new(category.Id,category.Title,parentId);
+        return new GetCategoryQueryResponse(category.Id,category.Title,parentId);
     }
 }
