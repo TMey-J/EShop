@@ -1,11 +1,10 @@
-﻿using EShop.Application.Features.AdminPanel.Requests.Commands.Category;
-using FluentValidation;
+﻿using FluentValidation;
 
-namespace EShop.Application.Features.AdminPanel.Requests.Queries.Category.Validations
+namespace EShop.Application.Features.AdminPanel.Requests.Queries.Tag.Validations
 {
-    public class GetAllCategoryQueryValidation : AbstractValidator<GetAllCategoryQueryRequest>
+    public class GetAllTagsQueryValidation : AbstractValidator<GetAllTagQueryRequest>
     {
-        public GetAllCategoryQueryValidation()
+        public GetAllTagsQueryValidation()
         {
             RuleFor(x => x.Search.Title).
                 MaximumLength(100).WithMessage(Messages.Validations.MaxLength);

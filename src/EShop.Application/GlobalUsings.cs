@@ -15,6 +15,10 @@ global using EShop.Application.Common.Exceptions;
 global using EShop.Application.Contracts;
 global using System.ComponentModel;
 global using EShop.Domain.Entities;
+global using EShop.Application.Contracts;
+global using EShop.Domain.Entities;
+global using EShop.Application.Common.Helpers;
+global using EShop.Application.DTOs;
 
 
 

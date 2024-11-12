@@ -2,6 +2,7 @@
 using EShop.Application.Features.AdminPanel.Requests.Commands.Category;
 using EShop.Application.Features.AdminPanel.Requests.Commands.Tag;
 using EShop.Application.Features.AdminPanel.Requests.Queries.Category;
+using EShop.Application.Features.AdminPanel.Requests.Queries.Tag;
 
 namespace EShop.Api.Controllers
 {
@@ -24,6 +25,13 @@ namespace EShop.Api.Controllers
             await _mediator.Send(request);
             return Ok();
         }
-        
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll(GetAllTagQueryRequest request)
+        {
+            var response = await _mediator.Send(request);
+            return Ok(response);
+
+        }
     }
 }
