@@ -1,5 +1,4 @@
-﻿using Blog.Core.Application.Constants.Common;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 
 namespace EShop.Application.Common.Helpers
 {

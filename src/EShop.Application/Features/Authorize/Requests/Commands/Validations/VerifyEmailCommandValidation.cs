@@ -1,5 +1,4 @@
-﻿using Blog.Core.Application.Constants.Common;
-using EShop.Application.Constants.Common;
+﻿using EShop.Application.Constants.Common;
 using FluentValidation;
 
 namespace EShop.Application.Features.Authorize.Requests.Commands.Validations;

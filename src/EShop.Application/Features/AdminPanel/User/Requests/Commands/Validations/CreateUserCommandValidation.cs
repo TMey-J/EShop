@@ -1,11 +1,11 @@
-﻿using EShop.Application.Constants.Common;
+﻿using EShop.Application.Features.Authorize.Requests.Commands;
 using FluentValidation;
 
-namespace EShop.Application.Features.Authorize.Requests.Commands.Validations;
+namespace EShop.Application.Features.AdminPanel.User.Requests.Commands.Validations;
 
-public class RegisterCommandValidation: AbstractValidator<RegisterCommandRequest>
+public class CreateUserCommandValidation: AbstractValidator<CreateUserCommandRequest>
 {
-    public RegisterCommandValidation()
+    public CreateUserCommandValidation()
     {
         RuleFor(x => x.UserName).NotEmpty().WithMessage(Messages.Validations.Required)
             .MaximumLength(256).WithMessage(Messages.Validations.MaxLength);

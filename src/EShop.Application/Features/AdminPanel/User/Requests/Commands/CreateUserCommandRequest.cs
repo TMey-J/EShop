@@ -1,9 +1,6 @@
-﻿using MediatR;
-using System.ComponentModel;
+﻿namespace EShop.Application.Features.AdminPanel.User.Requests.Commands;
 
-namespace EShop.Application.Features.Authorize.Requests.Commands;
-
-public record RegisterCommandRequest():IRequest<RegisterCommandResponse>
+public record CreateUserCommandRequest : IRequest<CreateUserCommandResponse>
 {
     [DisplayName("نام کاربری")]
     public string UserName { get; set; } = string.Empty;
@@ -17,4 +14,4 @@ public record RegisterCommandRequest():IRequest<RegisterCommandResponse>
     [DisplayName("تکرار کلمه عبور")]
     public string ConfirmPassword { get; set; } = string.Empty;
 }
-public record RegisterCommandResponse(string EmailOrPhoneNumber,int? ResendCodeSeconds,DateTime? SendCodeLastTime);
+public record CreateUserCommandResponse;
