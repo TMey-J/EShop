@@ -35,6 +35,6 @@ public class CreateCategoryCommandHandler(ICategoryRepository category,
         await _category.CreateAsync(category);
         await _category.SaveChangesAsync();
 
-        return new();
+        return new CreateCategoryCommandResponse();
     }
 }

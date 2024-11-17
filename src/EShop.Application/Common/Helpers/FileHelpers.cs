@@ -12,19 +12,16 @@ public static class FileHelpers
 
     public static async Task<string> ReUploadFileAsync(string? oldFileName, string base64, string path)
     {
-        if (oldFileName is not null)
-            DeleteFileAsync(oldFileName, path);
-
-        string fileName = await UploadFileAsync(base64, path);
+        string fileName = await UploadFileAsync(base64, path, oldFileName?.Split('.')[0]);
         return fileName;
     }
 
-    public static async Task<string> UploadFileAsync(this string base64, string path)
+    public static async Task<string> UploadFileAsync(this string base64, string path,string?oldFileName=null)
     {
         base64 = base64.RemoveBase64Header();
         var fileExtension = base64.GetBase64Extesion();
-        var fileName = StringHelpers.GenerateUniqueName();
-        await SaveFileBase64Async(new(base64, fileName, fileExtension, path));
+        var fileName = oldFileName??StringHelpers.GenerateUniqueName();
+        await SaveFileBase64Async(new SaveFileBase64Model(base64, fileName, fileExtension, path));
         return $"{fileName}.{fileExtension}";
     }
     private static string RemoveBase64Header(this string base64)
@@ -50,10 +47,10 @@ public static class FileHelpers
     }
     private static async Task SaveFileBase64Async(SaveFileBase64Model model)
     {
-        string filePath = new(Path.Combine(Directory.GetCurrentDirectory(), model.path));
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), model.path);
         if (!Directory.Exists(filePath))
             Directory.CreateDirectory(filePath);
-        var fullFilePath = filePath + $"{model.fileName}.{model.extension}";
+        var fullFilePath = filePath + $"/{model.fileName}.{model.extension}";
         try
         {
             var fileBytes = Convert.FromBase64String(model.fileBase64);
@@ -66,14 +63,14 @@ public static class FileHelpers
         }
     }
 
-    private static async Task<string> ConvertImageToBase64(this string imgName, string path)
-    {
-        string imagePath = new(Path.Combine(Directory.GetCurrentDirectory(), path, imgName));
-        if (!File.Exists(imagePath))
-            throw new CustomInternalServerException(["عکس مورد نظر پیدا نمیشود"]);
-
-        byte[] imageArray = await File.ReadAllBytesAsync(imagePath.ToString());
-        var base64ImageRepresentation = Convert.ToBase64String(imageArray);
-        return base64ImageRepresentation;
-    }
+    // private static async Task<string> ConvertImageToBase64(this string imgName, string path)
+    // {
+    //     string imagePath = new(Path.Combine(Directory.GetCurrentDirectory(), path, imgName));
+    //     if (!File.Exists(imagePath))
+    //         throw new CustomInternalServerException(["عکس مورد نظر پیدا نمیشود"]);
+    //
+    //     byte[] imageArray = await File.ReadAllBytesAsync(imagePath.ToString());
+    //     var base64ImageRepresentation = Convert.ToBase64String(imageArray);
+    //     return base64ImageRepresentation;
+    // }
 }

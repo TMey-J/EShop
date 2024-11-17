@@ -30,6 +30,10 @@
             public const string PhoneNumberAlreadyVerified = "این شماره تلفن قبلا فعال شده است";
             public const string InvalidTimeToSendCode = "زمان ارسال مجدد کد نرسیده است.";
             public const string UserNotActive = "حساب کاربری فعال نیست";
+            public static List<string> NotExistsRolesErrors(List<string> rolesName)
+            {
+                return rolesName.Select(role => $"نقش {role} معتبر نیشت").ToList();
+            }
 
             public static string DuplicatedValue(string name)
             {

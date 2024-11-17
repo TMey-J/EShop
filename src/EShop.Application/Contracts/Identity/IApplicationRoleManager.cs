@@ -34,4 +34,10 @@ public interface IApplicationRoleManager : IDisposable
     IQueryable<Role> Roles { get; }
 
     #endregion BaseClass
+
+    #region Custom
+
+    Task<List<string>> NotExistsRolesNameAsync(List<string> rolesName);
+
+    #endregion
 }

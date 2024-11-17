@@ -62,8 +62,10 @@ public class ExceptionHandlingMiddleware(RequestDelegate next,
         {
             var errors=string.Join('|', exception.Errors);
             _logger.LogError($"{exception.StackTrace?.Split("in")[0]} | {errors}");
+            
             await emailSender.SendEmailAsync(_siteSettings.AdminEmail, "EShop Error",
                 "An error occurred in EShop project.check the logs");
+            
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             var result = new ApiResult(false, System.Net.HttpStatusCode.InternalServerError,
                 exception.Message);

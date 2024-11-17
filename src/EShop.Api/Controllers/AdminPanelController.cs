@@ -18,6 +18,13 @@ public class AdminPanelController(IMediator mediator):ControllerBase
         await _mediator.Send(request);
         return Ok();
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> UpdateUser(UpdateUserCommandRequest request)
+    {
+        await _mediator.Send(request);
+        return Ok();
+    }
 
     #region Category
 
