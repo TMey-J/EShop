@@ -5,9 +5,10 @@ using Microsoft.AspNetCore.WebUtilities;
 
 namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 
-public class CreateUserCommandHandler(IApplicationUserManager userManager,
+public class CreateUserCommandHandler(IApplicationUserManager userManager,IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
 {
+    private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
@@ -25,7 +26,10 @@ public class CreateUserCommandHandler(IApplicationUserManager userManager,
             PhoneNumber = user.isEmail ? null : request.EmailOrPhoneNumber,
             PasswordHash = request.Password.HashPassword(out var salt),
             PasswordSalt = salt,
-            IsActive = true
+            IsActive = true,
+            Avatar = !string.IsNullOrWhiteSpace(request.Avatar)?
+                await request.Avatar.UploadFileAsync(_filesPath.UserAvatar):
+                null
         };
         if (user.isEmail)
         {

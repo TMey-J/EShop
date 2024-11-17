@@ -13,5 +13,8 @@ public record CreateUserCommandRequest : IRequest<CreateUserCommandResponse>
 
     [DisplayName("تکرار کلمه عبور")]
     public string ConfirmPassword { get; set; } = string.Empty;
+    
+    [DisplayName("آواتار")]
+    public string? Avatar { get; set; } = string.Empty;
 }
 public record CreateUserCommandResponse;
