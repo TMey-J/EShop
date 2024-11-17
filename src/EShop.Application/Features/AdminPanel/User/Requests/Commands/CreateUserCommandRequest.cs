@@ -16,5 +16,8 @@ public record CreateUserCommandRequest : IRequest<CreateUserCommandResponse>
     
     [DisplayName("آواتار")]
     public string? Avatar { get; set; } = string.Empty;
+    
+    [DisplayName("نقش های کاربر")]
+    public List<string> Roles { get; set; } = [];
 }
 public record CreateUserCommandResponse;

@@ -17,5 +17,7 @@ public class CreateUserCommandValidation: AbstractValidator<CreateUserCommandReq
         RuleFor(x => x.Password).NotEmpty().WithMessage(Messages.Validations.Required)
             .Length(8, 64).WithMessage(Messages.Validations.Length)
             .Equal(x => x.ConfirmPassword).WithMessage("رمز عبور با تکرار آن برابر نیست");
+        
+        RuleFor(x => x.Roles).NotEmpty().WithMessage(Messages.Validations.Required);
     }
 }

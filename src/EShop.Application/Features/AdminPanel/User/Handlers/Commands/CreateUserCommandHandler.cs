@@ -1,15 +1,16 @@
 ﻿using EShop.Application.Features.AdminPanel.User.Requests.Commands;
 using EShop.Application.Features.Authorize.Handlers.Commands;
-using EShop.Application.Features.Authorize.Requests.Commands;
-using Microsoft.AspNetCore.WebUtilities;
 
 namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 
-public class CreateUserCommandHandler(IApplicationUserManager userManager,IOptionsSnapshot<SiteSettings> siteSettings,
+public class CreateUserCommandHandler(
+    IApplicationUserManager userManager,IApplicationRoleManager roleManager,
+    IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
 {
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
     private readonly IApplicationUserManager _userManager = userManager;
+    private readonly IApplicationRoleManager _roleManager = roleManager;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
     public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
@@ -39,6 +40,22 @@ public class CreateUserCommandHandler(IApplicationUserManager userManager,IOptio
         {
             user.value.PhoneNumberConfirmed = true;
         }
+        #region role logic
+
+        request.Roles = request.Roles.Select(x => x.ToUpper()).ToList();
+        var notExistsRolesName = await _roleManager.NotExistsRolesNameAsync(request.Roles);
+        if (notExistsRolesName.Count > 0)
+        {
+            throw new CustomBadRequestException(Errors.NotExistsRolesErrors(notExistsRolesName));
+        }             
+
+        var addToRulesResult = await _userManager.AddToRolesAsync(user.value, request.Roles);
+        if (!addToRulesResult.Succeeded)
+        {
+            throw new CustomBadRequestException(addToRulesResult.GetErrors());
+        }
+
+        #endregion
         var result = await _userManager.CreateAsync(user.value);
         if (!result.Succeeded)
         {
