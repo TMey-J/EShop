@@ -15,16 +15,16 @@ public class CreateUserCommandHandler(
 
     public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
     {
-        (Domain.Entities.Identity.User? value,bool isEmail) user= await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
-        if (user.value is not null)
+        (Domain.Entities.Identity.User? user, bool isEmail) userFound= await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
+        if (userFound.user is not null)
         {
             throw new DuplicateException("کاربر");
         }
-        user.value=new()
+        userFound.user=new()
         {
             UserName = request.UserName,
-            Email = user.isEmail ? request.EmailOrPhoneNumber : null,
-            PhoneNumber = user.isEmail ? null : request.EmailOrPhoneNumber,
+            Email = userFound.isEmail ? request.EmailOrPhoneNumber : null,
+            PhoneNumber = userFound.isEmail ? null : request.EmailOrPhoneNumber,
             PasswordHash = request.Password.HashPassword(out var salt),
             PasswordSalt = salt,
             IsActive = true,
@@ -32,13 +32,19 @@ public class CreateUserCommandHandler(
                 await request.Avatar.UploadFileAsync(_filesPath.UserAvatar):
                 null
         };
-        if (user.isEmail)
+        if (userFound.isEmail)
         {
-            user.value.EmailConfirmed = true;
+            userFound.user.EmailConfirmed = true;
         }
         else
         {
-            user.value.PhoneNumberConfirmed = true;
+            userFound.user.PhoneNumberConfirmed = true;
+        }
+        
+        var result = await _userManager.CreateAsync(userFound.user);
+        if (!result.Succeeded)
+        {
+            throw new CustomInternalServerException(result.GetErrors());
         }
         #region role logic
 
@@ -49,19 +55,15 @@ public class CreateUserCommandHandler(
             throw new CustomBadRequestException(Errors.NotExistsRolesErrors(notExistsRolesName));
         }             
 
-        var addToRulesResult = await _userManager.AddToRolesAsync(user.value, request.Roles);
+        var addToRulesResult = await _userManager.AddToRolesAsync(userFound.user, request.Roles);
         if (!addToRulesResult.Succeeded)
         {
             throw new CustomBadRequestException(addToRulesResult.GetErrors());
         }
 
+        await _userManager.UpdateAsync(userFound.user);
         #endregion
-        var result = await _userManager.CreateAsync(user.value);
-        if (!result.Succeeded)
-        {
-            throw new CustomInternalServerException(result.GetErrors());
-        }
-        _logger.LogInformation($"user with phone Number/email {user.value.Email??user.value.PhoneNumber} has been created by admin");
+        _logger.LogInformation($"user with phone Number/email {userFound.user.Email??userFound.user.PhoneNumber} has been created by admin");
         return new CreateUserCommandResponse();
     }
 }
