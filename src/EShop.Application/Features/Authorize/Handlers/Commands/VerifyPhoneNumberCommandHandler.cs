@@ -27,7 +27,11 @@ public class VerifyPhoneNumberCommandHandler(IApplicationUserManager userManager
         }
         user.PhoneNumberConfirmed = true;
         user.IsActive = true;
-        await _userManager.UpdateUserAsync(user);
+        var update = await _userManager.UpdateAsync(user);
+        if (!update.Succeeded)
+        {
+            throw new CustomInternalServerException(update.GetErrors());
+        }
         _logger.LogInformation($"user with phone number: {user.PhoneNumber} verified");
 
         return new();

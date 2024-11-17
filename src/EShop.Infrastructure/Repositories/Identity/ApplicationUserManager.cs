@@ -38,12 +38,4 @@ public class ApplicationUserManager(
     {
         return await _user.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
     }
-    async Task IApplicationUserManager.UpdateUserAsync(User user)
-    {
-        var update = await base.UpdateAsync(user);
-        if (!update.Succeeded)
-        {
-            throw new CustomInternalServerException(update.GetErrors());
-        }
-    }
 }
