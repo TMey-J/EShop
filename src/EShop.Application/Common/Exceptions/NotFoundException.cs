@@ -1,4 +1,4 @@
-﻿namespace Blogger.Application.Common.Exceptions
+﻿namespace EShop.Application.Common.Exceptions
 {
     public class NotFoundException(string nameToReplace):ApplicationException($"{nameToReplace} یافت نشد")
     {

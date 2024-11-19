@@ -12,6 +12,8 @@ public class AdminPanelController(IMediator mediator):ControllerBase
 {
     private readonly IMediator _mediator = mediator;
 
+    #region User
+
     [HttpPost]
     public async Task<IActionResult> CreateUser(CreateUserCommandRequest request)
     {
@@ -19,12 +21,14 @@ public class AdminPanelController(IMediator mediator):ControllerBase
         return Ok();
     }
     
-    [HttpPost]
+    [HttpPut]
     public async Task<IActionResult> UpdateUser(UpdateUserCommandRequest request)
     {
         await _mediator.Send(request);
         return Ok();
     }
+
+    #endregion
 
     #region Category
 

@@ -1,6 +1,4 @@
-﻿using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
-
-namespace EShop.Application.Features.AdminPanel.Tag.Handlers.Queries;
+﻿namespace EShop.Application.Features.AdminPanel.Tag.Handlers.Queries;
 
 public class GetAllTagQueryHandler(ITagRepository tag):
     IRequestHandler<GetAllTagQueryRequest,GetAllTagQueryResponse>
