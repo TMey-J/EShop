@@ -17,7 +17,7 @@ public class LoginCommandHandler(IApplicationUserManager userManager,
 
     public async Task<LoginCommandResponde> Handle(LoginCommandRequest request, CancellationToken cancellationToken)
     {
-        (User? value, bool isEmail) user = await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
+        (User? value, bool isEmail) user = await _userManager.FindByEmailOrPhoneNumberWithCheckIsEmailAsync(request.EmailOrPhoneNumber);
 
         if (user.value is null)
         {

@@ -18,7 +18,7 @@ public class ReSendVerificationCodeCommandHandler(IApplicationUserManager userMa
 
     public async Task<ReSendVerificationCideCommandRespose> Handle(ReSendVerificationCideCommandRequest request, CancellationToken cancellationToken)
     {
-        (User? value, bool isEmail) user = await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
+        (User? value, bool isEmail) user = await _userManager.FindByEmailOrPhoneNumberWithCheckIsEmailAsync(request.EmailOrPhoneNumber);
 
         if (user.value is null)
         {

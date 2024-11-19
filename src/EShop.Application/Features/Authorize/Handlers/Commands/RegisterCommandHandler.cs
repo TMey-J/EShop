@@ -1,8 +1,5 @@
 ﻿using EShop.Application.Features.Authorize.Requests.Commands;
-using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.WebUtilities;
-using System;
 
 namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
@@ -20,10 +17,10 @@ public class RegisterCommandHandler(IApplicationUserManager userManager,
 
     public async Task<RegisterCommandResponse> Handle(RegisterCommandRequest request, CancellationToken cancellationToken)
     {
-        (User? value,bool isEmail) user= await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
+        (User? value,bool isEmail) user= await _userManager.FindByEmailOrPhoneNumberWithCheckIsEmailAsync(request.EmailOrPhoneNumber);
         if (user.value is not null)
         {
-            throw new DuplicateException("کاربر");
+            throw new DuplicateException(NameToReplaceInException.User);
         }
         user.value=new()
         {

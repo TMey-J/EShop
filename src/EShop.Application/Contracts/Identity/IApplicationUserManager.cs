@@ -202,6 +202,6 @@ public interface IApplicationUserManager : IDisposable
 
     #region Custom
     Task<User?> FindByPhoneNumberAsync(string phoneNumber);
-    Task <(User?,bool)> FindByEmailOrPhoneNumberAsync(string emailOrPhoneNumber);
+    Task <(User?,bool)> FindByEmailOrPhoneNumberWithCheckIsEmailAsync(string emailOrPhoneNumber);
     #endregion Custom
 }

@@ -1,4 +1,5 @@
-﻿using EShop.Application.Features.AdminPanel.Tag.Handlers.Commands;
+﻿using EShop.Application.Common.Exceptions;
+using EShop.Application.Features.AdminPanel.Tag.Handlers.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 
 
@@ -37,7 +38,7 @@ public class CreateTagCommandHandlerTests
         
         //Assert
         var exception= await Assert.ThrowsAsync<DuplicateException>(act);
-        Assert.Equal($"این{NameToReplaceInException.Tag}از قبل موجود است", exception.Message);
+        Assert.Equal($"این {NameToReplaceInException.Tag} از قبل موجود است", exception.Message);
         
         _tagRepositoryMock.Verify(x=>
             x.CreateAsync(It.IsAny<EShop.Domain.Entities.Tag>()), Times.Never);

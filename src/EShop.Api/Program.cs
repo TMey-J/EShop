@@ -1,3 +1,4 @@
+using Carter;
 using EShop.Api.Middlewares;
 using Serilog.Events;
 using Serilog;
@@ -18,16 +19,13 @@ try
     Log.ForContext<Program>().Information("Starting application");
     var builder = WebApplication.CreateBuilder(args);
     builder.Host.UseSerilog();
-
-    // Add services to the container.
-
-    builder.Services.AddControllers();
+    
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
-    builder.Services.AddInfrastructureServices(builder.Configuration,builder.Environment);
+    builder.Services.AddInfrastructureServices(builder.Configuration, builder.Environment);
     builder.Services.AddApplicationServices(builder.Configuration);
-
+    builder.Services.AddCarter();
 
     var app = builder.Build();
     app.Services.InitializeDb();
@@ -44,9 +42,8 @@ try
     app.UseMiddleware<ExceptionHandlingMiddleware>();
     app.UseAuthentication();
     app.UseAuthorization();
-
-    app.MapControllers();
-
+    
+    app.MapCarter();
     app.Run();
 }
 catch (Exception ex)

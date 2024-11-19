@@ -15,7 +15,7 @@ public class CreateUserCommandHandler(
 
     public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
     {
-        (Domain.Entities.Identity.User? user, bool isEmail) userFound= await _userManager.FindByEmailOrPhoneNumberAsync(request.EmailOrPhoneNumber);
+        (Domain.Entities.Identity.User? user, bool isEmail) userFound= await _userManager.FindByEmailOrPhoneNumberWithCheckIsEmailAsync(request.EmailOrPhoneNumber);
         if (userFound.user is not null)
         {
             throw new DuplicateException("کاربر");
