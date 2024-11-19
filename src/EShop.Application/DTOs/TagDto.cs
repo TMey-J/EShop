@@ -1,6 +1,6 @@
 ﻿namespace EShop.Application.DTOs;
 
-public record SearchTagDto : BaseSearchDTO
+public record SearchTagDto : BaseSearchDto
 {
     public SortingTagBy SortingBy { get; set; }
     

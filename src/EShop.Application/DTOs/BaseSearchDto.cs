@@ -1,6 +1,6 @@
 ﻿namespace EShop.Application.DTOs;
 
-public record BaseSearchDTO
+public record BaseSearchDto
 {
     /// <summary>
     /// 0=> don't show deleted item

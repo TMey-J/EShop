@@ -12,11 +12,9 @@ public class UpdateTagCommandHandler(ITagRepository tagRepository)
     {
         var tag = await _tagRepository.FindByIdAsync(request.Id) ??
                   throw new NotFoundException(NameToReplaceInException.Tag);
-        
+
         var isNewTitleExists =
-            await _tagRepository.IsExistsByAsync(nameof(Domain.Entities.Tag.Title),
-            request.Title,
-            request.Id);
+            await _tagRepository.IsExistsByAsync(nameof(Domain.Entities.Tag.Title), request.Title, request.Id);
         
         if (isNewTitleExists)
             throw new DuplicateException(NameToReplaceInException.Tag);

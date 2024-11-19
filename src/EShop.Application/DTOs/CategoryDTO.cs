@@ -1,6 +1,6 @@
 ﻿namespace EShop.Application.DTOs;
 
-public record SearchCategoryDto : BaseSearchDTO
+public record SearchCategoryDto : BaseSearchDto
 {
     [DisplayName("مرتب کردن بر اساس")]
     public SortingCategoryBy SortingBy { get; set; }
