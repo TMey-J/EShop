@@ -2,6 +2,6 @@
 {
     public interface ITagRepository:IGenericRepository<Tag>
     {
-        Task<GetAllTagQueryResponse> GetAllAsync(SearchTagDto search);
+        Task<GetAllTagsQueryResponse> GetAllAsync(SearchTagDto search);
     }
 }

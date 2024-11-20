@@ -2,7 +2,7 @@
 
 namespace EShop.Application.Features.AdminPanel.Tag.Requests.Queries.Validations
 {
-    public class GetAllTagsQueryValidation : AbstractValidator<GetAllTagQueryRequest>
+    public class GetAllTagsQueryValidation : AbstractValidator<GetAllTagsQueryRequest>
     {
         public GetAllTagsQueryValidation()
         {

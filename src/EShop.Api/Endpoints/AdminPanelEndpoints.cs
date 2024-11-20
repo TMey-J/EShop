@@ -97,7 +97,7 @@ public class AdminPanelEndpoints : ICarterModule
         return TypedResults.Ok();
     }
     private static async Task<IResult> GetAllTags(
-        [FromBody]GetAllTagQueryRequest request,
+        [FromBody]GetAllTagsQueryRequest request,
         IMediator mediator)
     {
         var response = await mediator.Send(request);

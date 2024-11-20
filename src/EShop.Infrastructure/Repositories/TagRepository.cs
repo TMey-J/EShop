@@ -6,7 +6,7 @@ namespace EShop.Infrastructure.Repositories
     public class TagRepository(SQLDbContext context) : GenericRepository<Tag>(context), ITagRepository
     {
         private readonly DbSet<Tag> _tag = context.Set<Tag>();
-        public async Task<GetAllTagQueryResponse> GetAllAsync(SearchTagDto search)
+        public async Task<GetAllTagsQueryResponse> GetAllAsync(SearchTagDto search)
         {
             var tagQuery = _tag.AsQueryable().IgnoreQueryFilters();
 
@@ -35,7 +35,7 @@ namespace EShop.Infrastructure.Repositories
             var tags = await tagQuery.Select
                 (x => new ShowTagDto(x.Id, x.Title)).ToListAsync();
 
-            return new GetAllTagQueryResponse(tags, search, pagination.pageCount);
+            return new GetAllTagsQueryResponse(tags, search, pagination.pageCount);
         }
     }
 }

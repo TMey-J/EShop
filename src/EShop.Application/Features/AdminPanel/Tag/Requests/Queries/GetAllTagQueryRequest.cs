@@ -1,4 +1,4 @@
 ﻿namespace EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 
-public record GetAllTagQueryRequest(SearchTagDto Search):IRequest<GetAllTagQueryResponse>;
-public record GetAllTagQueryResponse(List<ShowTagDto> tags,SearchTagDto Search,int pageCount);
+public record GetAllTagsQueryRequest(SearchTagDto Search):IRequest<GetAllTagsQueryResponse>;
+public record GetAllTagsQueryResponse(List<ShowTagDto> tags,SearchTagDto Search,int pageCount);
