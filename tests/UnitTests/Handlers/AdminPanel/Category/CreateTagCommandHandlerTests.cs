@@ -81,7 +81,7 @@ public class CreateCategoryCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnCreateCategoryCommandResponse_WhenCategoryEverythingIsOk()
+    public async Task Handle_ShouldReturnCreateCategoryCommandResponse_WhenEverythingIsOk()
     {
         //Arrange
         var categoryTitle = "test";
