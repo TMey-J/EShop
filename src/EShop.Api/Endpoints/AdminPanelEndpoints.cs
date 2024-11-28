@@ -13,16 +13,17 @@ public class AdminPanelEndpoints : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/AdminPanel").AddEndpointFilter<ApiResultEndpointFilter>();
-
-        #region User APIs
+        
+        #region User
 
         group.MapPost(nameof(CreateUser), CreateUser);
         group.MapPut(nameof(UpdateUser), UpdateUser);
         group.MapGet(nameof(GetAllUsers), GetAllUsers);
+        group.MapGet(nameof(GetUser)+"/{id}", GetUser);
 
         #endregion
 
-        #region Category APIs
+        #region Category
 
         group.MapPost(nameof(CreateCategory), CreateCategory);
         group.MapPut(nameof(UpdateCategory), UpdateCategory);
@@ -31,7 +32,7 @@ public class AdminPanelEndpoints : ICarterModule
 
         #endregion
 
-        #region Tag APIs
+        #region Tag
 
         group.MapPost(nameof(CreateTag), CreateTag);
         group.MapPut(nameof(UpdateTag), UpdateTag);
@@ -61,6 +62,11 @@ public class AdminPanelEndpoints : ICarterModule
         IMediator mediator)
     {
         var response = await mediator.Send(request);
+        return TypedResults.Ok(response);
+    }
+    private static async Task<IResult> GetUser(long id, IMediator mediator)
+    {
+        var response = await mediator.Send(new GetUserQueryRequest { Id = id });
         return TypedResults.Ok(response);
     }
 

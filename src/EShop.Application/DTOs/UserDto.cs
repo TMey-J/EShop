@@ -3,6 +3,7 @@
 public record SearchUserDto : BaseSearchDto
 {
     public SortingUserBy SortingBy { get; set; }
+    public ActivationStatus ActivationStatus { get; set; }
 
     public string UserName { get; init; } = string.Empty;
     
@@ -14,8 +15,7 @@ public record SearchUserDto : BaseSearchDto
 public record ShowUserDto(
     long Id,
     string UserName,
-    string? Email,
-    string? PhoneNumber,
+    string? EmailOrPhoneNumber,
     bool IsActive,
     string Avatar);
 
@@ -27,4 +27,10 @@ public enum SortingUserBy
     PhoneNumber,
     IsActive,
     Avatar
+}
+public enum ActivationStatus
+{
+    True,
+    False,
+    OnlyActive
 }

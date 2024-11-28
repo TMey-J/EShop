@@ -42,7 +42,7 @@ public static class ExperssionHelpers
         }
         var parameterExp = Expression.Parameter(typeof(T), "type");
         var propertyExp = Expression.Property(parameterExp, propertyName);
-        var method = typeof(string).GetMethod("Contains", new[] { typeof(string) })!;
+        var method = typeof(string).GetMethod("Contains", [typeof(string)])!;
         var someValue = Expression.Constant(propertyValue, typeof(string));
         var containsMethodExp = Expression.Call(propertyExp, method, someValue);
         var exp = Expression.Lambda<Func<T, bool>>(containsMethodExp, parameterExp);
