@@ -1,8 +1,7 @@
 ﻿using EShop.Application.Common.Exceptions;
+using EShop.Application.Contracts.Services;
 using EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
-using EShop.Application.Features.AdminPanel.Tag.Handlers.Commands;
-using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 using EShop.Application.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -13,13 +12,14 @@ public class UpdateCategoryCommandHandlerTests
 {
     private readonly UpdateCategoryCommandHandler _sut;
     private readonly Mock<ICategoryRepository> _categoryRepositoryMock = new();
+    private readonly Mock<IFileServices> _fileServiceMock = new();
     private readonly Mock<IOptionsSnapshot<SiteSettings>> _siteSettingsMock = new();
     private UpdateCategoryCommandRequest _request = new();
 
     public UpdateCategoryCommandHandlerTests()
     {
         _siteSettingsMock.Setup(x => x.Value).Returns(new SiteSettings());
-        _sut = new UpdateCategoryCommandHandler(_categoryRepositoryMock.Object, _siteSettingsMock.Object);
+        _sut = new UpdateCategoryCommandHandler(_categoryRepositoryMock.Object,_fileServiceMock.Object, _siteSettingsMock.Object);
     }
 
     [Fact]
@@ -118,68 +118,4 @@ public class UpdateCategoryCommandHandlerTests
         _categoryRepositoryMock.Verify(x =>
             x.SaveChangesAsync(), Times.Once);
     }
-
-    // [Fact]
-    // public async Task Handle_ShouldThrowDuplicateException_WhenNewTitleIsExists()
-    // {
-    //     //Arrange
-    //     const long tagId = 1;
-    //     const string tagTitle = "test";
-    //     const string propertyToSearch = nameof(EShop.Domain.Entities.Tag.Title);
-    //     var tag = new EShop.Domain.Entities.Tag()
-    //     {
-    //         Title = tagTitle,
-    //         Id = tagId
-    //     };
-    //     _categoryRepositoryMock.Setup(x =>
-    //             x.FindByIdAsync(tagId))
-    //         .ReturnsAsync(tag);
-    //
-    //     _categoryRepositoryMock.Setup(x =>
-    //             x.IsExistsByAsync(propertyToSearch,It.IsAny<string>(),It.IsAny<long>()))
-    //         .ReturnsAsync(true);
-    //     
-    //     _request = new() { Title = tagTitle,Id = tagId };
-    //
-    //     //Act
-    //     var act = () => _sut.Handle(_request, default);
-    //     
-    //     //Assert
-    //     var exception= await Assert.ThrowsAsync<DuplicateException>(act);
-    //     Assert.Equal($"این {NameToReplaceInException.Tag} از قبل موجود است", exception.Message);
-    //     
-    //     _categoryRepositoryMock.Verify(x=>
-    //         x.SaveChangesAsync(), Times.Never);
-    // }
-    //
-    // [Fact]
-    // public async Task Handle_ShouldReturnUpdateTagCommandResponse_WhenEverythingIsOk()
-    // {
-    //     //Arrange
-    //     const long tagId = 1;
-    //     const string tagTitle = "test";
-    //     const string propertyToSearch = nameof(EShop.Domain.Entities.Tag.Title);
-    //     var tag = new EShop.Domain.Entities.Tag()
-    //     {
-    //         Title = tagTitle,
-    //         Id = tagId
-    //     };
-    //     _categoryRepositoryMock.Setup(x =>
-    //             x.FindByIdAsync(tagId))
-    //         .ReturnsAsync(tag);
-    //
-    //     _categoryRepositoryMock.Setup(x =>
-    //             x.IsExistsByAsync(propertyToSearch,It.IsAny<string>(),It.IsAny<long>()))
-    //         .ReturnsAsync(false);
-    //     
-    //     _request = new() { Title = tagTitle,Id = tagId };
-    //
-    //     //Act
-    //     var result = await _sut.Handle(_request, default);
-    //     
-    //     //Assert
-    //     Assert.IsType<UpdateTagCommandResponse>(result);
-    //     _categoryRepositoryMock.Verify(x=>
-    //         x.SaveChangesAsync(), Times.Once);
-    // }
 }

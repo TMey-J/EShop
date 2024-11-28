@@ -6,11 +6,13 @@ namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 public class UpdateUserCommandHandler(
     IApplicationUserManager userManager,
     IApplicationRoleManager roleManager,
+    IFileServices fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<UpdateUserCommandRequest, UpdateUserCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
+    private readonly IFileServices _fileServices = fileServices;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
@@ -67,8 +69,10 @@ public class UpdateUserCommandHandler(
 
         if (!string.IsNullOrWhiteSpace(request.NewAvatar))
         {
-            user.Avatar = await FileHelpers
-                .ReUploadFileAsync(user.Avatar, request.NewAvatar, _siteSettings.FilesPath.UserAvatar);
+            user.Avatar = await _fileServices.UploadFileAsync
+                (request.NewAvatar, _siteSettings.FilesPath.UserAvatar,
+                    (int)FileHelpers.MaximumFilesSizeInMegaByte.UserAvatar,
+                    user.Avatar);
         }
 
         var result = await _userManager.UpdateAsync(user);

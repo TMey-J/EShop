@@ -1,8 +1,6 @@
-﻿using EShop.Application.Contracts;
-using EShop.Application.Contracts.Identity;
+﻿using EShop.Application.Contracts.Identity;
 using EShop.Application.Contracts.Services;
 using EShop.Application.Model;
-using EShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -18,8 +16,9 @@ using DNTCommon.Web.Core;
 using EShop.Infrastructure.Databases;
 using EShop.Infrastructure.Repositories;
 using EShop.Infrastructure.Repositories.Identity;
-using EShop.Infrastructure.Services.Email;
-using EShop.Infrastructure.Services.Sms;
+using EShop.Infrastructure.Repositories.Services;
+using EShop.Infrastructure.Repositories.Services.Email;
+using EShop.Infrastructure.Repositories.Services.Sms;
 
 namespace EShop.Infrastructure
 {
@@ -54,6 +53,7 @@ namespace EShop.Infrastructure
         }
         private static void ConfigureServices(this IServiceCollection services,IWebHostEnvironment environment)
         {
+            services.AddScoped<IFileServices, FileServices>();
             if (environment.IsDevelopment())
             {
                 services.AddScoped<ISmsSenderService, LocalSmsSenderService>();

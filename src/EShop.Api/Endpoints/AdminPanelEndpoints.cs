@@ -16,7 +16,7 @@ public class AdminPanelEndpoints : ICarterModule
         #region User APIs
 
         group.MapPost(nameof(CreateUser), CreateUser);
-        group.MapPost(nameof(UpdateUser), UpdateUser);
+        group.MapPut(nameof(UpdateUser), UpdateUser);
 
         #endregion
 

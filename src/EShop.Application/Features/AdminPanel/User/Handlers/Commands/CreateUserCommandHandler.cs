@@ -5,12 +5,14 @@ namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 
 public class CreateUserCommandHandler(
     IApplicationUserManager userManager,IApplicationRoleManager roleManager,
+    IFileServices fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
 {
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
+    private readonly IFileServices _fileServices = fileServices;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
     public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
@@ -29,7 +31,9 @@ public class CreateUserCommandHandler(
             PasswordSalt = salt,
             IsActive = true,
             Avatar = !string.IsNullOrWhiteSpace(request.Avatar)?
-                await request.Avatar.UploadFileAsync(_filesPath.UserAvatar):
+                await _fileServices.UploadFileAsync(request.Avatar,
+                    _filesPath.UserAvatar,
+                    (int)FileHelpers.MaximumFilesSizeInMegaByte.UserAvatar):
                 null
         };
         if (userFound.isEmail)

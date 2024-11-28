@@ -2,11 +2,14 @@
 
 namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 
-public class CreateCategoryCommandHandler(ICategoryRepository category,
+public class CreateCategoryCommandHandler(
+    ICategoryRepository category,
+    IFileServices fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings)
     : IRequestHandler<CreateCategoryCommandRequest, CreateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
+    private readonly IFileServices _fileServices = fileServices;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
 
     public async Task<CreateCategoryCommandResponse> Handle(CreateCategoryCommandRequest request, CancellationToken cancellationToken)
@@ -20,7 +23,9 @@ public class CreateCategoryCommandHandler(ICategoryRepository category,
         {
             Title = request.Title,
             Picture = string.IsNullOrWhiteSpace(request.PictureBase64) ? null :
-            await request.PictureBase64.UploadFileAsync(_filesPath.Category)
+            await _fileServices.UploadFileAsync(request.PictureBase64,
+                _filesPath.Category,
+                (int)FileHelpers.MaximumFilesSizeInMegaByte.CategoryPicture)
         };
 
         if (request.Parent is not null)

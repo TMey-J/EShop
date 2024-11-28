@@ -4,10 +4,12 @@ namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 
 public class UpdateCategoryCommandHandler(
     ICategoryRepository category,
+    IFileServices fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings)
     : IRequestHandler<UpdateCategoryCommandRequest, UpdateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
+    private readonly IFileServices _fileServices = fileServices;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
 
     public async Task<UpdateCategoryCommandResponse> Handle(UpdateCategoryCommandRequest request,
@@ -19,7 +21,11 @@ public class UpdateCategoryCommandHandler(
         if (!string.IsNullOrWhiteSpace(request.NewPicture))
         {
             category.Picture =
-                await FileHelpers.ReUploadFileAsync(category.Picture, request.NewPicture, _filesPath.Category);
+                await _fileServices.UploadFileAsync(
+                    request.NewPicture,
+                    _filesPath.Category,
+                    (int)FileHelpers.MaximumFilesSizeInMegaByte.CategoryPicture,
+                    category.Picture);
         }
 
         if (request.NewParentId is not null)
