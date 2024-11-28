@@ -37,19 +37,18 @@ namespace EShop.Infrastructure
             services.AddIdentityOptions(siteSettings);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IPrincipal>(provider => provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.User ?? ClaimsPrincipal.Current!);
+            services.AddSingleton<IPrincipal>(provider => provider.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? ClaimsPrincipal.Current!);
             services.ConfigureServices(environment);
             services.ConfigureRepositories();
             services.AddScoped<IDbInitializer, DbInitializer>();
             return services;
         }
-        private static IServiceCollection AddDataBase(this IServiceCollection services, string connectionString)
+        private static void AddDataBase(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContextPool<SQLDbContext>((sp, options) =>
+            services.AddDbContextPool<SQLDbContext>((options) =>
             {   
                 options.UseSqlServer(connectionString,x=>x.UseHierarchyId());
             });
-            return services;
         }
         private static void ConfigureServices(this IServiceCollection services,IWebHostEnvironment environment)
         {
@@ -71,7 +70,7 @@ namespace EShop.Infrastructure
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
         }
-        private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        private static void AddIdentityServices(this IServiceCollection services)
         {
             services.AddScoped<IApplicationUserManager, ApplicationUserManager>();
             services.AddScoped<UserManager<User>, ApplicationUserManager>();
@@ -83,10 +82,8 @@ namespace EShop.Infrastructure
             services.AddScoped<SignInManager<User>, ApplicationSignInManager>();
 
             services.AddScoped<IJwtService, JwtService>();
-
-            return services;
         }
-        private static IServiceCollection AddIdentityOptions(this IServiceCollection services, SiteSettings siteSettings)
+        private static void AddIdentityOptions(this IServiceCollection services, SiteSettings siteSettings)
         {
             services.AddConfirmEmailDataProtectorTokenOptions(siteSettings);
             services.AddIdentity<User, Role>(identityOptions =>
@@ -106,13 +103,10 @@ namespace EShop.Infrastructure
 
             services.ConfigureApplicationCookie(identityOptionsCookies =>
             {
-                var provider = services.BuildServiceProvider();
-                SetApplicationCookieOptions(provider, identityOptionsCookies, siteSettings);
+                SetApplicationCookieOptions(identityOptionsCookies, siteSettings);
             });
 
             services.EnableImmediateLogout();
-
-            return services;
         }
         public static void InitializeDb(this IServiceProvider serviceProvider)
         {
@@ -143,11 +137,11 @@ namespace EShop.Infrastructure
             {
                 // enables immediate logout, after updating the user's stat.
                 options.ValidationInterval = TimeSpan.Zero;
-                options.OnRefreshingPrincipal = principalContext => { return Task.CompletedTask; };
+                options.OnRefreshingPrincipal = new Func<SecurityStampRefreshingPrincipalContext, Task>(_ => Task.CompletedTask);
             });
         }
 
-        private static void SetApplicationCookieOptions(IServiceProvider provider, CookieAuthenticationOptions identityOptionsCookies, SiteSettings siteSettings)
+        private static void SetApplicationCookieOptions(CookieAuthenticationOptions identityOptionsCookies, SiteSettings siteSettings)
         {
             identityOptionsCookies.Cookie.Name = siteSettings.CookieOptions.CookieName;
             identityOptionsCookies.Cookie.HttpOnly = true;
@@ -179,7 +173,8 @@ namespace EShop.Infrastructure
             identityOptionsPassword.RequiredLength = siteSettings.PasswordOptions.RequiredLength;
         }
 
-        private static void SetSignInOptions(SignInOptions identityOptionsSignIn, SiteSettings siteSettings) => identityOptionsSignIn.RequireConfirmedEmail = siteSettings.EnableEmailConfirmation;
+        private static void SetSignInOptions(SignInOptions identityOptionsSignIn, SiteSettings siteSettings)
+            => identityOptionsSignIn.RequireConfirmedEmail = siteSettings.EnableEmailConfirmation;
 
         private static void SetUserOptions(UserOptions identityOptionsUser) => identityOptionsUser.RequireUniqueEmail = true;
 
