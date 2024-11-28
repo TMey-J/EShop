@@ -8,6 +8,8 @@ namespace EShop.Domain.Entities.Identity
         [MaxLength(11)]
         public override string? PhoneNumber { get => base.PhoneNumber; set => base.PhoneNumber = value; }
 
+        [Required]
+        public override string UserName { get; set; }=string.Empty;
         public DateTime SendCodeLastTime { get; set; }
         public bool IsActive { get; set; }
 
