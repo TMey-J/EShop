@@ -10,6 +10,8 @@
             public const string RegularExpression = "{DisplayName} را به درستی وارد کنید";
             public const string Length = "{DisplayName} باید از {MinLength} تا {MaxLength} کاراکتر باشد";
             public const string GreaterThanZero = "{DisplayName} باید بزرگ تر از 0 باشد";
+            public const string Between = "{DisplayName} باید بین {From} تا {To} باشد";
+            public static string NotInEnum(int min,int max) => $"مقدار فیلد '{{DisplayName}}' معتبر نیست.باید بین {min} تا {max} باشد";
 
 
         }
@@ -28,6 +30,10 @@
             public const string PhoneNumberAlreadyVerified = "این شماره تلفن قبلا فعال شده است";
             public const string InvalidTimeToSendCode = "زمان ارسال مجدد کد نرسیده است.";
             public const string UserNotActive = "حساب کاربری فعال نیست";
+            public static List<string> NotExistsRolesErrors(List<string> rolesName)
+            {
+                return rolesName.Select(role => $"نقش {role} معتبر نیشت").ToList();
+            }
 
             public static string DuplicatedValue(string name)
             {

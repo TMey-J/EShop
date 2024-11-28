@@ -1,4 +1,4 @@
-﻿namespace Blog.Core.Application.Constants.Common;
+﻿namespace EShop.Application.Constants.Common;
 
 public static class RegularExperssions
 {

@@ -1,0 +1,117 @@
+﻿using Carter;
+using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
+using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
+using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
+using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
+using EShop.Application.Features.AdminPanel.User.Requests.Commands;
+
+namespace EShop.Api.Endpoints;
+
+public class AdminPanelEndpoints : ICarterModule
+{
+    public void AddRoutes(IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("api/AdminPanel").AddEndpointFilter<ApiResultEndpointFilter>();
+
+        #region User APIs
+
+        group.MapPost(nameof(CreateUser), CreateUser);
+        group.MapPut(nameof(UpdateUser), UpdateUser);
+
+        #endregion
+
+        #region Category APIs
+
+        group.MapPost(nameof(CreateCategory), CreateCategory);
+        group.MapPut(nameof(UpdateCategory), UpdateCategory);
+        group.MapGet(nameof(GetAllCategories), GetAllCategories);
+        group.MapGet(nameof(GetCategory)+"/{id}", GetCategory);
+
+        #endregion
+
+        #region Tag APIs
+
+        group.MapPost(nameof(CreateTag), CreateTag);
+        group.MapPut(nameof(UpdateTag), UpdateTag);
+        group.MapGet(nameof(GetAllTags), GetAllTags);
+        group.MapGet(nameof(GetTag)+"/{id}", GetTag);
+
+        #endregion
+
+    }
+
+    #region APIs Body
+
+    #region User
+    private static async Task<IResult> CreateUser(CreateUserCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
+    }
+    
+    private static async Task<IResult> UpdateUser(UpdateUserCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
+    }
+
+    #endregion
+
+    #region Category
+    
+    private static async Task<IResult> CreateCategory(CreateCategoryCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
+    }
+    private static async Task<IResult> UpdateCategory(UpdateCategoryCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
+    }
+    
+    private static async Task<IResult> GetAllCategories(
+        [FromBody]GetAllCategoryQueryRequest request,
+        IMediator mediator)
+    {
+        var response = await mediator.Send(request);
+        return TypedResults.Ok(response);
+    }
+    public async Task<IResult> GetCategory(long id, IMediator mediator)
+    {
+        var response = await mediator.Send(new GetCategoryQueryRequest() { Id = id });
+        return TypedResults.Ok(response);
+    }
+
+    #endregion
+
+    #region Tag
+    private static async Task<IResult> CreateTag(CreateTagCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
+    }
+    private static async Task<IResult> UpdateTag(UpdateTagCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
+    }
+    private static async Task<IResult> GetAllTags(
+        [FromBody]GetAllTagsQueryRequest request,
+        IMediator mediator)
+    {
+        var response = await mediator.Send(request);
+        return TypedResults.Ok(response);
+    }
+
+    [HttpGet("{id:long}")]
+    private static async Task<IResult> GetTag(long id, IMediator mediator)
+    {
+        var response = await mediator.Send(new GetTagQueryRequest { Id = id });
+        return TypedResults.Ok(response);
+    }
+
+    #endregion
+
+    #endregion
+}

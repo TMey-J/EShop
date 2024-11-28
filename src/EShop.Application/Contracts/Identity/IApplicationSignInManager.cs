@@ -17,7 +17,7 @@ public interface IApplicationSignInManager
 
     Task RefreshSignInAsync(User user);
 
-    Task SignInAsync(User user, bool isPersistent, string authenticationMethod = null);
+    Task SignInAsync(User user, bool isPersistent, string? authenticationMethod = null);
 
     Task SignInAsync(User user, AuthenticationProperties authenticationProperties, string authenticationMethod);
 

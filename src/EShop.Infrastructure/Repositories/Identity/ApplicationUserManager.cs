@@ -25,7 +25,7 @@ public class ApplicationUserManager(
 {
     private readonly DbSet<User> _user = context.Set<User>();
 
-    public async Task<(User?, bool)> FindByEmailOrPhoneNumberAsync(string emailOrPhoneNumber)
+    public async Task<(User?, bool)> FindByEmailOrPhoneNumberWithCheckIsEmailAsync(string emailOrPhoneNumber)
     {
         var isEmail = emailOrPhoneNumber.IsEmail();
         var user = isEmail ?
@@ -37,13 +37,5 @@ public class ApplicationUserManager(
     public async Task<User?> FindByPhoneNumberAsync(string phoneNumber)
     {
         return await _user.SingleOrDefaultAsync(x => x.PhoneNumber == phoneNumber);
-    }
-    async Task IApplicationUserManager.UpdateUserAsync(User user)
-    {
-        var update = await base.UpdateAsync(user);
-        if (!update.Succeeded)
-        {
-            throw new CustomInternalServerException(update.GetErrors());
-        }
     }
 }

@@ -1,3 +1,9 @@
 ﻿global using Microsoft.EntityFrameworkCore;
 global using EShop.Domain.Entities.Identity;
 global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using EShop.Domain.Entities;
+global using EShop.Application.Contracts;
+global using EShop.Domain.Entities;
+global using EShop.Application.Common;
+global using EShop.Application.Common.Helpers;
+global using EShop.Application.DTOs;

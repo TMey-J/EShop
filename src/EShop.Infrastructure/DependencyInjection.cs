@@ -1,8 +1,6 @@
-﻿using EShop.Application.Contracts;
-using EShop.Application.Contracts.Identity;
+﻿using EShop.Application.Contracts.Identity;
 using EShop.Application.Contracts.Services;
 using EShop.Application.Model;
-using EShop.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -14,11 +12,13 @@ using Microsoft.Extensions.Hosting;
 using Restaurant.Application.Contracts.Identity;
 using System.Security.Claims;
 using System.Security.Principal;
+using DNTCommon.Web.Core;
 using EShop.Infrastructure.Databases;
 using EShop.Infrastructure.Repositories;
 using EShop.Infrastructure.Repositories.Identity;
-using EShop.Infrastructure.Services.Email;
-using EShop.Infrastructure.Services.Sms;
+using EShop.Infrastructure.Repositories.Services;
+using EShop.Infrastructure.Repositories.Services.Email;
+using EShop.Infrastructure.Repositories.Services.Sms;
 
 namespace EShop.Infrastructure
 {
@@ -40,6 +40,7 @@ namespace EShop.Infrastructure
             services.AddSingleton<IPrincipal>(provider => provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.User ?? ClaimsPrincipal.Current!);
             services.ConfigureServices(environment);
             services.ConfigureRepositories();
+            services.AddScoped<IDbInitializer, DbInitializer>();
             return services;
         }
         private static IServiceCollection AddDataBase(this IServiceCollection services, string connectionString)
@@ -52,6 +53,7 @@ namespace EShop.Infrastructure
         }
         private static void ConfigureServices(this IServiceCollection services,IWebHostEnvironment environment)
         {
+            services.AddScoped<IFileServices, FileServices>();
             if (environment.IsDevelopment())
             {
                 services.AddScoped<ISmsSenderService, LocalSmsSenderService>();
@@ -84,7 +86,6 @@ namespace EShop.Infrastructure
 
             return services;
         }
-
         private static IServiceCollection AddIdentityOptions(this IServiceCollection services, SiteSettings siteSettings)
         {
             services.AddConfirmEmailDataProtectorTokenOptions(siteSettings);
@@ -112,6 +113,14 @@ namespace EShop.Infrastructure
             services.EnableImmediateLogout();
 
             return services;
+        }
+        public static void InitializeDb(this IServiceProvider serviceProvider)
+        {
+            serviceProvider.RunScopedService<IDbInitializer>(dbInitialize =>
+            {
+                dbInitialize.Initialize();
+                dbInitialize.SeedData();
+            });
         }
         #region Identity Options
 

@@ -31,19 +31,19 @@ public class CustomIdentityErrorDescriber : IdentityErrorDescriber
     public override IdentityError DuplicateUserName(string userName) => new()
     {
         Code = nameof(DuplicateUserName),
-        Description = string.Format("نام کاربری '{0}' هم اکنون مورد استفاده‌است.", userName)
+        Description = $"نام کاربری '{userName}' هم اکنون مورد استفاده‌است."
     };
 
-    public override IdentityError InvalidEmail(string email) => new()
+    public override IdentityError InvalidEmail(string? email) => new()
     {
         Code = nameof(InvalidEmail),
-        Description = string.Format("ایمیل '{0}' معتبر نیست.", email)
+        Description = $"ایمیل '{email}' معتبر نیست."
     };
 
-    public override IdentityError InvalidRoleName(string role) => new()
+    public override IdentityError InvalidRoleName(string? role) => new()
     {
         Code = nameof(InvalidRoleName),
-        Description = string.Format("نقش '{0}' معتبر نیست.", role)
+        Description = $"نقش '{role}' معتبر نیست."
     };
 
     public override IdentityError InvalidToken() => new()
@@ -52,11 +52,10 @@ public class CustomIdentityErrorDescriber : IdentityErrorDescriber
         Description = "توکن غیر معتبر."
     };
 
-    public override IdentityError InvalidUserName(string userName) => new()
+    public override IdentityError InvalidUserName(string? userName) => new()
     {
         Code = nameof(InvalidUserName),
-        Description = string.Format("نام کاربری '{0}' معتبر نیست و تنها می‌تواند حاوی حروف و یا ارقام باشد.",
-                userName)
+        Description = $"نام کاربری '{userName}' معتبر نیست و تنها می‌تواند حاوی حروف و یا ارقام باشد."
     };
 
     public override IdentityError LoginAlreadyAssociated() => new()
@@ -104,7 +103,7 @@ public class CustomIdentityErrorDescriber : IdentityErrorDescriber
     public override IdentityError PasswordTooShort(int length) => new()
     {
         Code = nameof(PasswordTooShort),
-        Description = string.Format("کلمه‌ی عبور باید حداقل {0} حرف باشد.", length)
+        Description = $"کلمه‌ی عبور باید حداقل {length} حرف باشد."
     };
 
     public override IdentityError RecoveryCodeRedemptionFailed() => new()
@@ -122,7 +121,7 @@ public class CustomIdentityErrorDescriber : IdentityErrorDescriber
     public override IdentityError UserAlreadyInRole(string role) => new()
     {
         Code = nameof(UserAlreadyInRole),
-        Description = string.Format("کاربر هم اکنون دارای نقش '{0}' است.", role)
+        Description = $"کاربر هم اکنون دارای نقش '{role}' است."
     };
 
     public override IdentityError UserLockoutNotEnabled() => new()

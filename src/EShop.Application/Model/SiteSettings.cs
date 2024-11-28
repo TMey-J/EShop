@@ -16,6 +16,8 @@ public class SiteSettings
     public JwtConfigs JwtConfigs { get; set; } = null!;
     public SmsSettings SmsSettings { get; set; } = null!;
     public FilesPath FilesPath { get; set; } = null!;
+    public AdminUser AdminUser { get; set; } = null!;
+    public string DefaultUserAvatar { get; set; } = null!;
 }
 
 public class ConnectionStrings
@@ -63,4 +65,11 @@ public class SmsSettings
 public class FilesPath
 {
     public string Category { get; set; } = null!;
+    public string UserAvatar { get; set; } = null!;
+}
+public class AdminUser
+{
+    public string UserName { get; set; } = null!;
+    public string EmailOrPhoneNumber { get; set; }=null!;
+    public string Password { get; set; }=null!;
 }

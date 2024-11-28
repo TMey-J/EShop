@@ -1,6 +1,4 @@
-﻿using EShop.Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 namespace EShop.Application.Contracts.Identity;
@@ -204,7 +202,6 @@ public interface IApplicationUserManager : IDisposable
 
     #region Custom
     Task<User?> FindByPhoneNumberAsync(string phoneNumber);
-    Task UpdateUserAsync(User user);
-    Task <(User?,bool)> FindByEmailOrPhoneNumberAsync(string emailOrPhoneNumber);
+    Task <(User?,bool)> FindByEmailOrPhoneNumberWithCheckIsEmailAsync(string emailOrPhoneNumber);
     #endregion Custom
 }

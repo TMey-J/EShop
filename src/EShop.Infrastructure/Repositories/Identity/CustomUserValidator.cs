@@ -4,7 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace EShop.Infrastructure.Repositories.Identity
 {
-    public class CustomUserValidator<TUser> : IUserValidator<TUser> where TUser : class
+    public sealed class CustomUserValidator<TUser>(IdentityErrorDescriber? errors = null) : IUserValidator<TUser>
+        where TUser : class
     {
 
         private readonly List<string> _allowedDomains = new List<string>
@@ -13,15 +14,10 @@ namespace EShop.Infrastructure.Repositories.Identity
         "test.com"
     };
 
-        public CustomUserValidator(IdentityErrorDescriber errors = null)
-        {
-            Describer = errors ?? new IdentityErrorDescriber();
-        }
-
-        public IdentityErrorDescriber Describer { get; }
+        private IdentityErrorDescriber Describer { get; } = errors ?? new IdentityErrorDescriber();
 
 
-        public virtual async Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user)
+        public async Task<IdentityResult> ValidateAsync(UserManager<TUser> manager, TUser user)
         {
             if (manager == null)
                 throw new ArgumentNullException(nameof(manager));
@@ -72,8 +68,8 @@ namespace EShop.Infrastructure.Repositories.Identity
                 var flag = byEmailAsync != null;
                 if (flag)
                 {
-                    var a = await manager.GetUserIdAsync(byEmailAsync);
-                    flag = !string.Equals(a, await manager.GetUserIdAsync(user));
+                    var userId = await manager.GetUserIdAsync(byEmailAsync!);
+                    flag = !string.Equals(userId, await manager.GetUserIdAsync(user));
                 }
                 if (!flag)
                     return;

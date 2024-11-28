@@ -16,7 +16,7 @@ public interface IApplicationRoleManager : IDisposable
 
     Task<string> GetRoleIdAsync(Role role);
 
-    Task<string> GetRoleNameAsync(Role role);
+    Task<string?> GetRoleNameAsync(Role role);
 
     Task<IdentityResult> SetRoleNameAsync(Role role, string roleName);
 
@@ -37,6 +37,7 @@ public interface IApplicationRoleManager : IDisposable
 
     #region Custom
 
+    Task<List<string>> NotExistsRolesNameAsync(List<string> rolesName);
 
-    #endregion Custom
+    #endregion
 }

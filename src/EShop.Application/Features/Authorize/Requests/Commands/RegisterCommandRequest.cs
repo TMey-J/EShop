@@ -8,7 +8,7 @@ public record RegisterCommandRequest():IRequest<RegisterCommandResponse>
     [DisplayName("نام کاربری")]
     public string UserName { get; set; } = string.Empty;
 
-    [DisplayName("ایمیل/شماره تلفن")]
+    [DisplayName("ایمیل / شماره تلفن")]
     public string EmailOrPhoneNumber { get; set; } = string.Empty;
 
     [DisplayName("کلمه عبور")]
