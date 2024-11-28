@@ -36,7 +36,7 @@ public static class ExperssionHelpers
 
    public static IQueryable<T> CreateContainsExpression<T>(this IQueryable<T> query,string propertyName, string propertyValue)
     {
-        if (string.IsNullOrWhiteSpace(propertyName))
+        if (string.IsNullOrWhiteSpace(propertyValue))
         {
             return query;
         }

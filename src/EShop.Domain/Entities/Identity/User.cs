@@ -12,6 +12,8 @@ namespace EShop.Domain.Entities.Identity
         public override string UserName { get; set; }=string.Empty;
         public DateTime SendCodeLastTime { get; set; }
         public bool IsActive { get; set; }
+        
+        public bool IsDelete { get; set; }
 
         [MaxLength(40)]
         public string? Avatar { get; set; }

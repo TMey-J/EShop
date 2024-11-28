@@ -4,6 +4,7 @@ using EShop.Infrastructure.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.SqlServer.Types;
 
@@ -12,9 +13,11 @@ using Microsoft.SqlServer.Types;
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    partial class SQLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241128114739_make_username_not_null")]
+    partial class make_username_not_null
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -132,9 +135,6 @@ namespace EShop.Infrastructure.Migrations
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")

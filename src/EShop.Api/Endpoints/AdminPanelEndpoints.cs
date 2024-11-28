@@ -4,6 +4,7 @@ using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 using EShop.Application.Features.AdminPanel.User.Requests.Commands;
+using EShop.Application.Features.AdminPanel.User.Requests.Queries;
 
 namespace EShop.Api.Endpoints;
 
@@ -17,6 +18,7 @@ public class AdminPanelEndpoints : ICarterModule
 
         group.MapPost(nameof(CreateUser), CreateUser);
         group.MapPut(nameof(UpdateUser), UpdateUser);
+        group.MapGet(nameof(GetAllUsers), GetAllUsers);
 
         #endregion
 
@@ -53,6 +55,13 @@ public class AdminPanelEndpoints : ICarterModule
     {
         await mediator.Send(request);
         return TypedResults.Ok();
+    }
+    private static async Task<IResult> GetAllUsers(
+        [FromBody]GetAllUsersQueryRequest request,
+        IMediator mediator)
+    {
+        var response = await mediator.Send(request);
+        return TypedResults.Ok(response);
     }
 
     #endregion

@@ -8,9 +8,10 @@ public class ApiResultEndpointFilter : IEndpointFilter
     {
         var result = await next(context);
         object? data = null;
-        if (result is Ok<object> obj)
+        var value = result?.GetType().GetProperty("Value")?.GetValue(result);
+        if (value is not null)
         {
-            data= obj.Value;
+            data = value;
         }
         return new ApiResult(true, HttpStatusCode.OK, data: data );
     }
