@@ -56,6 +56,12 @@ public class ApplicationUserManager(
 
         userQuery = userQuery.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
 
+        userQuery = search.ActivationStatus switch
+        {
+            ActivationStatus.OnlyActive => userQuery.Where(x => x.IsActive),
+            ActivationStatus.False => userQuery.Where(x => !x.IsActive),
+            _ => userQuery
+        };
         #endregion
 
         #region Paging
@@ -67,7 +73,8 @@ public class ApplicationUserManager(
         #endregion
 
         var users = await userQuery.Select
-            (x => new ShowUserDto(x.Id, x.UserName,x.Email,x.PhoneNumber,x.IsActive,x.Avatar??_defaultUserAvatar)).ToListAsync();
+        (x => new ShowUserDto(x.Id, x.UserName, x.Email ?? x.PhoneNumber, x.IsActive,
+            x.Avatar ?? _defaultUserAvatar)).ToListAsync();
 
         return new GetAllUsersQueryResponse(users, search, pagination.pageCount);
     }
