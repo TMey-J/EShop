@@ -1,8 +1,4 @@
-﻿using Blogger.Application.Common.Exceptions;
-using EShop.Application.Common.Exceptions;
-using EShop.Application.Constants;
-using EShop.Application.Contracts;
-using EShop.Application.Contracts.MongoDb;
+﻿using EShop.Application.Contracts.MongoDb;
 using EShop.Application.DTOs;
 using EShop.Application.Features.AdminPanel.Tag.Handlers.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
