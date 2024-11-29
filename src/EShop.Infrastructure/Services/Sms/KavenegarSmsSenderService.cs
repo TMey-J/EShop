@@ -3,7 +3,7 @@ using EShop.Application.Model;
 using Kavenegar;
 using Microsoft.Extensions.Options;
 
-namespace EShop.Infrastructure.Repositories.Services.Sms;
+namespace EShop.Infrastructure.Services.Sms;
 
 public class KavenegarSmsSenderService(IOptionsMonitor<SiteSettings> options) : ISmsSenderService
 {

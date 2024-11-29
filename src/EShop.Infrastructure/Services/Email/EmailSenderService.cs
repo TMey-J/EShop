@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 using MimeKit;
 using MimeKit.Text;
 
-namespace EShop.Infrastructure.Repositories.Services.Email;
+namespace EShop.Infrastructure.Services.Email;
 
 public class EmailSenderService(IOptionsSnapshot<SiteSettings> siteSettings) : IEmailSenderService
 {

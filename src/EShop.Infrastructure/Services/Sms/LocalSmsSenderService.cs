@@ -2,7 +2,7 @@
 using EShop.Application.Model;
 using Microsoft.Extensions.Options;
 
-namespace EShop.Infrastructure.Repositories.Services.Sms;
+namespace EShop.Infrastructure.Services.Sms;
 
 public class LocalSmsSenderService(IOptionsMonitor<SiteSettings> options) : ISmsSenderService
 {
