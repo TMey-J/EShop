@@ -4,12 +4,12 @@ namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 
 public class UpdateCategoryCommandHandler(
     ICategoryRepository category,
-    IFileServices fileServices,
+    IFileRepository fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings)
     : IRequestHandler<UpdateCategoryCommandRequest, UpdateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
-    private readonly IFileServices _fileServices = fileServices;
+    private readonly IFileRepository _fileServices = fileServices;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
 
     public async Task<UpdateCategoryCommandResponse> Handle(UpdateCategoryCommandRequest request,

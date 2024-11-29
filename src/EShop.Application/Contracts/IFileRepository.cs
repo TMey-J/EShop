@@ -1,6 +1,6 @@
-﻿namespace EShop.Application.Contracts.Services
+﻿namespace EShop.Application.Contracts
 {
-    public interface IFileServices
+    public interface IFileRepository
     {
         Task<string> UploadFileAsync(string base64, string path,int maximumFileSizeInMegaByte, string? oldFileName = null);
         void DeleteFile(string fileName, string path);

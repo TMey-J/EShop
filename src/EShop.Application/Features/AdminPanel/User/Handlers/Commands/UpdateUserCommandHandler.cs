@@ -6,13 +6,13 @@ namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 public class UpdateUserCommandHandler(
     IApplicationUserManager userManager,
     IApplicationRoleManager roleManager,
-    IFileServices fileServices,
+    IFileRepository fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger) : IRequestHandler<UpdateUserCommandRequest, UpdateUserCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
-    private readonly IFileServices _fileServices = fileServices;
+    private readonly IFileRepository _fileServices = fileServices;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 

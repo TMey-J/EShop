@@ -2,9 +2,9 @@
 using EShop.Application.Contracts.Services;
 using EShop.Application.Model;
 
-namespace EShop.Infrastructure.Repositories.Services;
+namespace EShop.Infrastructure.Repositories;
 
-public class FileServices:IFileServices
+public class FileRepository:IFileRepository
 {
     public async Task<string> UploadFileAsync(string base64, string path,int maximumFileSizeInMegaByte, string? oldFileName = null)
     {
