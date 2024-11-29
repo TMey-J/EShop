@@ -13,9 +13,11 @@ using Restaurant.Application.Contracts.Identity;
 using System.Security.Claims;
 using System.Security.Principal;
 using DNTCommon.Web.Core;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Infrastructure.Databases;
 using EShop.Infrastructure.Repositories;
 using EShop.Infrastructure.Repositories.Identity;
+using EShop.Infrastructure.Repositories.MongoDb;
 using EShop.Infrastructure.Services;
 using EShop.Infrastructure.Services.Email;
 using EShop.Infrastructure.Services.Sms;
@@ -41,7 +43,8 @@ namespace EShop.Infrastructure
             services.AddSingleton<IPrincipal>(provider =>
                 provider.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? ClaimsPrincipal.Current!);
             services.ConfigureServices(environment);
-            services.ConfigureRepositories();
+            services.ConfigureSqlRepositories();
+            services.ConfigureMongoRepositories();
             services.AddScoped<IDbInitializer, DbInitializer>();
             return services;
         }
@@ -69,12 +72,15 @@ namespace EShop.Infrastructure
             }
         }
 
-        private static void ConfigureRepositories(this IServiceCollection services)
+        private static void ConfigureSqlRepositories(this IServiceCollection services)
         {
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
         }
-
+        private static void ConfigureMongoRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IMongoTagRepository, MongoTagRepository>();
+        }
         private static void AddIdentityServices(this IServiceCollection services)
         {
             services.AddScoped<IApplicationUserManager, ApplicationUserManager>();

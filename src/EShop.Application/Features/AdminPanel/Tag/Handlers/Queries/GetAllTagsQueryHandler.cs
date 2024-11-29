@@ -1,9 +1,11 @@
-﻿namespace EShop.Application.Features.AdminPanel.Tag.Handlers.Queries;
+﻿using EShop.Application.Contracts.MongoDb;
 
-public class GetAllTagsQueryHandler(ITagRepository tag):
+namespace EShop.Application.Features.AdminPanel.Tag.Handlers.Queries;
+
+public class GetAllTagsQueryHandler(IMongoTagRepository tag):
     IRequestHandler<GetAllTagsQueryRequest,GetAllTagsQueryResponse>
 {
-    private readonly ITagRepository _tag = tag;
+    private readonly IMongoTagRepository _tag = tag;
 
     public async Task<GetAllTagsQueryResponse> Handle(GetAllTagsQueryRequest request, CancellationToken cancellationToken)
     {
