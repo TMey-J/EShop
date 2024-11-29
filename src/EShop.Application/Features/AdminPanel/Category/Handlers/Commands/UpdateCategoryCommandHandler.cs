@@ -5,11 +5,13 @@ namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 public class UpdateCategoryCommandHandler(
     ICategoryRepository category,
     IFileRepository fileServices,
-    IOptionsSnapshot<SiteSettings> siteSettings)
+    IOptionsSnapshot<SiteSettings> siteSettings,
+    IRabbitmqPublisherService rabbitmqPublisher)
     : IRequestHandler<UpdateCategoryCommandRequest, UpdateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
     private readonly IFileRepository _fileServices = fileServices;
+    private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
 
     public async Task<UpdateCategoryCommandResponse> Handle(UpdateCategoryCommandRequest request,

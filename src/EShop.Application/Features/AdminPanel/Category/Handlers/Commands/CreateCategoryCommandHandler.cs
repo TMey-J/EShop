@@ -5,11 +5,13 @@ namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 public class CreateCategoryCommandHandler(
     ICategoryRepository category,
     IFileRepository fileServices,
-    IOptionsSnapshot<SiteSettings> siteSettings)
+    IOptionsSnapshot<SiteSettings> siteSettings,
+    IRabbitmqPublisherService rabbitmqPublisher)
     : IRequestHandler<CreateCategoryCommandRequest, CreateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
     private readonly IFileRepository _fileServices = fileServices;
+    private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
 
     public async Task<CreateCategoryCommandResponse> Handle(CreateCategoryCommandRequest request, CancellationToken cancellationToken)
@@ -39,7 +41,10 @@ public class CreateCategoryCommandHandler(
         }
         await _category.CreateAsync(category);
         await _category.SaveChangesAsync();
-
+        await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Category>(
+            new(ActionTypes.Update, category),
+            RabbitmqConstants.QueueNames.Category,
+            RabbitmqConstants.RoutingKeys.Category);
         return new CreateCategoryCommandResponse();
     }
 }

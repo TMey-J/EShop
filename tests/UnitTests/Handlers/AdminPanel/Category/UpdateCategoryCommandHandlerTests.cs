@@ -12,6 +12,7 @@ public class UpdateCategoryCommandHandlerTests
 {
     private readonly UpdateCategoryCommandHandler _sut;
     private readonly Mock<ICategoryRepository> _categoryRepositoryMock = new();
+    private readonly Mock<IRabbitmqPublisherService> _rabbitmqPublisher = new();
     private readonly Mock<IFileRepository> _fileServiceMock = new();
     private readonly Mock<IOptionsSnapshot<SiteSettings>> _siteSettingsMock = new();
     private UpdateCategoryCommandRequest _request = new();
@@ -19,7 +20,9 @@ public class UpdateCategoryCommandHandlerTests
     public UpdateCategoryCommandHandlerTests()
     {
         _siteSettingsMock.Setup(x => x.Value).Returns(new SiteSettings());
-        _sut = new UpdateCategoryCommandHandler(_categoryRepositoryMock.Object,_fileServiceMock.Object, _siteSettingsMock.Object);
+        _sut = new UpdateCategoryCommandHandler(_categoryRepositoryMock.Object,
+            _fileServiceMock.Object, _siteSettingsMock.Object,
+            _rabbitmqPublisher.Object);
     }
 
     [Fact]
