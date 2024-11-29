@@ -12,7 +12,7 @@ public class CreateCategoryCommandHandlerTests
 {
     private readonly CreateCategoryCommandHandler _sut;
     private readonly Mock<ICategoryRepository> _categoryRepositoryMock = new();
-    private readonly Mock<IFileServices> _fileServiceMock = new();
+    private readonly Mock<IFileRepository> _fileServiceMock = new();
     private readonly Mock<IOptionsSnapshot<SiteSettings>> _siteSettingsMock = new();
     private CreateCategoryCommandRequest _request = new();
 

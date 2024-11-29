@@ -2,6 +2,7 @@
 using EShop.Application.Common.Exceptions;
 using EShop.Application.Constants;
 using EShop.Application.Contracts;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Application.DTOs;
 using EShop.Application.Features.AdminPanel.Tag.Handlers.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
@@ -12,7 +13,7 @@ namespace UnitTests.Handlers.AdminPanel.Tag;
 public class GetAllTagsQueryHandlerTests
 {
     private readonly GetAllTagsQueryHandler _sut;
-    private readonly Mock<ITagRepository> _tagRepositoryMock = new();
+    private readonly Mock<IMongoTagRepository> _tagRepositoryMock = new();
 
     public GetAllTagsQueryHandlerTests()
     {
@@ -48,7 +49,7 @@ public class GetAllTagsQueryHandlerTests
 
         //Assert
         Assert.IsType<GetAllTagsQueryResponse>(result);
-        Assert.Contains(tags.First(), result.tags);
-        Assert.True(result.pageCount>0);
+        Assert.Contains(tags.First(), result.Tags);
+        Assert.True(result.PageCount>0);
     }
 }
