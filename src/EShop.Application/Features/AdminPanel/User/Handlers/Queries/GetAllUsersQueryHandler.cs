@@ -1,15 +1,16 @@
-﻿using EShop.Application.Features.AdminPanel.User.Requests.Queries;
+﻿using EShop.Application.Contracts.MongoDb;
+using EShop.Application.Features.AdminPanel.User.Requests.Queries;
 
 namespace EShop.Application.Features.AdminPanel.User.Handlers.Queries;
 
-public class GetAllUsersQueryHandler(IApplicationUserManager userManager):
+public class GetAllUsersQueryHandler(IMongoUserRepository user):
     IRequestHandler<GetAllUsersQueryRequest,GetAllUsersQueryResponse>
 {
-    private readonly IApplicationUserManager _userManager = userManager;
+    private readonly IMongoUserRepository _user = user;
 
     public async Task<GetAllUsersQueryResponse> Handle(GetAllUsersQueryRequest request, CancellationToken cancellationToken)
     {
-        var users = await _userManager.GetAllWithFiltersAsync(request.Search);
+        var users = await _user.GetAllWithFiltersAsync(request.Search);
         
         return users;
     }

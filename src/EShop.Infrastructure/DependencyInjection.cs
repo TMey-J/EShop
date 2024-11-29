@@ -80,6 +80,7 @@ namespace EShop.Infrastructure
         private static void ConfigureMongoRepositories(this IServiceCollection services)
         {
             services.AddScoped<IMongoTagRepository, MongoTagRepository>();
+            services.AddScoped<IMongoUserRepository, MongoUserRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {

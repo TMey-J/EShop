@@ -1,6 +1,6 @@
 ﻿namespace EShop.Application.Contracts.MongoDb;
 
-public interface IMongoGenericRepository<TEntity> where TEntity : BaseEntity
+public interface IMongoGenericRepository<TEntity>
 {
     Task CreateAsync(TEntity entity);   
     Task Update(TEntity entity);
