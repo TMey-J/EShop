@@ -59,7 +59,7 @@ namespace EShop.Infrastructure
 
         private static void ConfigureServices(this IServiceCollection services, IWebHostEnvironment environment)
         {
-            services.AddScoped<IFileRepository, FileRepository>();
+            services.AddScoped<IRabbitmqPublisherService, RabbitmqPublisherService>();
             if (environment.IsDevelopment())
             {
                 services.AddScoped<ISmsSenderService, LocalSmsSenderService>();
@@ -74,6 +74,7 @@ namespace EShop.Infrastructure
 
         private static void ConfigureSqlRepositories(this IServiceCollection services)
         {
+            services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
         }
