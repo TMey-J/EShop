@@ -1,5 +1,4 @@
-﻿using EShop.Application.Common.Exceptions;
-using EShop.Application.Features.AdminPanel.Tag.Handlers.Commands;
+﻿using EShop.Application.Features.AdminPanel.Tag.Handlers.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 
 
@@ -9,11 +8,12 @@ public class UpdateTagCommandHandlerTests
 {
     private readonly UpdateTagCommandHandler _sut;
     private readonly Mock<ITagRepository> _tagRepositoryMock = new();
+    private readonly Mock<IRabbitmqPublisherService> _rabbitmqPublisher = new();
     private  UpdateTagCommandRequest _request=new();
 
     public UpdateTagCommandHandlerTests()
     {
-        _sut = new UpdateTagCommandHandler(_tagRepositoryMock.Object);
+        _sut = new UpdateTagCommandHandler(_tagRepositoryMock.Object,_rabbitmqPublisher.Object);
     }
 
     [Fact]
