@@ -11,9 +11,9 @@ using Tag = EShop.Domain.Entities.Tag;
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
     public class MongoUserRepository(MongoDbContext mongoDb,
-        IOptionsSnapshot<SiteSettings> siteSettings) : IMongoUserRepository
+        IOptionsMonitor<SiteSettings> siteSettings) : IMongoUserRepository
     {
-        private readonly string _defaultUserAvatar = siteSettings.Value.DefaultUserAvatar;
+        private readonly string _defaultUserAvatar = siteSettings.CurrentValue.DefaultUserAvatar;
         private readonly IMongoCollection<User> _user = mongoDb.GetCollection<User>();
 
 
