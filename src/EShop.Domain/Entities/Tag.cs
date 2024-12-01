@@ -7,5 +7,11 @@ namespace EShop.Domain.Entities
         [Required]
         [MaxLength(100)]
         public string Title { get; set; }=string.Empty;
+        
+        #region Relationships
+
+        public ICollection<Product> Products { get; set; } = [];
+
+        #endregion
     }
 }

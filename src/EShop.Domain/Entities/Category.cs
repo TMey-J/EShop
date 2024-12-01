@@ -14,5 +14,11 @@ namespace EShop.Domain.Entities
 
         [MaxLength(40)]
         public string? Picture { get; set; }
+
+        #region Relationships
+
+        public ICollection<Product> Products { get; set; } = [];
+
+        #endregion
     }
 }
