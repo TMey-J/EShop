@@ -4,6 +4,7 @@ using EShop.Infrastructure.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.SqlServer.Types;
 
@@ -12,9 +13,11 @@ using Microsoft.SqlServer.Types;
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    partial class SQLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241201082837_add_province_and_city_entity")]
+    partial class add_province_and_city_entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
