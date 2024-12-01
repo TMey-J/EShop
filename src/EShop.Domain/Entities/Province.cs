@@ -10,8 +10,8 @@ public class Province:BaseEntity
     
 
     #region Relationships
-    
+
     public ICollection<City> Cities { get; set; }
-    
+
     #endregion
 }

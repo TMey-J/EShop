@@ -6,4 +6,6 @@ public interface IDbInitializer
     void SeedData();
     Task SeedAdmin(AdminUser adminUser);
     Task SeedRole(string roleName);
+    Task SeedProvinces();
+    Task SeedCities();
 }

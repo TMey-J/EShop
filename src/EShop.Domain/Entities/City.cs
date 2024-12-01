@@ -11,7 +11,7 @@ public class City:BaseEntity
     public long ProvinceId { get; set; }
 
     #region Relationships
-    
+
     public Province Province { get; set; }
 
     #endregion

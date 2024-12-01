@@ -12,6 +12,7 @@ public interface IGenericRepository<TEntity> where TEntity : BaseEntity
     Task<IEnumerable<TEntity>> GetAllAsync();
     Task<bool> IsExistsByAsync(string propertyToFilter, object propertyValue, long? id = null);
     Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue);
+    Task<bool> IsAnyAsync();
     Task SaveChangesAsync();
 
 

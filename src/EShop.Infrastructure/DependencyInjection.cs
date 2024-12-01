@@ -77,6 +77,8 @@ namespace EShop.Infrastructure
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<IProvinceRepository, ProvinceRepository>();
+            services.AddScoped<ICityRepository, CityRepository>();
         }
         private static void ConfigureMongoRepositories(this IServiceCollection services)
         {
