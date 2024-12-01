@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EShop.Domain.Entities;
 
@@ -16,7 +17,7 @@ public class Product : BaseEntity
     [MaxLength(200)]
     public double BasePrice { get; set; }
     [Required]
-    [MaxLength(200)]
+    [Column(TypeName ="ntext")]
     public string Description { get; set; } = string.Empty;
     
     [MaxLength(3)]
@@ -32,7 +33,6 @@ public class Product : BaseEntity
     public ICollection<ProductImages> Images { get; set; } = [];
     public ICollection<Color> Colors { get; set; } = [];
     public Category Category { get; set; } = new();
-    
     
     #endregion
 }
