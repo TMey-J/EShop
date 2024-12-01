@@ -3,6 +3,7 @@ using DNTCommon.Web.Core;
 using EShop.Application.Common.Exceptions;
 using EShop.Application.Constants;
 using EShop.Application.Contracts.Identity;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Model;
 using EShop.Infrastructure.Databases;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,13 +18,17 @@ public class DbInitializer(
     IApplicationRoleManager roleManager,
     IOptionsSnapshot<SiteSettings> siteSettings,
     IProvinceRepository province,
-    ICityRepository city) : IDbInitializer
+    ICityRepository city,
+    IMongoProvinceRepository mongoProvince,
+    IMongoCityRepository mongoCity) : IDbInitializer
 {
     private readonly IServiceScopeFactory _serviceFactory = serviceFactory;
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
     private readonly IProvinceRepository _province = province;
+    private readonly IMongoProvinceRepository _mongoProvince = mongoProvince;
     private readonly ICityRepository _city = city;
+    private readonly IMongoCityRepository _mongoCity = mongoCity;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
 
     public void Initialize()
@@ -41,7 +46,6 @@ public class DbInitializer(
             dbInitializer.SeedAdmin(_siteSettings.AdminUser).GetAwaiter().GetResult();
             dbInitializer.SeedProvinces().GetAwaiter().GetResult();
             dbInitializer.SeedCities().GetAwaiter().GetResult();
-
         });
     }
 
@@ -78,12 +82,14 @@ public class DbInitializer(
         {
             user.PhoneNumberConfirmed = true;
         }
+
         var result = await _userManager.CreateAsync(user);
         if (!result.Succeeded)
         {
             throw new CustomBadRequestException(result.GetErrors());
         }
-        var addToRulesResult= await _userManager.AddToRoleAsync(user, adminRole.Name!);
+
+        var addToRulesResult = await _userManager.AddToRoleAsync(user, adminRole.Name!);
         if (!addToRulesResult.Succeeded)
         {
             throw new CustomBadRequestException(addToRulesResult.GetErrors());
@@ -97,6 +103,7 @@ public class DbInitializer(
         {
             return;
         }
+
         role = new Role
         {
             Name = roleName
@@ -112,31 +119,44 @@ public class DbInitializer(
     {
         if (!await _province.IsAnyAsync())
         {
-            var provincesPath=Path.Combine(Directory.GetCurrentDirectory(),"wwwroot","ProvincesAndCities", "Provinces.json");
-            var provincesDto = JsonConvert.DeserializeObject<List<ProvinceDto>>(await File.ReadAllTextAsync(provincesPath));
+            var provincesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProvincesAndCities",
+                "Provinces.json");
+            var provincesDto =
+                JsonConvert.DeserializeObject<List<ProvinceDto>>(await File.ReadAllTextAsync(provincesPath));
             if (provincesDto is null)
             {
                 throw new CustomInternalServerException(["provinces file is not found"]);
             }
+
             var provinces = provincesDto.Select(x => new Province
             {
                 Title = x.Name,
             }).ToList();
             await _province.CreateAllAsync(provinces);
             await _province.SaveChangesAsync();
+            
+            // add provinces to mongodb
+            provinces = provincesDto.Select(x => new Province
+            {
+                Id = x.Id,
+                Title = x.Name,
+            }).ToList();
+            await _mongoProvince.CreateAllAsync(provinces);
         }
     }
 
     public async Task SeedCities()
     {
-        if (!await _city.IsAnyAsync())
+        if (await _city.IsAnyAsync())
         {
-            var citiesPath=Path.Combine(Directory.GetCurrentDirectory(),"wwwroot","ProvincesAndCities", "Cities.json");
+            var citiesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProvincesAndCities",
+                "Cities.json");
             var citiesDto = JsonConvert.DeserializeObject<List<CityDto>>(await File.ReadAllTextAsync(citiesPath));
             if (citiesDto is null)
             {
                 throw new CustomInternalServerException(["cities file is not found"]);
             }
+
             var cities = citiesDto.Select(x => new City
             {
                 Title = x.Name,
@@ -144,6 +164,15 @@ public class DbInitializer(
             }).ToList();
             await _city.CreateAllAsync(cities);
             await _city.SaveChangesAsync();
+            
+            // add cities to mongodb
+            cities = citiesDto.Select(x => new City
+            {
+                Id = x.Id,
+                Title = x.Name,
+                ProvinceId = x.Province_Id
+            }).ToList();
+            await _mongoCity.CreateAllAsync(cities);
         }
     }
 }

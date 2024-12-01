@@ -14,6 +14,11 @@ public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb) : IMongoGen
         await _collection.InsertOneAsync(entity);
     }
 
+    public async Task CreateAllAsync(List<TEntity> entity)
+    {
+        await _collection.InsertManyAsync(entity);
+    }
+
     public async Task Update(TEntity entity)
     {
         var filter = Builders<TEntity>.Filter.Eq(x => x.Id, entity.Id);

@@ -84,6 +84,8 @@ namespace EShop.Infrastructure
         {
             services.AddScoped<IMongoTagRepository, MongoTagRepository>();
             services.AddScoped<IMongoUserRepository, MongoUserRepository>();
+            services.AddScoped<IMongoProvinceRepository, MongoProvinceRepository>();
+            services.AddScoped<IMongoCityRepository, MongoCityRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {

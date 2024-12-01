@@ -3,6 +3,7 @@
 public interface IMongoGenericRepository<TEntity>
 {
     Task CreateAsync(TEntity entity);   
+    Task CreateAllAsync(List<TEntity>entity);   
     Task Update(TEntity entity);
     Task Delete(TEntity entity);
     Task SoftDeleteAsync(TEntity entity);
