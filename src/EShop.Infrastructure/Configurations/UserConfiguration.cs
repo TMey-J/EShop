@@ -1,5 +1,5 @@
 ﻿
-namespace Restaurant.Persistence.Configurations;
+namespace EShop.Infrastructure.Configurations;
 
 public class UserConfiguration : IEntityTypeConfiguration<User>
 {
