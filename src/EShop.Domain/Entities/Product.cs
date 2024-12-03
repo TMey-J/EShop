@@ -28,11 +28,9 @@ public class Product : BaseEntity
     public long CategoryId { get; set; }
 
     #region Relationships
-    
     public ICollection<Tag> Tags { get; set; } = [];
     public ICollection<ProductImages> Images { get; set; } = [];
     public ICollection<Color> Colors { get; set; } = [];
     public Category Category { get; set; } = new();
-    
     #endregion
 }
