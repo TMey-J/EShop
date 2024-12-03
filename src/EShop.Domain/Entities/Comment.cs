@@ -12,7 +12,7 @@ public class Comment:BaseEntity
     
     [Required]
     [MinLength(1), MaxLength(5)]
-    public int Rating { get; set; }
+    public byte Rating { get; set; }
     
     public HierarchyId Replay { get; set; } = HierarchyId.GetRoot();
 
