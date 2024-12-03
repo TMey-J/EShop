@@ -18,6 +18,7 @@ namespace EShop.Domain.Entities
         #region Relationships
 
         public ICollection<Product> Products { get; set; } = [];
+        public ICollection<Feature> Features { get; set; } = [];
 
         #endregion
     }
