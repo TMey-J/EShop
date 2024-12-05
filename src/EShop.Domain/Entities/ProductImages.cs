@@ -11,7 +11,7 @@ namespace EShop.Domain.Entities
         
         #region Relationships
 
-        public Product Product { get; set; } =new();
+        public Product? Product { get; set; }
 
         #endregion
     }

@@ -18,7 +18,7 @@ public class Comment:BaseEntity
 
     #region Relations
 
-    public Product Product { get; set; }
+    public Product? Product { get; set; }
 
     #endregion
 

@@ -6,7 +6,7 @@ public class Feature:BaseEntity
     
     #region Relations
 
-    public ICollection<Category> Categories { get; set; }
+    public ICollection<Category>? Categories { get; set; }
 
     #endregion
 }

@@ -14,7 +14,7 @@ public class Color:BaseEntity
     
     #region Relationships
 
-    public ICollection<Product> Products { get; set; } = [];
+    public ICollection<Product>? Products { get; set; }
 
     #endregion
 }

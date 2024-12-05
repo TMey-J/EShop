@@ -12,7 +12,7 @@ public class City:BaseEntity
 
     #region Relationships
 
-    public Province Province { get; set; }
+    public Province? Province { get; set; }
 
     #endregion
 }
