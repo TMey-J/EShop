@@ -20,8 +20,8 @@ public class Product : BaseEntity
     [Column(TypeName ="ntext")]
     public string Description { get; set; } = string.Empty;
     
-    [MaxLength(3)]
-    public int DiscountPercentage { get; set; }
+    [Length(1,100)]
+    public byte? DiscountPercentage { get; set; }
     
     public DateTime? EndOfDiscount { get; set; }
 
