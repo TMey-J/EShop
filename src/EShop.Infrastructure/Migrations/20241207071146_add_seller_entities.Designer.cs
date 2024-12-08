@@ -4,6 +4,7 @@ using EShop.Infrastructure.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.SqlServer.Types;
 
@@ -12,9 +13,11 @@ using Microsoft.SqlServer.Types;
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    partial class SQLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241207071146_add_seller_entities")]
+    partial class add_seller_entities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -622,9 +625,6 @@ namespace EShop.Infrastructure.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<long?>("ProductId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("RejectReason")
                         .HasColumnType("ntext");
 
@@ -643,8 +643,6 @@ namespace EShop.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CityId");
-
-                    b.HasIndex("ProductId");
 
                     b.HasIndex("UserId");
 
@@ -670,24 +668,6 @@ namespace EShop.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Tag");
-                });
-
-            modelBuilder.Entity("EShop.Domain.SellerProduct", b =>
-                {
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("SellerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductId", "SellerId");
-
-                    b.HasIndex("SellerId");
-
-                    b.ToTable("SellerProducts", (string)null);
                 });
 
             modelBuilder.Entity("ProductTag", b =>
@@ -870,10 +850,6 @@ namespace EShop.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EShop.Domain.Entities.Product", null)
-                        .WithMany("Sellers")
-                        .HasForeignKey("ProductId");
-
                     b.HasOne("EShop.Domain.Entities.Identity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -883,25 +859,6 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("City");
 
                     b.Navigation("User");
-                });
-
-            modelBuilder.Entity("EShop.Domain.SellerProduct", b =>
-                {
-                    b.HasOne("EShop.Domain.Entities.Product", "Product")
-                        .WithMany("SellersProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EShop.Domain.Entities.SellerBase", "Seller")
-                        .WithMany("SellersProducts")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
-
-                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("ProductTag", b =>
@@ -945,10 +902,6 @@ namespace EShop.Infrastructure.Migrations
             modelBuilder.Entity("EShop.Domain.Entities.Product", b =>
                 {
                     b.Navigation("Images");
-
-                    b.Navigation("Sellers");
-
-                    b.Navigation("SellersProducts");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Province", b =>
@@ -961,8 +914,6 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("IndividualSeller");
 
                     b.Navigation("LegalSeller");
-
-                    b.Navigation("SellersProducts");
                 });
 #pragma warning restore 612, 618
         }
