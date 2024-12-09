@@ -1,16 +1,14 @@
-﻿using EShop.Domain.Entities;
-
-namespace EShop.Domain;
+﻿namespace EShop.Domain.Entities;
 
 public class SellerProduct
 {
     public long SellerId { get; set; }
     public long ProductId { get; set; }
+    
     public int Count { get; set; }
 
     #region Relations
-
-    public SellerBase? Seller { get; set; }
+    public Seller? Seller { get; set; }
     public Product? Product { get; set; }
     #endregion
 }

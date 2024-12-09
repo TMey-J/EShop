@@ -30,7 +30,7 @@ public class LegalSeller : BaseEntity
 
     #region Relations
 
-    public SellerBase? Seller { get; set; }
+    public Seller? Seller { get; set; }
 
     #endregion
 }

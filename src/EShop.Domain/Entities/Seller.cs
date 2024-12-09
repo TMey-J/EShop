@@ -4,7 +4,7 @@ using EShop.Domain.Entities.Identity;
 
 namespace EShop.Domain.Entities;
 
-public class SellerBase : BaseEntity
+public class Seller : BaseEntity
 {
     public long UserId { get; set; }
 
@@ -51,6 +51,7 @@ public class SellerBase : BaseEntity
     
     public LegalSeller? LegalSeller { get; set; }
     public ICollection<SellerProduct>? SellersProducts { get; set; }
+    public ICollection<ProductFeature>? ProductFeatures { get; set; }
 
     #endregion
 }

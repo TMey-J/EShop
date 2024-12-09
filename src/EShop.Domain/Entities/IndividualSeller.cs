@@ -25,7 +25,7 @@ public class IndividualSeller : BaseEntity
 
     #region Relations
 
-    public SellerBase? Seller { get; set; }
+    public Seller? Seller { get; set; }
 
     #endregion
 }
