@@ -147,7 +147,7 @@ public class DbInitializer(
 
     public async Task SeedCities()
     {
-        if (await _city.IsAnyAsync())
+        if (!await _city.IsAnyAsync())
         {
             var citiesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ProvincesAndCities",
                 "Cities.json");

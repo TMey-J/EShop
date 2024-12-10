@@ -6,4 +6,5 @@ public static class NameToReplaceInException
     public const string ParentCategory = "دسته بندی والد";
     public const string Tag = "تگ";
     public const string User = "کاربر";
+    public const string Feature = "ویژگی";
 }

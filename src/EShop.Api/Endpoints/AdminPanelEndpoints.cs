@@ -1,6 +1,7 @@
 ﻿using Carter;
 using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
+using EShop.Application.Features.AdminPanel.Feature.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 using EShop.Application.Features.AdminPanel.User.Requests.Commands;
@@ -38,6 +39,13 @@ public class AdminPanelEndpoints : ICarterModule
         group.MapPut(nameof(UpdateTag), UpdateTag);
         group.MapGet(nameof(GetAllTags), GetAllTags);
         group.MapGet(nameof(GetTag)+"/{id}", GetTag);
+
+        #endregion
+
+        #region Feature
+
+        group.MapPost(nameof(CreateFeature), CreateFeature);
+
 
         #endregion
 
@@ -124,6 +132,16 @@ public class AdminPanelEndpoints : ICarterModule
     {
         var response = await mediator.Send(new GetTagQueryRequest { Id = id });
         return TypedResults.Ok(response);
+    }
+
+    #endregion
+
+    #region Feature
+
+    private static async Task<IResult> CreateFeature(CreateFeatureCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
     }
 
     #endregion

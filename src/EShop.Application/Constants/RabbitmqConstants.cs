@@ -7,11 +7,13 @@ public static class RabbitmqConstants
         public const string Tag = nameof(Tag);
         public const string Category = nameof(Category);
         public const string User = nameof(User);
+        public const string Feature = nameof(Feature);
     }
     public static class RoutingKeys
     {
         public const string Tag = nameof(Tag);
         public const string Category = nameof(Category);
         public const string User = nameof(User);
+        public const string Feature = nameof(Feature);
     }
 }
