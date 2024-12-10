@@ -2,6 +2,7 @@
 using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Feature.Requests.Commands;
+using EShop.Application.Features.AdminPanel.Feature.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 using EShop.Application.Features.AdminPanel.User.Requests.Commands;
@@ -45,7 +46,7 @@ public class AdminPanelEndpoints : ICarterModule
         #region Feature
 
         group.MapPost(nameof(CreateFeature), CreateFeature);
-
+        group.MapGet(nameof(GetFeature)+"/{id}", GetFeature);
 
         #endregion
 
@@ -126,8 +127,6 @@ public class AdminPanelEndpoints : ICarterModule
         var response = await mediator.Send(request);
         return TypedResults.Ok(response);
     }
-
-    [HttpGet("{id:long}")]
     private static async Task<IResult> GetTag(long id, IMediator mediator)
     {
         var response = await mediator.Send(new GetTagQueryRequest { Id = id });
@@ -143,7 +142,11 @@ public class AdminPanelEndpoints : ICarterModule
         await mediator.Send(request);
         return TypedResults.Ok();
     }
-
+    private static async Task<IResult> GetFeature(long id, IMediator mediator)
+    {
+        var response = await mediator.Send(new GetFeatureQueryRequest { Id = id });
+        return TypedResults.Ok(response);
+    }
     #endregion
 
     #endregion
