@@ -19,3 +19,4 @@ public enum SortingCategoryBy
     Id,
     Title
 }
+public record ReadCategoryFeaturesDto(long CategoryId, long FeatureId);

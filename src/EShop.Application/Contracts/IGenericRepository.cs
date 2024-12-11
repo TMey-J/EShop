@@ -2,7 +2,7 @@
 
 namespace EShop.Application.Contracts;
 
-public interface IGenericRepository<TEntity> where TEntity : BaseEntity
+public interface IGenericRepository<TEntity>
 {
     Task CreateAsync(TEntity entity);
     void Update(TEntity entity);

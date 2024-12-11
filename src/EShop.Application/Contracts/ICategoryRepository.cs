@@ -8,5 +8,6 @@ namespace EShop.Application.Contracts
         Task<long?> GetParentIdWithHierarchyIdAsync(HierarchyId categoryHierarchyId);
         Task<List<Category>> GetCategoryChildrenAsync(Category category);
         Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDto search);
+        Task<Category?> FindByIdWithIncludeFeatures(long categoryId);
     }
 }

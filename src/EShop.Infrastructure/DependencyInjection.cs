@@ -76,6 +76,7 @@ namespace EShop.Infrastructure
         {
             services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICategoryFeatureRepository, CategoryFeatureRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IProvinceRepository, ProvinceRepository>();
             services.AddScoped<ICityRepository, CityRepository>();
@@ -88,6 +89,7 @@ namespace EShop.Infrastructure
             services.AddScoped<IMongoProvinceRepository, MongoProvinceRepository>();
             services.AddScoped<IMongoCityRepository, MongoCityRepository>();
             services.AddScoped<IMongoFeatureRepository, MongoFeatureRepository>();
+            services.AddScoped<IMongoCategoryFeatureRepository, MongoCategoryFeatureRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {

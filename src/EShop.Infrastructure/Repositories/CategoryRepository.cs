@@ -61,5 +61,11 @@ namespace EShop.Infrastructure.Repositories
 
             return new GetAllCategoryQueryResponse(categories, search, pagination.pageCount);
         }
+
+        public async Task<Category?> FindByIdWithIncludeFeatures(long categoryId)
+        {
+            return await _category.Include(x=>x.CategoryFeatures).
+                SingleOrDefaultAsync(x=>x.Id == categoryId); 
+        }
     }
 }
