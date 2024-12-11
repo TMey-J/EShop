@@ -7,6 +7,7 @@ public class CreateFeatureCommandValidation:AbstractValidator<CreateFeatureComma
 {
     public CreateFeatureCommandValidation()
     {
-        RuleFor(x => x.Name).NotEmpty().WithMessage(Messages.Validations.Required);
+        RuleFor(x => x.Name).NotEmpty().WithMessage(Messages.Validations.Required)
+            .MaximumLength(100).WithMessage(Messages.Validations.MaxLength);
     }
 }

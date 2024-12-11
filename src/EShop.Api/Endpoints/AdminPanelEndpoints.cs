@@ -46,6 +46,7 @@ public class AdminPanelEndpoints : ICarterModule
         #region Feature
 
         group.MapPost(nameof(CreateFeature), CreateFeature);
+        group.MapPut(nameof(UpdateFeature), UpdateFeature);
         group.MapGet(nameof(GetFeature)+"/{id}", GetFeature);
 
         #endregion
@@ -146,6 +147,11 @@ public class AdminPanelEndpoints : ICarterModule
     {
         var response = await mediator.Send(new GetFeatureQueryRequest { Id = id });
         return TypedResults.Ok(response);
+    }
+    private static async Task<IResult> UpdateFeature(UpdateFeatureCommandRequest request, IMediator mediator)
+    { 
+        await mediator.Send(request);
+        return TypedResults.Ok();
     }
     #endregion
 
