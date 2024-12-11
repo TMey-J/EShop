@@ -10,10 +10,8 @@ namespace EShop.Application.Features.AdminPanel.Category.Requests.Commands.Valid
                 .WithMessage(Messages.Validations.GreaterThanZero);
             RuleFor(x => x.FeaturesName).NotEmpty()
                 .WithMessage(Messages.Validations.Required);
-            RuleFor(x => x.FeaturesName).ForEach(f =>
-            {
-                f.NotEmpty().WithMessage(Messages.Validations.Required);
-            });
+            RuleFor(x => x.FeaturesName).Must(x =>
+                x.All(f=>!string.IsNullOrWhiteSpace(f))).WithMessage(Messages.Validations.Required);
         }
     }
 }
