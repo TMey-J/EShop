@@ -10,7 +10,7 @@ public class Feature:BaseEntity
     
     #region Relations
 
-    public ICollection<Category>? Categories { get; set; }
+    public ICollection<CategoryFeature>? CategoryFeatures { get; set; }
 
     #endregion
 }
