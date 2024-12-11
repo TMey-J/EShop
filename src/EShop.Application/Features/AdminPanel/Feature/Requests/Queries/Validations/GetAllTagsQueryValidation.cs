@@ -1,12 +1,12 @@
 ﻿using FluentValidation;
 
-namespace EShop.Application.Features.AdminPanel.Tag.Requests.Queries.Validations
+namespace EShop.Application.Features.AdminPanel.Feature.Requests.Queries.Validations
 {
-    public class GetAllTagsQueryValidation : AbstractValidator<GetAllTagsQueryRequest>
+    public class GetAllFeaturesQueryValidation : AbstractValidator<GetAllFeaturesQueryRequest>
     {
-        public GetAllTagsQueryValidation()
+        public GetAllFeaturesQueryValidation()
         {
-            RuleFor(x => x.Search.Title).
+            RuleFor(x => x.Search.Name).
                 MaximumLength(100).WithMessage(Messages.Validations.MaxLength);
             
             RuleFor(x => x.Search.SortingBy).IsInEnum().

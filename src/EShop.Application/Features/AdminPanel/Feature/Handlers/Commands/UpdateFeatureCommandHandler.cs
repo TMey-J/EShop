@@ -15,6 +15,7 @@ public class UpdateFeatureCommandHandler(IFeatureRepository featureRepository,IR
         feature.Name = request.Name;
         
         _featureRepository.Update(feature);
+        await _featureRepository.SaveChangesAsync();
        await _publisher.PublishMessageAsync<Domain.Entities.Feature>(new
                (ActionTypes.Update, feature), RabbitmqConstants.QueueNames.Feature,
            RabbitmqConstants.RoutingKeys.Feature);
