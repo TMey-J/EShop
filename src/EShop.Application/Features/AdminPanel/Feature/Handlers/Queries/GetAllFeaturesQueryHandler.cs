@@ -18,7 +18,7 @@ public class GetAllFeaturesQueryHandler(IMongoFeatureRepository feature):
         }
 
         var featuresWithSearch = await _feature.GetAllAsync(request.Search);
-        
-        return new GetAllFeaturesQueryResponse(featuresWithSearch.Features,request.Search,featuresWithSearch.PageCount);
+
+        return featuresWithSearch;
     }
 }

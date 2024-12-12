@@ -53,7 +53,7 @@ namespace EShop.Infrastructure
         {
             services.AddDbContextPool<SQLDbContext>((options) =>
             {
-                options.UseSqlServer(connectionString, x => x.UseHierarchyId());
+                options.UseSqlServer(connectionString);
             });
         }
 
@@ -90,6 +90,7 @@ namespace EShop.Infrastructure
             services.AddScoped<IMongoCityRepository, MongoCityRepository>();
             services.AddScoped<IMongoFeatureRepository, MongoFeatureRepository>();
             services.AddScoped<IMongoCategoryFeatureRepository, MongoCategoryFeatureRepository>();
+            services.AddScoped<IMongoCategoryRepository, MongoCategoryRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {

@@ -5,4 +5,4 @@ public record GetCategoryFeaturesQueryRequest:IRequest<GetCategoryFeaturesQueryR
     [DisplayName("شناسه دسته بندی")]
     public long CategoryId { get; set; }
 }
-public record GetCategoryFeaturesQueryResponse(Dictionary<long, string?>? Features);
+public record GetCategoryFeaturesQueryResponse(Dictionary<long, string> Features);
