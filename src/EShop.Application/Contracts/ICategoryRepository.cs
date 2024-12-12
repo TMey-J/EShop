@@ -4,9 +4,7 @@ namespace EShop.Application.Contracts
 {
     public interface ICategoryRepository:IGenericRepository<Category>
     {
-        Task<HierarchyId?> GetLastChildHierarchyIdAsync(Category parentCategory);
-        Task<long?> GetParentIdWithHierarchyIdAsync(HierarchyId categoryHierarchyId);
-        Task<List<Category>> GetCategoryChildrenAsync(Category category);
+        Task<bool> IsHasChild(Category parentCategory);
         Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDto search);
         Task<Category?> FindByIdWithIncludeFeatures(long categoryId);
     }

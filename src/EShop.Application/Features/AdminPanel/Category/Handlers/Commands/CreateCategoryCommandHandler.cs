@@ -35,14 +35,13 @@ public class CreateCategoryCommandHandler(
             var parentCategory = await _category.FindByIdAsync(request.Parent ?? 0)
                 ?? throw new NotFoundException(NameToReplaceInException.ParentCategory);
 
-            var lastChild = await _category.GetLastChildHierarchyIdAsync(parentCategory!);
-
-            category.Parent = parentCategory.Parent.GetDescendant(lastChild, null);
+            category.ParentId = parentCategory.Id;
         }
         await _category.CreateAsync(category);
         await _category.SaveChangesAsync();
-        await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Category>(
-            new(ActionTypes.Update, category),
+        var readCategoryDto=new ReadCategoryDto(category.Id, category.Title,category.ParentId, category.Picture, category.IsDelete);
+        await _rabbitmqPublisher.PublishMessageAsync<ReadCategoryDto>(
+            new(ActionTypes.Create, readCategoryDto),
             RabbitmqConstants.QueueNames.Category,
             RabbitmqConstants.RoutingKeys.Category);
         return new CreateCategoryCommandResponse();

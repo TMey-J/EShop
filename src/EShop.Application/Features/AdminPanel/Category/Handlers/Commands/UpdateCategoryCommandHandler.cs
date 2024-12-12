@@ -32,24 +32,21 @@ public class UpdateCategoryCommandHandler(
 
         if (request.NewParentId is not null)
         {
-            var newParentCategory = await _category.FindByIdAsync(request.NewParentId ?? 0) ??
-                                 throw new NotFoundException(NameToReplaceInException.ParentCategory);
-            
-            var categoryChildren = await _category.GetCategoryChildrenAsync(category);
-
-            var lastChild = await _category.GetLastChildHierarchyIdAsync(newParentCategory);
-            
-            category.Parent = newParentCategory.Parent.GetDescendant(lastChild);
-            
-            lastChild = null;
-            foreach (var categoryChild in categoryChildren)
+            if (await _category.IsHasChild(category))
             {
-                categoryChild.Parent = category.Parent.GetDescendant(lastChild);
-                lastChild = categoryChild.Parent;
+                throw new CustomBadRequestException(["این دسته بندی دارای زیردسته است. ابتدا آنها را حذف کند"]);
             }
+            var newParentCategory = await _category.FindByIdAsync(request.NewParentId ?? 0) ??
+                                    throw new NotFoundException(NameToReplaceInException.ParentCategory);
+            category.ParentId = newParentCategory.Id;
         }
         
         await _category.SaveChangesAsync();
+        var readCategoryDto=new ReadCategoryDto(category.Id, category.Title,category.ParentId, category.Picture, category.IsDelete);
+        await _rabbitmqPublisher.PublishMessageAsync<ReadCategoryDto>(
+            new(ActionTypes.Update, readCategoryDto),
+            RabbitmqConstants.QueueNames.Category,
+            RabbitmqConstants.RoutingKeys.Category);
         return new();
     }
 }
