@@ -1,4 +1,5 @@
-﻿using EShop.Application.DTOs;
+﻿using EShop.Application.Contracts.MongoDb;
+using EShop.Application.DTOs;
 using EShop.Application.Features.AdminPanel.Category.Handlers.Queries;
 using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 
@@ -7,13 +8,13 @@ namespace UnitTests.Handlers.AdminPanel.Category;
 public class GetAllCategoriesQueryHandlerTests
 {
     private readonly GetAllCategoryQueryHandler _sut;
-    private readonly Mock<ICategoryRepository> _categoryRepositoryMock = new();
+    private readonly Mock<IMongoCategoryRepository> _mongoCategoryRepositoryMock = new();
     private readonly Mock<SearchCategoryDto> _searchCategoryDtoMock = new();
     private GetAllCategoryQueryRequest _request;
 
     public GetAllCategoriesQueryHandlerTests()
     {
-        _sut = new GetAllCategoryQueryHandler(_categoryRepositoryMock.Object);
+        _sut = new GetAllCategoryQueryHandler(_mongoCategoryRepositoryMock.Object);
         _request = new GetAllCategoryQueryRequest(_searchCategoryDtoMock.Object);
     }
 
@@ -38,7 +39,7 @@ public class GetAllCategoriesQueryHandlerTests
             }
         };
         
-        _categoryRepositoryMock.Setup(x =>
+        _mongoCategoryRepositoryMock.Setup(x =>
                 x.GetAllAsync(search))
             .ReturnsAsync(new GetAllCategoryQueryResponse(categories, search,1));
 
@@ -47,7 +48,7 @@ public class GetAllCategoriesQueryHandlerTests
 
         //Assert
         Assert.IsType<GetAllCategoryQueryResponse>(result);
-        Assert.Contains(categories.First(), result.categories);
-        Assert.True(result.pageCount>0);
+        Assert.Contains(categories.First(), result.Categories);
+        Assert.True(result.PageCount>0);
     }
 }

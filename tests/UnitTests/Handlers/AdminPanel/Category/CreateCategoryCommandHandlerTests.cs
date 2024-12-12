@@ -91,12 +91,10 @@ public class CreateCategoryCommandHandlerTests
     {
         //Arrange
         var categoryTitle = "test";
-        var categoryParentIdHierarchyId = HierarchyId.GetRoot();
-        var categoryParentId = 1;
+        long categoryParentId = 1;
         var category = new EShop.Domain.Entities.Category()
         {
             Title = categoryTitle, 
-            Parent = categoryParentIdHierarchyId,
             Id = categoryParentId
         };
         var propertyToSearch = nameof(EShop.Domain.Entities.Category.Title);

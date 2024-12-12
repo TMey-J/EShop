@@ -51,12 +51,11 @@ public class UpdateCategoryCommandHandlerTests
         //Arrange
         long categoryId = 1;
         string categoryTitle = "test";
-        HierarchyId categoryParent = HierarchyId.GetRoot();
         var categoryParentId = 2;
         var category = new EShop.Domain.Entities.Category()
         {
             Title = categoryTitle,
-            Parent = categoryParent,
+            ParentId = categoryParentId,
             Id = categoryId,
         };
         _categoryRepositoryMock.Setup(x =>
@@ -66,10 +65,13 @@ public class UpdateCategoryCommandHandlerTests
         _categoryRepositoryMock.Setup(x =>
                 x.FindByIdAsync(categoryParentId))
             .ReturnsAsync(() => null);
-
+        
+        _categoryRepositoryMock.Setup(x =>
+                x.FindByIdAsync(categoryParentId))
+            .ReturnsAsync(() => null);
 
         //Act
-        _request = new() { NewTitle = categoryTitle,NewParentId = categoryParentId,Id = categoryId };
+        _request = new() { Title = categoryTitle,ParentId = categoryParentId,Id = categoryId };
         var act = () => _sut.Handle(_request, default);
 
         //Assert
@@ -85,18 +87,17 @@ public class UpdateCategoryCommandHandlerTests
     {
         const long categoryId = 1;
         const string categoryTitle = "test";
-        var categoryParent = HierarchyId.GetRoot();
-        const int categoryParentId = 2;
+        const long categoryParentId = 2;
         var category = new EShop.Domain.Entities.Category()
         {
             Title = categoryTitle,
-            Parent = categoryParent,
+            ParentId = categoryParentId,
             Id = categoryId,
         };
         var parentCategory = new EShop.Domain.Entities.Category()
         {
             Title = categoryTitle,
-            Parent = categoryParent,
+            ParentId = null,
             Id = categoryParentId,
         };
         _categoryRepositoryMock.Setup(x =>
@@ -106,13 +107,9 @@ public class UpdateCategoryCommandHandlerTests
         _categoryRepositoryMock.Setup(x =>
                 x.FindByIdAsync(categoryParentId))
             .ReturnsAsync(parentCategory);
-        
-        _categoryRepositoryMock.Setup(x =>
-                x.GetCategoryChildrenAsync(category))
-            .ReturnsAsync(()=>[]);
     
         //Act
-        _request = new() { NewTitle = categoryTitle,NewParentId = categoryParentId,Id = categoryId };
+        _request = new() { Title = categoryTitle,ParentId = categoryParentId,Id = categoryId };
         var result = await _sut.Handle(_request, default);
     
         //Assert
