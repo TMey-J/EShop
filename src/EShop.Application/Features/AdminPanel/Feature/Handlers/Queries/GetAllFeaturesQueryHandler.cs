@@ -10,8 +10,15 @@ public class GetAllFeaturesQueryHandler(IMongoFeatureRepository feature):
 
     public async Task<GetAllFeaturesQueryResponse> Handle(GetAllFeaturesQueryRequest request, CancellationToken cancellationToken)
     {
-        var features = await _feature.GetAllAsync(request.Search);
+        if (request.Search is null)
+        {
+            var features = await _feature.GetAllAsync();
+            var showFeatures = features.Select(x => new ShowFeatureDto(x.Id, x.Name)).ToList();
+            return new GetAllFeaturesQueryResponse(showFeatures,null,null);
+        }
+
+        var featuresWithSearch = await _feature.GetAllAsync(request.Search);
         
-        return new GetAllFeaturesQueryResponse(features.Features,request.Search,features.PageCount);
+        return new GetAllFeaturesQueryResponse(featuresWithSearch.Features,request.Search,featuresWithSearch.PageCount);
     }
 }
