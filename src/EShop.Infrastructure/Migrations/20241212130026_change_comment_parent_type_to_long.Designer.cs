@@ -6,15 +6,14 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.SqlServer.Types;
 
 #nullable disable
 
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    [Migration("20241207072724_add_seller_relation_with_product")]
-    partial class add_seller_relation_with_product
+    [Migration("20241212130026_change_comment_parent_type_to_long")]
+    partial class change_comment_parent_type_to_long
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,21 +24,6 @@ namespace EShop.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CategoryFeature", b =>
-                {
-                    b.Property<long>("CategoriesId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("FeaturesId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("CategoriesId", "FeaturesId");
-
-                    b.HasIndex("FeaturesId");
-
-                    b.ToTable("CategoryFeature");
-                });
 
             modelBuilder.Entity("ColorProduct", b =>
                 {
@@ -67,8 +51,8 @@ namespace EShop.Infrastructure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<SqlHierarchyId>("Parent")
-                        .HasColumnType("hierarchyid");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Picture")
                         .HasMaxLength(40)
@@ -81,7 +65,24 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ParentId");
+
                     b.ToTable("Category");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.CategoryFeature", b =>
+                {
+                    b.Property<long>("CategoryId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("FeatureId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("CategoryId", "FeatureId");
+
+                    b.HasIndex("FeatureId");
+
+                    b.ToTable("CategoryFeatures", (string)null);
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.City", b =>
@@ -151,17 +152,19 @@ namespace EShop.Infrastructure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<long?>("ProductId")
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductId")
                         .HasColumnType("bigint");
 
                     b.Property<byte>("Rating")
                         .HasMaxLength(5)
                         .HasColumnType("tinyint");
 
-                    b.Property<SqlHierarchyId>("Replay")
-                        .HasColumnType("hierarchyid");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("ProductId");
 
@@ -181,7 +184,8 @@ namespace EShop.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
@@ -538,6 +542,42 @@ namespace EShop.Infrastructure.Migrations
                     b.ToTable("Product");
                 });
 
+            modelBuilder.Entity("EShop.Domain.Entities.ProductFeature", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("FeatureName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FeatureValue")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SellerId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("SellerId");
+
+                    b.ToTable("ProductFeature");
+                });
+
             modelBuilder.Entity("EShop.Domain.Entities.ProductImages", b =>
                 {
                     b.Property<long>("Id")
@@ -585,7 +625,7 @@ namespace EShop.Infrastructure.Migrations
                     b.ToTable("Province");
                 });
 
-            modelBuilder.Entity("EShop.Domain.Entities.SellerBase", b =>
+            modelBuilder.Entity("EShop.Domain.Entities.Seller", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -625,9 +665,6 @@ namespace EShop.Infrastructure.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
-                    b.Property<long?>("ProductId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("RejectReason")
                         .HasColumnType("ntext");
 
@@ -647,11 +684,27 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("ProductId");
-
                     b.HasIndex("UserId");
 
-                    b.ToTable("SellerBase");
+                    b.ToTable("Seller");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.SellerProduct", b =>
+                {
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SellerId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.HasKey("ProductId", "SellerId");
+
+                    b.HasIndex("SellerId");
+
+                    b.ToTable("SellerProducts", (string)null);
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Tag", b =>
@@ -675,24 +728,6 @@ namespace EShop.Infrastructure.Migrations
                     b.ToTable("Tag");
                 });
 
-            modelBuilder.Entity("EShop.Domain.SellerProduct", b =>
-                {
-                    b.Property<long>("ProductId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("SellerId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Count")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductId", "SellerId");
-
-                    b.HasIndex("SellerId");
-
-                    b.ToTable("SellerProducts", (string)null);
-                });
-
             modelBuilder.Entity("ProductTag", b =>
                 {
                     b.Property<long>("ProductsId")
@@ -706,21 +741,6 @@ namespace EShop.Infrastructure.Migrations
                     b.HasIndex("TagsId");
 
                     b.ToTable("ProductTag");
-                });
-
-            modelBuilder.Entity("CategoryFeature", b =>
-                {
-                    b.HasOne("EShop.Domain.Entities.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EShop.Domain.Entities.Feature", null)
-                        .WithMany()
-                        .HasForeignKey("FeaturesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("ColorProduct", b =>
@@ -738,6 +758,34 @@ namespace EShop.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EShop.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("EShop.Domain.Entities.Category", "Parent")
+                        .WithMany("Categories")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.CategoryFeature", b =>
+                {
+                    b.HasOne("EShop.Domain.Entities.Category", "Category")
+                        .WithMany("CategoryFeatures")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EShop.Domain.Entities.Feature", "Feature")
+                        .WithMany("CategoryFeatures")
+                        .HasForeignKey("FeatureId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Feature");
+                });
+
             modelBuilder.Entity("EShop.Domain.Entities.City", b =>
                 {
                     b.HasOne("EShop.Domain.Entities.Province", "Province")
@@ -751,9 +799,17 @@ namespace EShop.Infrastructure.Migrations
 
             modelBuilder.Entity("EShop.Domain.Entities.Comment", b =>
                 {
+                    b.HasOne("EShop.Domain.Entities.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentId");
+
                     b.HasOne("EShop.Domain.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
 
                     b.Navigation("Product");
                 });
@@ -823,7 +879,7 @@ namespace EShop.Infrastructure.Migrations
 
             modelBuilder.Entity("EShop.Domain.Entities.IndividualSeller", b =>
                 {
-                    b.HasOne("EShop.Domain.Entities.SellerBase", "Seller")
+                    b.HasOne("EShop.Domain.Entities.Seller", "Seller")
                         .WithOne("IndividualSeller")
                         .HasForeignKey("EShop.Domain.Entities.IndividualSeller", "SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -834,7 +890,7 @@ namespace EShop.Infrastructure.Migrations
 
             modelBuilder.Entity("EShop.Domain.Entities.LegalSeller", b =>
                 {
-                    b.HasOne("EShop.Domain.Entities.SellerBase", "Seller")
+                    b.HasOne("EShop.Domain.Entities.Seller", "Seller")
                         .WithOne("LegalSeller")
                         .HasForeignKey("EShop.Domain.Entities.LegalSeller", "SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -854,6 +910,25 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("EShop.Domain.Entities.ProductFeature", b =>
+                {
+                    b.HasOne("EShop.Domain.Entities.Product", "Product")
+                        .WithMany("ProductFeatures")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EShop.Domain.Entities.Seller", "Seller")
+                        .WithMany("ProductFeatures")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+
+                    b.Navigation("Seller");
+                });
+
             modelBuilder.Entity("EShop.Domain.Entities.ProductImages", b =>
                 {
                     b.HasOne("EShop.Domain.Entities.Product", "Product")
@@ -865,17 +940,13 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("EShop.Domain.Entities.SellerBase", b =>
+            modelBuilder.Entity("EShop.Domain.Entities.Seller", b =>
                 {
                     b.HasOne("EShop.Domain.Entities.City", "City")
                         .WithMany()
                         .HasForeignKey("CityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("EShop.Domain.Entities.Product", null)
-                        .WithMany("Sellers")
-                        .HasForeignKey("ProductId");
 
                     b.HasOne("EShop.Domain.Entities.Identity.User", "User")
                         .WithMany()
@@ -888,7 +959,7 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EShop.Domain.SellerProduct", b =>
+            modelBuilder.Entity("EShop.Domain.Entities.SellerProduct", b =>
                 {
                     b.HasOne("EShop.Domain.Entities.Product", "Product")
                         .WithMany("SellersProducts")
@@ -896,7 +967,7 @@ namespace EShop.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EShop.Domain.Entities.SellerBase", "Seller")
+                    b.HasOne("EShop.Domain.Entities.Seller", "Seller")
                         .WithMany("SellersProducts")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -924,7 +995,21 @@ namespace EShop.Infrastructure.Migrations
 
             modelBuilder.Entity("EShop.Domain.Entities.Category", b =>
                 {
+                    b.Navigation("Categories");
+
+                    b.Navigation("CategoryFeatures");
+
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.Comment", b =>
+                {
+                    b.Navigation("Replies");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.Feature", b =>
+                {
+                    b.Navigation("CategoryFeatures");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Identity.Role", b =>
@@ -949,7 +1034,7 @@ namespace EShop.Infrastructure.Migrations
                 {
                     b.Navigation("Images");
 
-                    b.Navigation("Sellers");
+                    b.Navigation("ProductFeatures");
 
                     b.Navigation("SellersProducts");
                 });
@@ -959,11 +1044,13 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("Cities");
                 });
 
-            modelBuilder.Entity("EShop.Domain.Entities.SellerBase", b =>
+            modelBuilder.Entity("EShop.Domain.Entities.Seller", b =>
                 {
                     b.Navigation("IndividualSeller");
 
                     b.Navigation("LegalSeller");
+
+                    b.Navigation("ProductFeatures");
 
                     b.Navigation("SellersProducts");
                 });

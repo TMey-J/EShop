@@ -1,8 +1,5 @@
-﻿using EShop.Domain.Entities;
-using EShop.Domain.Entities.Identity;
-using EShop.Infrastructure.Extensions;
+﻿using EShop.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 
 namespace EShop.Infrastructure.Databases
 {

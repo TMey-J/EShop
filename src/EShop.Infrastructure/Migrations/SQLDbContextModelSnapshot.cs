@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.SqlServer.Types;
 
 #nullable disable
 
@@ -49,8 +48,8 @@ namespace EShop.Infrastructure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<SqlHierarchyId>("Parent")
-                        .HasColumnType("hierarchyid");
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Picture")
                         .HasMaxLength(40)
@@ -62,6 +61,8 @@ namespace EShop.Infrastructure.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Category");
                 });
@@ -148,17 +149,19 @@ namespace EShop.Infrastructure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<long?>("ProductId")
+                    b.Property<long?>("ParentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductId")
                         .HasColumnType("bigint");
 
                     b.Property<byte>("Rating")
                         .HasMaxLength(5)
                         .HasColumnType("tinyint");
 
-                    b.Property<SqlHierarchyId>("Replay")
-                        .HasColumnType("hierarchyid");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
 
                     b.HasIndex("ProductId");
 
@@ -752,6 +755,15 @@ namespace EShop.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("EShop.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("EShop.Domain.Entities.Category", "Parent")
+                        .WithMany("Categories")
+                        .HasForeignKey("ParentId");
+
+                    b.Navigation("Parent");
+                });
+
             modelBuilder.Entity("EShop.Domain.Entities.CategoryFeature", b =>
                 {
                     b.HasOne("EShop.Domain.Entities.Category", "Category")
@@ -784,9 +796,17 @@ namespace EShop.Infrastructure.Migrations
 
             modelBuilder.Entity("EShop.Domain.Entities.Comment", b =>
                 {
+                    b.HasOne("EShop.Domain.Entities.Comment", "ParentComment")
+                        .WithMany("Replies")
+                        .HasForeignKey("ParentId");
+
                     b.HasOne("EShop.Domain.Entities.Product", "Product")
                         .WithMany()
-                        .HasForeignKey("ProductId");
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentComment");
 
                     b.Navigation("Product");
                 });
@@ -972,9 +992,16 @@ namespace EShop.Infrastructure.Migrations
 
             modelBuilder.Entity("EShop.Domain.Entities.Category", b =>
                 {
+                    b.Navigation("Categories");
+
                     b.Navigation("CategoryFeatures");
 
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.Comment", b =>
+                {
+                    b.Navigation("Replies");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Feature", b =>
