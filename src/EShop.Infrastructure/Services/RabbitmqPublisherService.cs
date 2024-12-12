@@ -24,16 +24,15 @@ namespace EShop.Infrastructure.Services
             await using var channel = await connection.CreateChannelAsync();
 
             var exchangeName = _siteSettings.Rabbitmq.ExchangeName;
-            var routingKey = _siteSettings.Rabbitmq.RoutingKey;
 
             await channel.ExchangeDeclareAsync(exchangeName, ExchangeType.Direct);
             await channel.QueueDeclareAsync(queueName, false, false, false, null);
-            await channel.QueueBindAsync(queueName, exchangeName, routingKey, null);
+            await channel.QueueBindAsync(queueName, exchangeName, routeKey, null);
 
             var serializeMessage = JsonConvert.SerializeObject(message);
             var massageBodyBytes = Encoding.UTF8.GetBytes(serializeMessage);
 
-            await channel.BasicPublishAsync(exchangeName, routingKey, massageBodyBytes);
+            await channel.BasicPublishAsync(exchangeName, routeKey,massageBodyBytes);
             await channel.CloseAsync();
             await connection.CloseAsync();
         }
