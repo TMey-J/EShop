@@ -31,6 +31,7 @@ public class AdminPanelEndpoints : ICarterModule
         group.MapPost(nameof(AddFeaturesToCategory), AddFeaturesToCategory);
         group.MapPut(nameof(UpdateCategory), UpdateCategory);
         group.MapGet(nameof(GetAllCategories), GetAllCategories);
+        group.MapGet(nameof(GetCategoryFeatures), GetCategoryFeatures);
         group.MapGet(nameof(GetCategory)+"/{id}", GetCategory);
 
         #endregion
@@ -113,6 +114,13 @@ public class AdminPanelEndpoints : ICarterModule
     {
         await mediator.Send(request);
         return TypedResults.Ok();
+    }
+    private static async Task<IResult> GetCategoryFeatures(
+        [FromBody]GetCategoryFeaturesQueryRequest request,
+        IMediator mediator)
+    {
+        var response= await mediator.Send(request);
+        return TypedResults.Ok(response);
     }
     #endregion
 

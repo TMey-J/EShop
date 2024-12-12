@@ -64,7 +64,8 @@ namespace EShop.Infrastructure.Repositories
 
         public async Task<Category?> FindByIdWithIncludeFeatures(long categoryId)
         {
-            return await _category.Include(x=>x.CategoryFeatures).
+            return await _category.Include(x=>x.CategoryFeatures)!.
+                ThenInclude(x=>x.Feature).
                 SingleOrDefaultAsync(x=>x.Id == categoryId); 
         }
     }
