@@ -19,7 +19,7 @@ public class UpdateCategoryCommandHandler(
     {
         var category = await _category.FindByIdAsync(request.Id) ??
                        throw new NotFoundException(NameToReplaceInException.Category);
-        category.Title = request.NewTitle;
+        category.Title = request.Title;
         if (!string.IsNullOrWhiteSpace(request.NewPicture))
         {
             category.Picture =
@@ -30,13 +30,13 @@ public class UpdateCategoryCommandHandler(
                     category.Picture);
         }
 
-        if (request.NewParentId is not null)
+        if (request.ParentId!=category.ParentId)
         {
             if (await _category.IsHasChild(category))
             {
                 throw new CustomBadRequestException(["این دسته بندی دارای زیردسته است. ابتدا آنها را حذف کند"]);
             }
-            var newParentCategory = await _category.FindByIdAsync(request.NewParentId ?? 0) ??
+            var newParentCategory = await _category.FindByIdAsync(request.ParentId) ??
                                     throw new NotFoundException(NameToReplaceInException.ParentCategory);
             category.ParentId = newParentCategory.Id;
         }

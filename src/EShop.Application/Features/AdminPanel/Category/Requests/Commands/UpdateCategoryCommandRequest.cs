@@ -6,10 +6,10 @@ public record UpdateCategoryCommandRequest:IRequest<UpdateCategoryCommandRespons
     public long Id { get; set; }
     
     [DisplayName("عنوان جذید")]
-    public string NewTitle { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
     
-    [DisplayName("والد جذیذ")]
-    public long? NewParentId { get; set; }
+    [DisplayName("والد")]
+    public long ParentId { get; set; }
     
     [DisplayName("والد جذیذ")]
     public string? NewPicture { get; set; }
