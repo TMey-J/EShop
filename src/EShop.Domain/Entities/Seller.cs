@@ -33,8 +33,7 @@ public class Seller : BaseEntity
     public DateTime CreatedDateTime { get; set; }
     
     public DocumentStatus DocumentStatus { get; set; }
-
-    [Display(Name = "دلایل رد مدارک فروشنده")]
+    
     [MaxLength(1000)]
     public string? RejectReason { get; set; }
     

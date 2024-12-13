@@ -459,7 +459,7 @@ namespace EShop.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<byte?>("CompanyType")
+                    b.Property<byte>("CompanyType")
                         .HasColumnType("tinyint");
 
                     b.Property<string>("EconomicCode")
@@ -468,9 +468,6 @@ namespace EShop.Infrastructure.Migrations
                         .HasColumnType("nvarchar(12)");
 
                     b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsRealPerson")
                         .HasColumnType("bit");
 
                     b.Property<string>("RegisterNumber")
