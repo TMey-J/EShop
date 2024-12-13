@@ -43,7 +43,9 @@ public class DbInitializer(
             dbInitializer.SeedRole(RoleNames.Admin).GetAwaiter().GetResult();
             dbInitializer.SeedRole(RoleNames.User).GetAwaiter().GetResult();
             dbInitializer.SeedRole(RoleNames.Seller).GetAwaiter().GetResult();
+            dbInitializer.SeedRole(RoleNames.SystemSeller).GetAwaiter().GetResult();
             dbInitializer.SeedAdmin(_siteSettings.AdminUser).GetAwaiter().GetResult();
+            dbInitializer.SeedSystemSeller(_siteSettings.SystemSeller).GetAwaiter().GetResult();
             dbInitializer.SeedProvinces().GetAwaiter().GetResult();
             dbInitializer.SeedCities().GetAwaiter().GetResult();
         });
@@ -72,16 +74,10 @@ public class DbInitializer(
             PasswordHash = adminUser.Password.HashPassword(out var salt),
             PasswordSalt = salt,
             Avatar = _siteSettings.DefaultUserAvatar,
-            IsActive = true
+            IsActive = true,
+            EmailConfirmed = isEmail,
+            PhoneNumberConfirmed = !isEmail,
         };
-        if (user.Email is not null)
-        {
-            user.EmailConfirmed = true;
-        }
-        else
-        {
-            user.PhoneNumberConfirmed = true;
-        }
 
         var result = await _userManager.CreateAsync(user);
         if (!result.Succeeded)
@@ -173,6 +169,60 @@ public class DbInitializer(
                 ProvinceId = x.Province_Id
             }).ToList();
             await _mongoCity.CreateAllAsync(cities);
+        }
+    }
+
+    public async Task SeedSystemSeller(SystemSeller systemSeller)
+    {
+        var user = await _userManager.FindByNameAsync(systemSeller.UserName);
+        if (user is not null)
+        {
+            return;
+        }
+        var systemSellerRole = await _roleManager.FindByNameAsync(RoleNames.SystemSeller);
+        if (systemSellerRole is null)
+        {
+            throw new CustomInternalServerException(["Admin role not found"]);
+        }
+        var city=await _city.FindByAsync(nameof(City.Title), systemSeller.CityName)
+                   ?? throw new CustomInternalServerException(["City not found"]);
+        var isEmail = systemSeller.EmailOrPhoneNumber.IsEmail();
+        user = new User
+        {
+            UserName = systemSeller.UserName,
+            Email = isEmail ? systemSeller.EmailOrPhoneNumber : null,
+            PhoneNumber = isEmail ? null : systemSeller.EmailOrPhoneNumber,
+            PasswordHash = systemSeller.Password.HashPassword(out var salt),
+            PasswordSalt = salt,
+            Avatar = _siteSettings.DefaultUserAvatar,
+            IsActive = true,
+            EmailConfirmed = isEmail,
+            PhoneNumberConfirmed = !isEmail,
+            Seller = new Seller()
+            {
+                ShopName = systemSeller.ShopName,
+                Address = systemSeller.Address,
+                DocumentStatus = DocumentStatus.Confirmed,
+                PostalCode = systemSeller.PostalCode,
+                CityId = city.Id,
+                IndividualSeller = new IndividualSeller()
+                {
+                    NationalId = systemSeller.NationalId,
+                    CartOrShebaNumber = systemSeller.NationalId
+                }
+            }
+        };
+
+        var result = await _userManager.CreateAsync(user);
+        if (!result.Succeeded)
+        {
+            throw new CustomBadRequestException(result.GetErrors());
+        }
+
+        var addToRulesResult = await _userManager.AddToRoleAsync(user, systemSellerRole.Name!);
+        if (!addToRulesResult.Succeeded)
+        {
+            throw new CustomBadRequestException(addToRulesResult.GetErrors());
         }
     }
 }

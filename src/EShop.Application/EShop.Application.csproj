@@ -26,4 +26,11 @@
     <ProjectReference Include="..\EShop.Domain\EShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\AdminPanel\Seller\Handlers\Commands\" />
+    <Folder Include="Features\AdminPanel\Seller\Handlers\Queries\" />
+    <Folder Include="Features\AdminPanel\Seller\Requests\Commands\Validations\" />
+    <Folder Include="Features\AdminPanel\Seller\Requests\Queries\Validations\" />
+  </ItemGroup>
+
 </Project>

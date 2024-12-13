@@ -8,4 +8,5 @@ public interface IDbInitializer
     Task SeedRole(string roleName);
     Task SeedProvinces();
     Task SeedCities();
+    Task SeedSystemSeller(SystemSeller systemSeller);
 }
