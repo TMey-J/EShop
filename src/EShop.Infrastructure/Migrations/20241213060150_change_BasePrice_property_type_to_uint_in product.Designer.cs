@@ -4,6 +4,7 @@ using EShop.Infrastructure.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    partial class SQLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241213060150_change_BasePrice_property_type_to_uint_in product")]
+    partial class change_BasePrice_property_type_to_uint_inproduct
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

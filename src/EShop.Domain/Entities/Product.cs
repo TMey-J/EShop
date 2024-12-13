@@ -14,8 +14,8 @@ public class Product : BaseEntity
     public string EnglishTitle { get; set; } = string.Empty;
 
     [Required]
-    [MaxLength(200)]
-    public double BasePrice { get; set; }
+    public uint BasePrice { get; set; }
+    
     [Required]
     [Column(TypeName ="ntext")]
     public string Description { get; set; } = string.Empty;
