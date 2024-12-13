@@ -11,6 +11,8 @@
     <PackageReference Include="DNTCommon.Web.Core" Version="7.6.7" />
     <PackageReference Include="KavenegarDotNetCore" Version="1.0.7" />
     <PackageReference Include="MailKit" Version="4.8.0" />
+    <PackageReference Include="MassTransit" Version="8.3.3-develop.2143" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.3.3-develop.2143" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.HierarchyId" Version="9.0.0" />
@@ -19,6 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.8.0" />
+    <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,4 @@
-﻿namespace Restaurant.Persistence.Configurations;
+﻿namespace EShop.Infrastructure.Configurations;
 
 public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
 {

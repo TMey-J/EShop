@@ -6,13 +6,15 @@ namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 public class UpdateUserCommandHandler(
     IApplicationUserManager userManager,
     IApplicationRoleManager roleManager,
-    IFileServices fileServices,
+    IFileRepository fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings,
-    ILogger<RegisterCommandHandler> logger) : IRequestHandler<UpdateUserCommandRequest, UpdateUserCommandResponse>
+    ILogger<RegisterCommandHandler> logger,
+    IRabbitmqPublisherService rabbitmqPublisher) : IRequestHandler<UpdateUserCommandRequest, UpdateUserCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
-    private readonly IFileServices _fileServices = fileServices;
+    private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
+    private readonly IFileRepository _fileServices = fileServices;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
@@ -80,7 +82,15 @@ public class UpdateUserCommandHandler(
         {
             throw new CustomBadRequestException(result.GetErrors());
         }
-
+        user.UserRoles = null;
+        user.UserClaims = null;
+        user.UserTokens = null;
+        user.UserLogins = null;
+        await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Identity.User>(
+            new(ActionTypes.Create,user),
+            RabbitmqConstants.QueueNames.User,
+            RabbitmqConstants.RoutingKeys.User);
+        
         _logger.LogInformation(
             $"user with Id {user.Id} has been updated by admin");
         return new UpdateUserCommandResponse();

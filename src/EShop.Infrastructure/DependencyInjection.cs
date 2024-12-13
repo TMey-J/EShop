@@ -13,12 +13,14 @@ using Restaurant.Application.Contracts.Identity;
 using System.Security.Claims;
 using System.Security.Principal;
 using DNTCommon.Web.Core;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Infrastructure.Databases;
 using EShop.Infrastructure.Repositories;
 using EShop.Infrastructure.Repositories.Identity;
-using EShop.Infrastructure.Repositories.Services;
-using EShop.Infrastructure.Repositories.Services.Email;
-using EShop.Infrastructure.Repositories.Services.Sms;
+using EShop.Infrastructure.Repositories.MongoDb;
+using EShop.Infrastructure.Services;
+using EShop.Infrastructure.Services.Email;
+using EShop.Infrastructure.Services.Sms;
 
 namespace EShop.Infrastructure
 {
@@ -26,34 +28,38 @@ namespace EShop.Infrastructure
     {
         private const string EmailConfirmationTokenProviderName = "ConfirmEmail";
 
-        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
+        public static IServiceCollection AddInfrastructureServices(this IServiceCollection services,
+            IConfiguration configuration, IWebHostEnvironment environment)
         {
             var siteSettings = configuration.Get<SiteSettings>(configuration.Bind);
             ArgumentNullException.ThrowIfNull(siteSettings);
 
-            services.AddDataBase(siteSettings.ConnectionStrings.SQLDbContextConnection);
-
+            services.AddSqlDataBase(siteSettings.ConnectionStrings.SQLDbContextConnection);
+            services.AddSingleton<MongoDbContext>();
             services.AddIdentityServices();
             services.AddIdentityOptions(siteSettings);
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddSingleton<IPrincipal>(provider => provider.GetRequiredService<IHttpContextAccessor>()?.HttpContext?.User ?? ClaimsPrincipal.Current!);
+            services.AddSingleton<IPrincipal>(provider =>
+                provider.GetRequiredService<IHttpContextAccessor>().HttpContext?.User ?? ClaimsPrincipal.Current!);
             services.ConfigureServices(environment);
-            services.ConfigureRepositories();
+            services.ConfigureSqlRepositories();
+            services.ConfigureMongoRepositories();
             services.AddScoped<IDbInitializer, DbInitializer>();
             return services;
         }
-        private static IServiceCollection AddDataBase(this IServiceCollection services, string connectionString)
+
+        private static void AddSqlDataBase(this IServiceCollection services, string connectionString)
         {
-            services.AddDbContextPool<SQLDbContext>((sp, options) =>
-            {   
-                options.UseSqlServer(connectionString,x=>x.UseHierarchyId());
+            services.AddDbContextPool<SQLDbContext>((options) =>
+            {
+                options.UseSqlServer(connectionString);
             });
-            return services;
         }
-        private static void ConfigureServices(this IServiceCollection services,IWebHostEnvironment environment)
+
+        private static void ConfigureServices(this IServiceCollection services, IWebHostEnvironment environment)
         {
-            services.AddScoped<IFileServices, FileServices>();
+            services.AddScoped<IRabbitmqPublisherService, RabbitmqPublisherService>();
             if (environment.IsDevelopment())
             {
                 services.AddScoped<ISmsSenderService, LocalSmsSenderService>();
@@ -63,15 +69,30 @@ namespace EShop.Infrastructure
             {
                 services.AddScoped<IEmailSenderService, EmailSenderService>();
                 services.AddScoped<ISmsSenderService, KavenegarSmsSenderService>();
-
             }
         }
-        private static void ConfigureRepositories(this IServiceCollection services)
+
+        private static void ConfigureSqlRepositories(this IServiceCollection services)
         {
+            services.AddScoped<IFileRepository, FileRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICategoryFeatureRepository, CategoryFeatureRepository>();
             services.AddScoped<ITagRepository, TagRepository>();
+            services.AddScoped<IProvinceRepository, ProvinceRepository>();
+            services.AddScoped<ICityRepository, CityRepository>();
+            services.AddScoped<IFeatureRepository, FeatureRepository>();
         }
-        private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        private static void ConfigureMongoRepositories(this IServiceCollection services)
+        {
+            services.AddScoped<IMongoTagRepository, MongoTagRepository>();
+            services.AddScoped<IMongoUserRepository, MongoUserRepository>();
+            services.AddScoped<IMongoProvinceRepository, MongoProvinceRepository>();
+            services.AddScoped<IMongoCityRepository, MongoCityRepository>();
+            services.AddScoped<IMongoFeatureRepository, MongoFeatureRepository>();
+            services.AddScoped<IMongoCategoryFeatureRepository, MongoCategoryFeatureRepository>();
+            services.AddScoped<IMongoCategoryRepository, MongoCategoryRepository>();
+        }
+        private static void AddIdentityServices(this IServiceCollection services)
         {
             services.AddScoped<IApplicationUserManager, ApplicationUserManager>();
             services.AddScoped<UserManager<User>, ApplicationUserManager>();
@@ -83,19 +104,18 @@ namespace EShop.Infrastructure
             services.AddScoped<SignInManager<User>, ApplicationSignInManager>();
 
             services.AddScoped<IJwtService, JwtService>();
-
-            return services;
         }
-        private static IServiceCollection AddIdentityOptions(this IServiceCollection services, SiteSettings siteSettings)
+
+        private static void AddIdentityOptions(this IServiceCollection services, SiteSettings siteSettings)
         {
             services.AddConfirmEmailDataProtectorTokenOptions(siteSettings);
             services.AddIdentity<User, Role>(identityOptions =>
-            {
-                SetPasswordOptions(identityOptions.Password, siteSettings);
-                SetSignInOptions(identityOptions.SignIn, siteSettings);
-                SetUserOptions(identityOptions.User);
-                SetLockoutOptions(identityOptions.Lockout, siteSettings);
-            }).AddUserManager<ApplicationUserManager>()
+                {
+                    SetPasswordOptions(identityOptions.Password, siteSettings);
+                    SetSignInOptions(identityOptions.SignIn, siteSettings);
+                    SetUserOptions(identityOptions.User);
+                    SetLockoutOptions(identityOptions.Lockout, siteSettings);
+                }).AddUserManager<ApplicationUserManager>()
                 .AddRoleManager<ApplicationRoleManager>()
                 .AddEntityFrameworkStores<SQLDbContext>()
                 .AddErrorDescriber<CustomIdentityErrorDescriber>()
@@ -106,14 +126,12 @@ namespace EShop.Infrastructure
 
             services.ConfigureApplicationCookie(identityOptionsCookies =>
             {
-                var provider = services.BuildServiceProvider();
-                SetApplicationCookieOptions(provider, identityOptionsCookies, siteSettings);
+                SetApplicationCookieOptions(identityOptionsCookies, siteSettings);
             });
 
             services.EnableImmediateLogout();
-
-            return services;
         }
+
         public static void InitializeDb(this IServiceProvider serviceProvider)
         {
             serviceProvider.RunScopedService<IDbInitializer>(dbInitialize =>
@@ -122,9 +140,11 @@ namespace EShop.Infrastructure
                 dbInitialize.SeedData();
             });
         }
+
         #region Identity Options
 
-        private static void AddConfirmEmailDataProtectorTokenOptions(this IServiceCollection services, SiteSettings siteSettings)
+        private static void AddConfirmEmailDataProtectorTokenOptions(this IServiceCollection services,
+            SiteSettings siteSettings)
         {
             services.Configure<IdentityOptions>(options =>
             {
@@ -143,11 +163,13 @@ namespace EShop.Infrastructure
             {
                 // enables immediate logout, after updating the user's stat.
                 options.ValidationInterval = TimeSpan.Zero;
-                options.OnRefreshingPrincipal = principalContext => { return Task.CompletedTask; };
+                options.OnRefreshingPrincipal =
+                    new Func<SecurityStampRefreshingPrincipalContext, Task>(_ => Task.CompletedTask);
             });
         }
 
-        private static void SetApplicationCookieOptions(IServiceProvider provider, CookieAuthenticationOptions identityOptionsCookies, SiteSettings siteSettings)
+        private static void SetApplicationCookieOptions(CookieAuthenticationOptions identityOptionsCookies,
+            SiteSettings siteSettings)
         {
             identityOptionsCookies.Cookie.Name = siteSettings.CookieOptions.CookieName;
             identityOptionsCookies.Cookie.HttpOnly = true;
@@ -179,9 +201,11 @@ namespace EShop.Infrastructure
             identityOptionsPassword.RequiredLength = siteSettings.PasswordOptions.RequiredLength;
         }
 
-        private static void SetSignInOptions(SignInOptions identityOptionsSignIn, SiteSettings siteSettings) => identityOptionsSignIn.RequireConfirmedEmail = siteSettings.EnableEmailConfirmation;
+        private static void SetSignInOptions(SignInOptions identityOptionsSignIn, SiteSettings siteSettings)
+            => identityOptionsSignIn.RequireConfirmedEmail = siteSettings.EnableEmailConfirmation;
 
-        private static void SetUserOptions(UserOptions identityOptionsUser) => identityOptionsUser.RequireUniqueEmail = true;
+        private static void SetUserOptions(UserOptions identityOptionsUser) =>
+            identityOptionsUser.RequireUniqueEmail = true;
 
         #endregion Identity Options
     }

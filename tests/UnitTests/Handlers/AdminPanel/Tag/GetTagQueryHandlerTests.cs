@@ -2,6 +2,7 @@
 using EShop.Application.Common.Exceptions;
 using EShop.Application.Constants;
 using EShop.Application.Contracts;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Features.AdminPanel.Tag.Handlers.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 
@@ -11,7 +12,7 @@ namespace UnitTests.Handlers.AdminPanel.Tag;
 public class GetTagQueryHandlerTests
 {
     private readonly GetTagQueryHandler _sut;
-    private readonly Mock<ITagRepository> _tagRepositoryMock = new();
+    private readonly Mock<IMongoTagRepository> _tagRepositoryMock = new();
     private GetTagQueryRequest _request = new();
 
     public GetTagQueryHandlerTests()

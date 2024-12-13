@@ -4,12 +4,14 @@ namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 
 public class UpdateCategoryCommandHandler(
     ICategoryRepository category,
-    IFileServices fileServices,
-    IOptionsSnapshot<SiteSettings> siteSettings)
+    IFileRepository fileServices,
+    IOptionsSnapshot<SiteSettings> siteSettings,
+    IRabbitmqPublisherService rabbitmqPublisher)
     : IRequestHandler<UpdateCategoryCommandRequest, UpdateCategoryCommandResponse>
 {
     private readonly ICategoryRepository _category = category;
-    private readonly IFileServices _fileServices = fileServices;
+    private readonly IFileRepository _fileServices = fileServices;
+    private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
 
     public async Task<UpdateCategoryCommandResponse> Handle(UpdateCategoryCommandRequest request,
@@ -17,7 +19,7 @@ public class UpdateCategoryCommandHandler(
     {
         var category = await _category.FindByIdAsync(request.Id) ??
                        throw new NotFoundException(NameToReplaceInException.Category);
-        category.Title = request.NewTitle;
+        category.Title = request.Title;
         if (!string.IsNullOrWhiteSpace(request.NewPicture))
         {
             category.Picture =
@@ -28,26 +30,23 @@ public class UpdateCategoryCommandHandler(
                     category.Picture);
         }
 
-        if (request.NewParentId is not null)
+        if (request.ParentId!=category.ParentId)
         {
-            var newParentCategory = await _category.FindByIdAsync(request.NewParentId ?? 0) ??
-                                 throw new NotFoundException(NameToReplaceInException.ParentCategory);
-            
-            var categoryChildren = await _category.GetCategoryChildrenAsync(category);
-
-            var lastChild = await _category.GetLastChildHierarchyIdAsync(newParentCategory);
-            
-            category.Parent = newParentCategory.Parent.GetDescendant(lastChild);
-            
-            lastChild = null;
-            foreach (var categoryChild in categoryChildren)
+            if (await _category.IsHasChild(category))
             {
-                categoryChild.Parent = category.Parent.GetDescendant(lastChild);
-                lastChild = categoryChild.Parent;
+                throw new CustomBadRequestException(["این دسته بندی دارای زیردسته است. ابتدا آنها را حذف کند"]);
             }
+            var newParentCategory = await _category.FindByIdAsync(request.ParentId) ??
+                                    throw new NotFoundException(NameToReplaceInException.ParentCategory);
+            category.ParentId = newParentCategory.Id;
         }
         
         await _category.SaveChangesAsync();
+        var readCategoryDto=new ReadCategoryDto(category.Id, category.Title,category.ParentId, category.Picture, category.IsDelete);
+        await _rabbitmqPublisher.PublishMessageAsync<ReadCategoryDto>(
+            new(ActionTypes.Update, readCategoryDto),
+            RabbitmqConstants.QueueNames.Category,
+            RabbitmqConstants.RoutingKeys.Category);
         return new();
     }
 }

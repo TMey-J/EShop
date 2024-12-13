@@ -29,6 +29,11 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
         return await _entity.ToListAsync();
     }
 
+    public async Task<bool> IsAnyAsync()
+    {
+        return await _entity.AnyAsync();
+    }
+
     public async Task SaveChangesAsync()
     {
        await _context.SaveChangesAsync();

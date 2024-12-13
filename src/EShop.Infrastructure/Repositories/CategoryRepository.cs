@@ -7,27 +7,10 @@ namespace EShop.Infrastructure.Repositories
     {
         private readonly DbSet<Category> _category = context.Set<Category>();
 
-        public async Task<HierarchyId?> GetLastChildHierarchyIdAsync(Category category)
+        public async Task<bool> IsHasChild(Category category)
         {
-            return await _category.Where(x => x.Parent.GetAncestor(1) == category.Parent)
-                .OrderByDescending(x => x.Parent)
-                .Select(x => x.Parent).FirstOrDefaultAsync();
+            return await _category.AnyAsync(x => x.ParentId == category.Id);
         }
-
-        public async Task<long?> GetParentIdWithHierarchyIdAsync(HierarchyId categoryHierarchyId)
-        {
-            var parentHierarchyId = categoryHierarchyId.GetAncestor(1);
-            var parentId = await _category.Where(x => x.Parent == parentHierarchyId)
-                .Select(x => x.Id).SingleOrDefaultAsync();
-            return parentId != 0 ? parentId : null;
-        }
-
-        public async Task<List<Category>> GetCategoryChildrenAsync(Category category)
-        {
-            return await _category.Where(x =>
-                x.Id != category.Id && x.Parent.IsDescendantOf(category.Parent)).ToListAsync();
-        }
-
         public async Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDto search)
         {
             var category = _category.AsQueryable().IgnoreQueryFilters();
@@ -56,10 +39,17 @@ namespace EShop.Infrastructure.Repositories
 
             var categories = await category.Select
             (x => new ShowCategoryDto(x.Id, x.Title,
-                _category.SingleOrDefault(c => c.Parent == x.Parent.GetAncestor(1))!.Id,
+                x.ParentId,
                 x.Picture)).ToListAsync();
 
             return new GetAllCategoryQueryResponse(categories, search, pagination.pageCount);
+        }
+
+        public async Task<Category?> FindByIdWithIncludeFeatures(long categoryId)
+        {
+            return await _category.Include(x=>x.CategoryFeatures)!.
+                ThenInclude(x=>x.Feature).
+                SingleOrDefaultAsync(x=>x.Id == categoryId); 
         }
     }
 }

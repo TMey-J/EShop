@@ -6,10 +6,10 @@ namespace EShop.Application.Features.AdminPanel.Category.Requests.Commands.Valid
     {
         public UpdateCategoryCommandValidation()
         {
-            RuleFor(x => x.NewTitle).NotEmpty().WithMessage(Messages.Validations.Required)
+            RuleFor(x => x.Title).NotEmpty().WithMessage(Messages.Validations.Required)
                 .MaximumLength(100).WithMessage(Messages.Validations.MaxLength);
             
-            RuleFor(x => x.NewParentId)
+            RuleFor(x => x.ParentId)
                 .GreaterThan(0).WithMessage(Messages.Validations.GreaterThanZero);
             
             RuleFor(x => x.Id)

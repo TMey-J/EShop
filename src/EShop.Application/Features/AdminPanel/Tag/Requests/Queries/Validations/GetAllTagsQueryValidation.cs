@@ -17,7 +17,7 @@ namespace EShop.Application.Features.AdminPanel.Tag.Requests.Queries.Validations
             
             RuleFor(x => x.Search.SortingAs).IsInEnum().
                 WithMessage(Messages.Validations.NotInEnum(0,1));
-
+            
             RuleFor(x => x.Search.Pagination.TakeRecord).
                 InclusiveBetween(1, 100).WithMessage(Messages.Validations.Between);
             

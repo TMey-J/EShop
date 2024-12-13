@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using EShop.Application.Features.AdminPanel.User.Requests.Queries;
 
 namespace EShop.Application.Contracts.Identity;
 
@@ -203,5 +204,6 @@ public interface IApplicationUserManager : IDisposable
     #region Custom
     Task<User?> FindByPhoneNumberAsync(string phoneNumber);
     Task <(User?,bool)> FindByEmailOrPhoneNumberWithCheckIsEmailAsync(string emailOrPhoneNumber);
+    Task <GetAllUsersQueryResponse> GetAllWithFiltersAsync(SearchUserDto search);
     #endregion Custom
 }

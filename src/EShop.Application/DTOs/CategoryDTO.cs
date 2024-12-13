@@ -19,3 +19,5 @@ public enum SortingCategoryBy
     Id,
     Title
 }
+public record ReadCategoryDto(long Id,string Title, long? ParentId,string? PictureName,bool IsDelete);
+public record ReadCategoryFeaturesDto(long CategoryId, long FeatureId);

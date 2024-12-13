@@ -4,25 +4,31 @@ using EShop.Application.Features.Authorize.Handlers.Commands;
 namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 
 public class CreateUserCommandHandler(
-    IApplicationUserManager userManager,IApplicationRoleManager roleManager,
-    IFileServices fileServices,
+    IApplicationUserManager userManager,
+    IApplicationRoleManager roleManager,
+    IFileRepository fileServices,
     IOptionsSnapshot<SiteSettings> siteSettings,
-    ILogger<RegisterCommandHandler> logger) : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
+    ILogger<RegisterCommandHandler> logger,
+    IRabbitmqPublisherService rabbitmqPublisher) : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
 {
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
-    private readonly IFileServices _fileServices = fileServices;
+    private readonly IFileRepository _fileServices = fileServices;
+    private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
-    public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request, CancellationToken cancellationToken)
+    public async Task<CreateUserCommandResponse> Handle(CreateUserCommandRequest request,
+        CancellationToken cancellationToken)
     {
-        (Domain.Entities.Identity.User? user, bool isEmail) userFound= await _userManager.FindByEmailOrPhoneNumberWithCheckIsEmailAsync(request.EmailOrPhoneNumber);
+        (Domain.Entities.Identity.User? user, bool isEmail) userFound =
+            await _userManager.FindByEmailOrPhoneNumberWithCheckIsEmailAsync(request.EmailOrPhoneNumber);
         if (userFound.user is not null)
         {
             throw new DuplicateException("کاربر");
         }
-        userFound.user=new()
+
+        userFound.user = new()
         {
             UserName = request.UserName,
             Email = userFound.isEmail ? request.EmailOrPhoneNumber : null,
@@ -30,11 +36,11 @@ public class CreateUserCommandHandler(
             PasswordHash = request.Password.HashPassword(out var salt),
             PasswordSalt = salt,
             IsActive = true,
-            Avatar = !string.IsNullOrWhiteSpace(request.Avatar)?
-                await _fileServices.UploadFileAsync(request.Avatar,
+            Avatar = !string.IsNullOrWhiteSpace(request.Avatar)
+                ? await _fileServices.UploadFileAsync(request.Avatar,
                     _filesPath.UserAvatar,
-                    (int)FileHelpers.MaximumFilesSizeInMegaByte.UserAvatar):
-                null
+                    (int)FileHelpers.MaximumFilesSizeInMegaByte.UserAvatar)
+                : null
         };
         if (userFound.isEmail)
         {
@@ -44,12 +50,13 @@ public class CreateUserCommandHandler(
         {
             userFound.user.PhoneNumberConfirmed = true;
         }
-        
+
         var result = await _userManager.CreateAsync(userFound.user);
         if (!result.Succeeded)
         {
             throw new CustomInternalServerException(result.GetErrors());
         }
+
         #region role logic
 
         request.Roles = request.Roles.Select(x => x.ToUpper()).ToList();
@@ -57,7 +64,7 @@ public class CreateUserCommandHandler(
         if (notExistsRolesName.Count > 0)
         {
             throw new CustomBadRequestException(Errors.NotExistsRolesErrors(notExistsRolesName));
-        }             
+        }
 
         var addToRulesResult = await _userManager.AddToRolesAsync(userFound.user, request.Roles);
         if (!addToRulesResult.Succeeded)
@@ -66,8 +73,19 @@ public class CreateUserCommandHandler(
         }
 
         await _userManager.UpdateAsync(userFound.user);
+
         #endregion
-        _logger.LogInformation($"user with phone Number/email {userFound.user.Email??userFound.user.PhoneNumber} has been created by admin");
+
+        userFound.user.UserRoles = null;
+        userFound.user.UserClaims = null;
+        userFound.user.UserTokens = null;
+        userFound.user.UserLogins = null;
+        await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Identity.User>(
+            new(ActionTypes.Create, userFound.user),
+            RabbitmqConstants.QueueNames.User,
+            RabbitmqConstants.RoutingKeys.User);
+        _logger.LogInformation(
+            $"user with phone Number/email {userFound.user.Email ?? userFound.user.PhoneNumber} has been created by admin");
         return new CreateUserCommandResponse();
     }
 }
