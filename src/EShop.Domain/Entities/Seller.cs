@@ -28,8 +28,6 @@ public class Seller : BaseEntity
     [MaxLength(300)]
     public string Address { get; set; }=string.Empty;
 
-    public bool IsDocumentApproved { get; set; }
-
     public bool IsActive { get; set; } = true;
 
     public DateTime CreatedDateTime { get; set; }
@@ -37,7 +35,7 @@ public class Seller : BaseEntity
     public DocumentStatus DocumentStatus { get; set; }
 
     [Display(Name = "دلایل رد مدارک فروشنده")]
-    [Column(TypeName ="ntext")]
+    [MaxLength(1000)]
     public string? RejectReason { get; set; }
     
 
@@ -63,7 +61,7 @@ public enum DocumentStatus : byte
     [Display(Name = "تایید شده")]
     Confirmed,
 
-    [Display(Name = "رد شده در ح    الت اولیه")]
+    [Display(Name = "رد شده در حالت اولیه")]
     Rejected,
 
     [Display(Name = "در انتظار تایید فروشنده سیستم")]
