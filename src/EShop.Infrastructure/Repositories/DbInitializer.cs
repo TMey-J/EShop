@@ -4,6 +4,7 @@ using EShop.Application.Common.Exceptions;
 using EShop.Application.Constants;
 using EShop.Application.Contracts.Identity;
 using EShop.Application.Contracts.MongoDb;
+using EShop.Application.Contracts.Services;
 using EShop.Application.Model;
 using EShop.Infrastructure.Databases;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,8 @@ public class DbInitializer(
     IProvinceRepository province,
     ICityRepository city,
     IMongoProvinceRepository mongoProvince,
-    IMongoCityRepository mongoCity) : IDbInitializer
+    IMongoCityRepository mongoCity,
+    IRabbitmqPublisherService publisher) : IDbInitializer
 {
     private readonly IServiceScopeFactory _serviceFactory = serviceFactory;
     private readonly IApplicationUserManager _userManager = userManager;
@@ -29,6 +31,7 @@ public class DbInitializer(
     private readonly IMongoProvinceRepository _mongoProvince = mongoProvince;
     private readonly ICityRepository _city = city;
     private readonly IMongoCityRepository _mongoCity = mongoCity;
+    private readonly IRabbitmqPublisherService _publisher = publisher;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
 
     public void Initialize()
@@ -90,6 +93,13 @@ public class DbInitializer(
         {
             throw new CustomBadRequestException(addToRulesResult.GetErrors());
         }
+        user.UserRoles = null;
+        user.UserClaims = null;
+        user.UserTokens = null;
+        user.UserLogins = null;
+        await _publisher.PublishMessageAsync<User>(new(ActionTypes.Create, user), 
+            RabbitmqConstants.QueueNames.User,
+            RabbitmqConstants.RoutingKeys.User);
     }
 
     public async Task SeedRole(string roleName)
@@ -130,7 +140,7 @@ public class DbInitializer(
             }).ToList();
             await _province.CreateAllAsync(provinces);
             await _province.SaveChangesAsync();
-            
+
             // add provinces to mongodb
             provinces = provincesDto.Select(x => new Province
             {
@@ -160,7 +170,7 @@ public class DbInitializer(
             }).ToList();
             await _city.CreateAllAsync(cities);
             await _city.SaveChangesAsync();
-            
+
             // add cities to mongodb
             cities = citiesDto.Select(x => new City
             {
@@ -179,13 +189,16 @@ public class DbInitializer(
         {
             return;
         }
+
         var systemSellerRole = await _roleManager.FindByNameAsync(RoleNames.SystemSeller);
         if (systemSellerRole is null)
         {
             throw new CustomInternalServerException(["Admin role not found"]);
         }
-        var city=await _city.FindByAsync(nameof(City.Title), systemSeller.CityName)
+
+        var city = await _city.FindByAsync(nameof(City.Title), systemSeller.CityName)
                    ?? throw new CustomInternalServerException(["City not found"]);
+        city.Province = await _province.FindByIdAsync(city.ProvinceId);
         var isEmail = systemSeller.EmailOrPhoneNumber.IsEmail();
         user = new User
         {
@@ -198,20 +211,22 @@ public class DbInitializer(
             IsActive = true,
             EmailConfirmed = isEmail,
             PhoneNumberConfirmed = !isEmail,
-            Seller = new Seller()
+        };
+        var seller = new Seller()
+        {
+            ShopName = systemSeller.ShopName,
+            Address = systemSeller.Address,
+            DocumentStatus = DocumentStatus.Confirmed,
+            PostalCode = systemSeller.PostalCode,
+            CityId = city.Id,
+            City = city,
+            IndividualSeller = new IndividualSeller()
             {
-                ShopName = systemSeller.ShopName,
-                Address = systemSeller.Address,
-                DocumentStatus = DocumentStatus.Confirmed,
-                PostalCode = systemSeller.PostalCode,
-                CityId = city.Id,
-                IndividualSeller = new IndividualSeller()
-                {
-                    NationalId = systemSeller.NationalId,
-                    CartOrShebaNumber = systemSeller.NationalId
-                }
+                NationalId = systemSeller.NationalId,
+                CartOrShebaNumber = systemSeller.NationalId
             }
         };
+        user.Seller = seller;
 
         var result = await _userManager.CreateAsync(user);
         if (!result.Succeeded)
@@ -224,5 +239,21 @@ public class DbInitializer(
         {
             throw new CustomBadRequestException(addToRulesResult.GetErrors());
         }
+        user.UserRoles = null;
+        user.UserClaims = null;
+        user.UserTokens = null;
+        user.UserLogins = null;
+        user.Seller = null;
+        await _publisher.PublishMessageAsync<User>(new(ActionTypes.Create, user), 
+            RabbitmqConstants.QueueNames.User,
+            RabbitmqConstants.RoutingKeys.User);
+        seller.UserId = user.Id;
+        seller.User = null;
+        seller.IndividualSeller.Seller = null;
+        seller.LegalSeller = null;
+        seller.City.Province!.Cities = null;
+        await _publisher.PublishMessageAsync<Seller>(new(ActionTypes.Create, seller), 
+            RabbitmqConstants.QueueNames.Seller,
+            RabbitmqConstants.RoutingKeys.Seller);
     }
 }
