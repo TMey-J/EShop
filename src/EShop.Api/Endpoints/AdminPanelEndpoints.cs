@@ -3,6 +3,7 @@ using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Feature.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Feature.Requests.Queries;
+using EShop.Application.Features.AdminPanel.Seller.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 using EShop.Application.Features.AdminPanel.User.Requests.Commands;
@@ -51,6 +52,12 @@ public class AdminPanelEndpoints : ICarterModule
         group.MapPut(nameof(UpdateFeature), UpdateFeature);
         group.MapGet(nameof(GetFeature)+"/{id}", GetFeature);
         group.MapGet(nameof(GetAllFeatures), GetAllFeatures);
+
+        #endregion
+
+        #region Seller
+
+        group.MapGet(nameof(GetSeller)+"/{id}", GetSeller);
 
         #endregion
 
@@ -175,6 +182,16 @@ public class AdminPanelEndpoints : ICarterModule
         var response = await mediator.Send(request);
         return TypedResults.Ok(response);
     }
+    #endregion
+
+    #region Seller
+
+    private static async Task<IResult> GetSeller(long id, IMediator mediator)
+    {
+        var response = await mediator.Send(new GetSellerQueryRequest { Id = id });
+        return TypedResults.Ok(response);
+    }
+
     #endregion
 
     #endregion
