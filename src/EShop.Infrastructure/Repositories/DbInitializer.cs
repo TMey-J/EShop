@@ -220,6 +220,7 @@ public class DbInitializer(
             PostalCode = systemSeller.PostalCode,
             CityId = city.Id,
             City = city,
+            UserName = user.UserName,
             IndividualSeller = new IndividualSeller()
             {
                 NationalId = systemSeller.NationalId,

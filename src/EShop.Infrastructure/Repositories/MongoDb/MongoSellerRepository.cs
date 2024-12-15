@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Contracts.MongoDb;
+using EShop.Application.Features.AdminPanel.Seller.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
 using EShop.Application.Features.AdminPanel.User.Requests.Queries;
 using EShop.Application.Model;
@@ -12,6 +13,56 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 {
     public class MongoSellerRepository(MongoDbContext mongoDb) : MongoGenericRepository<Seller>(mongoDb),IMongoSellerRepository
     {
-        private readonly IMongoCollection<Seller> _user = mongoDb.GetCollection<Seller>();
+        private readonly IMongoCollection<Seller> _seller = mongoDb.GetCollection<Seller>();
+        public async Task<GetAllSellersQueryResponse> GetAllAsync(SearchSellerDto search)
+        {
+            var sellerQuery = _seller.AsQueryable().IgnoreQueryFilters();
+
+            #region Search
+
+            sellerQuery = sellerQuery.CreateContainsExpression(nameof(Seller.UserName), search.UserName);
+            sellerQuery = sellerQuery.CreateContainsExpression(nameof(Seller.ShopName), search.ShopName);
+            sellerQuery = sellerQuery.CreateContainsExpression(nameof(Seller.City.Title), search.City);
+            sellerQuery = sellerQuery.CreateContainsExpression(nameof(Seller.City.Province.Title), search.Province);
+
+            #endregion
+
+            #region Sort
+
+            sellerQuery = sellerQuery.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+
+            sellerQuery = sellerQuery.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+            sellerQuery = search.ActivationStatus switch
+            {
+                ActivationStatus.OnlyActive => sellerQuery.Where(x => x.IsActive),
+                ActivationStatus.False => sellerQuery.Where(x => !x.IsActive),
+                _ => sellerQuery
+            };
+            #endregion
+
+            #region Paging
+
+            (IQueryable<Seller> query, int pageCount) pagination =
+                sellerQuery.Page(search.Pagination.CurrentPage, search.Pagination.TakeRecord);
+            sellerQuery = pagination.query;
+
+            #endregion
+
+            var sellers = await MongoQueryable.ToListAsync(sellerQuery.Select
+                (x => new ShowSellerDto(x.Id,
+                    x.UserId,
+                    x.UserName,
+                    x.IsLegalPerson,
+                    x.ShopName,
+                    x.Logo,
+                    x.Website,
+                    x.City!.Title,
+                    x.City.Province!.Title,
+                    x.CreatedDateTime,
+                    x.DocumentStatus,
+                    null)));
+
+            return new GetAllSellersQueryResponse(sellers, search, pagination.pageCount);
+        }
     }
 }

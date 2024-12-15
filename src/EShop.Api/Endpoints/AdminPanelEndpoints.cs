@@ -58,6 +58,7 @@ public class AdminPanelEndpoints : ICarterModule
         #region Seller
 
         group.MapGet(nameof(GetSeller)+"/{id}", GetSeller);
+        group.MapGet(nameof(GetAllSellers), GetAllSellers);
 
         #endregion
 
@@ -189,6 +190,13 @@ public class AdminPanelEndpoints : ICarterModule
     private static async Task<IResult> GetSeller(long id, IMediator mediator)
     {
         var response = await mediator.Send(new GetSellerQueryRequest { Id = id });
+        return TypedResults.Ok(response);
+    }
+    private static async Task<IResult> GetAllSellers(
+        [FromBody]GetAllSellersQueryRequest request,
+        IMediator mediator)
+    {
+        var response = await mediator.Send(request);
         return TypedResults.Ok(response);
     }
 

@@ -12,11 +12,15 @@ public record SearchSellerDto : BaseSearchDto
     public string ShopName { get; init; } = string.Empty;
 
     public string City { get; init; } = string.Empty;
-}
+    
+    public string Province { get; init; } = string.Empty;
+}    
+
 
 public record ShowSellerDto(
     long Id,
     long UserId,
+    string UserName,
     bool IsLegal,
     string ShopName,
     string? Logo,

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using EShop.Domain.Entities.Identity;
 
 namespace EShop.Domain.Entities;
@@ -6,6 +7,8 @@ namespace EShop.Domain.Entities;
 public class Seller : BaseEntity
 {
     public long UserId { get; set; }
+    [NotMapped]
+    public string UserName { get; set; }=string.Empty;
 
     public bool IsLegalPerson { get; set; }
     [Required]

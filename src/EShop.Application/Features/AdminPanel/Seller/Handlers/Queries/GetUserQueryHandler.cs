@@ -1,6 +1,5 @@
 ﻿using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Features.AdminPanel.Seller.Requests.Queries;
-using EShop.Application.Features.AdminPanel.User.Requests.Queries;
 
 namespace EShop.Application.Features.AdminPanel.Seller.Handlers.Queries;
 
@@ -30,6 +29,7 @@ public class GetSellerQueryHandler(IMongoSellerRepository seller) :
         
         var showSeller = new ShowSellerDto(seller.Id,
             seller.UserId,
+            seller.UserName,
             seller.IsLegalPerson,
             seller.ShopName,
             seller.Logo,
