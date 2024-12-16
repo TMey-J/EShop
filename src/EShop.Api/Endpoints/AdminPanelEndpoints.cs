@@ -3,6 +3,7 @@ using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Feature.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Feature.Requests.Queries;
+using EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Seller.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
@@ -59,6 +60,7 @@ public class AdminPanelEndpoints : ICarterModule
 
         group.MapGet(nameof(GetSeller)+"/{id}", GetSeller);
         group.MapGet(nameof(GetAllSellers), GetAllSellers);
+        group.MapPost(nameof(CreateSeller), CreateSeller);
 
         #endregion
 
@@ -198,6 +200,12 @@ public class AdminPanelEndpoints : ICarterModule
     {
         var response = await mediator.Send(request);
         return TypedResults.Ok(response);
+    }
+    
+    private static async Task<IResult> CreateSeller(CreateSellerCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
     }
 
     #endregion

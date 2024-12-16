@@ -33,7 +33,7 @@ public class Seller : BaseEntity
 
     public bool IsActive { get; set; } = true;
 
-    public DateTime CreatedDateTime { get; set; }
+    public DateTime CreatedDateTime { get; set; }=DateTime.Now;
     
     public DocumentStatus DocumentStatus { get; set; }
     

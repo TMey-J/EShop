@@ -9,6 +9,7 @@
             public const string MaxLength = "{DisplayName} نباید بیشتر از {MaxLength} کاراکتر باشد";
             public const string RegularExpression = "{DisplayName} را به درستی وارد کنید";
             public const string Length = "{DisplayName} باید از {MinLength} تا {MaxLength} کاراکتر باشد";
+            public const string ExactLength = "{DisplayName} باید {MinLength} کاراکتر باشد";
             public const string GreaterThanZero = "{DisplayName} باید بزرگ تر از 0 باشد";
             public const string Between = "{DisplayName} باید بین {From} تا {To} باشد";
             public static string NotInEnum(int min,int max) => $"مقدار فیلد '{{DisplayName}}' معتبر نیست.باید بین {min} تا {max} باشد";

@@ -75,7 +75,8 @@ public static class FileHelpers
     public enum MaximumFilesSizeInMegaByte
     {
         UserAvatar=2,
-        CategoryPicture=5
+        CategoryPicture=5,
+        SellerLogo=3
     }
 
     // private static async Task<string> ConvertImageToBase64(this string imgName, string path)

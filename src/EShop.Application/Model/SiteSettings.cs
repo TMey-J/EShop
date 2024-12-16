@@ -69,6 +69,7 @@ public class FilesPath
 {
     public string Category { get; set; } = null!;
     public string UserAvatar { get; set; } = null!;
+    public string SellerLogo { get; set; } = null!;
 }
 public class AdminUser
 {
