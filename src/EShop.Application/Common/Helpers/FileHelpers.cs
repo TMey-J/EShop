@@ -78,15 +78,4 @@ public static class FileHelpers
         CategoryPicture=5,
         SellerLogo=3
     }
-
-    // private static async Task<string> ConvertImageToBase64(this string imgName, string path)
-    // {
-    //     string imagePath = new(Path.Combine(Directory.GetCurrentDirectory(), path, imgName));
-    //     if (!File.Exists(imagePath))
-    //         throw new CustomInternalServerException(["عکس مورد نظر پیدا نمیشود"]);
-    //
-    //     byte[] imageArray = await File.ReadAllBytesAsync(imagePath.ToString());
-    //     var base64ImageRepresentation = Convert.ToBase64String(imageArray);
-    //     return base64ImageRepresentation;
-    // }
 }

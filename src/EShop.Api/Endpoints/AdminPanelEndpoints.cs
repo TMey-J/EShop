@@ -61,6 +61,7 @@ public class AdminPanelEndpoints : ICarterModule
         group.MapGet(nameof(GetSeller)+"/{id}", GetSeller);
         group.MapGet(nameof(GetAllSellers), GetAllSellers);
         group.MapPost(nameof(CreateSeller), CreateSeller);
+        group.MapPut(nameof(UpdateSeller), UpdateSeller);
 
         #endregion
 
@@ -207,7 +208,11 @@ public class AdminPanelEndpoints : ICarterModule
         await mediator.Send(request);
         return TypedResults.Ok();
     }
-
+    private static async Task<IResult> UpdateSeller(UpdateSellerCommandRequest request, IMediator mediator)
+    {
+        await mediator.Send(request);
+        return TypedResults.Ok();
+    }
     #endregion
 
     #endregion

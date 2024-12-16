@@ -31,7 +31,6 @@ public class CreateSellerCommandHandler(
         }
         var city=await _cityRepository.FindByIdAsync(request.CityId)??
                    throw new CustomBadRequestException(["شهر یافت نشد"]);
-        //TODO:check for valid nationalId id
         var seller = new Domain.Entities.Seller()
         {
             UserId = user.Id,
@@ -58,6 +57,7 @@ public class CreateSellerCommandHandler(
                 ShabaNumber = request.LegalSeller.ShabaNumber
             };
             //TODO: check for valid shaba number
+            //TODO: check for register number
         }
         else if(request.IndividualSeller != null)
         {
@@ -67,6 +67,7 @@ public class CreateSellerCommandHandler(
                 CartOrShebaNumber = request.IndividualSeller.CartOrShebaNumber,
                 AboutSeller = request.IndividualSeller.AboutSeller
             };
+            //TODO:check for valid nationalId id
             //TODO:check for valid shaba or cart number
         }
         else
