@@ -11,9 +11,11 @@ using Tag = EShop.Domain.Entities.Tag;
 
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
-    public class MongoSellerRepository(MongoDbContext mongoDb) : MongoGenericRepository<Seller>(mongoDb),IMongoSellerRepository
+    public class MongoSellerRepository(MongoDbContext mongoDb)
+        : MongoGenericRepository<Seller>(mongoDb), IMongoSellerRepository
     {
         private readonly IMongoCollection<Seller> _seller = mongoDb.GetCollection<Seller>();
+
         public async Task<GetAllSellersQueryResponse> GetAllAsync(SearchSellerDto search)
         {
             var sellerQuery = _seller.AsQueryable().IgnoreQueryFilters();
@@ -38,6 +40,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                 ActivationStatus.False => sellerQuery.Where(x => !x.IsActive),
                 _ => sellerQuery
             };
+
             #endregion
 
             #region Paging
@@ -49,18 +52,39 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             #endregion
 
             var sellers = await MongoQueryable.ToListAsync(sellerQuery.Select
-                (x => new ShowSellerDto(x.Id,
-                    x.UserId,
-                    x.UserName,
-                    x.IsLegalPerson,
-                    x.ShopName,
-                    x.Logo,
-                    x.Website,
-                    x.City!.Title,
-                    x.City.Province!.Title,
-                    x.CreatedDateTime,
-                    x.DocumentStatus,
-                    null)));
+            (x => new ShowSellerDto(x.Id,
+                x.UserId,
+                x.UserName,
+                x.IsLegalPerson,
+                x.ShopName,
+                x.Logo,
+                x.Website, 
+                x.City!.Title,
+                x.City.Province!.Title,
+                x.PostalCode,
+                x.Address,
+                x.RejectReason,
+                x.CreatedDateTime,
+                x.DocumentStatus,
+                x.LegalSeller != null
+                    ? new LegalSellerDto()
+                    {
+                        CompanyName = x.LegalSeller.CompanyName,
+                        RegisterNumber = x.LegalSeller.RegisterNumber,
+                        EconomicCode = x.LegalSeller.EconomicCode,
+                        SignatureOwners = x.LegalSeller.SignatureOwners,
+                        ShabaNumber = x.LegalSeller.ShabaNumber,
+                        CompanyType = x.LegalSeller.CompanyType
+                    }
+                    : null,
+                x.IndividualSeller != null
+                    ? new IndividualSellerDto()
+                    {
+                        NationalId = x.IndividualSeller.NationalId,
+                        CartOrShebaNumber = x.IndividualSeller.CartOrShebaNumber,
+                        AboutSeller = x.IndividualSeller.AboutSeller
+                    }
+                    : null)));
 
             return new GetAllSellersQueryResponse(sellers, search, pagination.pageCount);
         }

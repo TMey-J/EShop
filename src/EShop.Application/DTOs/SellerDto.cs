@@ -27,23 +27,13 @@ public record ShowSellerDto(
     string? WebSite,
     string City,
     string Province,
-    DateTime CreatedDate,
-    DocumentStatus DocumentStatus,
-    ShowSellerDetailsDto? Details
-);
-
-public record ShowSellerDetailsDto(
-    string? RejectReason,
     string PostalCode,
     string Address,
-    string? NationalId,
-    string? CartOrShebaNumber,
-    string? AboutSeller,
-    string? CompanyName,
-    string? RegisterNumber,
-    string? EconomicCode,
-    string? SignatureOwners,
-    CompanyType? CompanyType
+    string? RejectReason,
+    DateTime CreatedDate,
+    DocumentStatus DocumentStatus,
+    LegalSellerDto? Legal,
+    IndividualSellerDto? Individual
 );
 
 public record IndividualSellerDto

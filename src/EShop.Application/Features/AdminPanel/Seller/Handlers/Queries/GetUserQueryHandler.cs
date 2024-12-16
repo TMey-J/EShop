@@ -12,21 +12,29 @@ public class GetSellerQueryHandler(IMongoSellerRepository seller) :
     {
         var seller = await _seller.FindByIdAsync(request.Id) ??
                    throw new NotFoundException(NameToReplaceInException.Seller);
-        
-        var showSellerDetails = new ShowSellerDetailsDto(
-            seller.RejectReason,
-            seller.PostalCode,
-            seller.Address,
-            seller.IndividualSeller?.NationalId,
-            seller.IndividualSeller?.CartOrShebaNumber,
-            seller.IndividualSeller?.AboutSeller,
-            seller.LegalSeller?.CompanyName,
-            seller.LegalSeller?.RegisterNumber,
-            seller.LegalSeller?.EconomicCode,
-            seller.LegalSeller?.SignatureOwners,
-            seller.LegalSeller?.CompanyType
-            );
-        
+        LegalSellerDto? legalSeller = null;
+        IndividualSellerDto? individualSeller = null;
+        if (seller.LegalSeller!=null)
+        {
+            legalSeller = new LegalSellerDto
+            {
+                CompanyName = seller.LegalSeller.CompanyName,
+                RegisterNumber = seller.LegalSeller.RegisterNumber,
+                EconomicCode = seller.LegalSeller.EconomicCode,
+                SignatureOwners = seller.LegalSeller.SignatureOwners,
+                ShabaNumber = seller.LegalSeller.ShabaNumber,
+                CompanyType = seller.LegalSeller.CompanyType
+            };
+        }
+        if(seller.IndividualSeller!=null)
+        {
+            individualSeller = new IndividualSellerDto
+            {
+                NationalId = seller.IndividualSeller.NationalId,
+                CartOrShebaNumber = seller.IndividualSeller.CartOrShebaNumber,
+                AboutSeller = seller.IndividualSeller.AboutSeller
+            };
+        }
         var showSeller = new ShowSellerDto(seller.Id,
             seller.UserId,
             seller.UserName,
@@ -36,9 +44,14 @@ public class GetSellerQueryHandler(IMongoSellerRepository seller) :
             seller.Website,
             seller.City?.Title??"",
             seller.City?.Province?.Title??"",
+            seller.PostalCode,
+            seller.Address,
+            seller.RejectReason,
             seller.CreatedDateTime,
             seller.DocumentStatus,
-            showSellerDetails);
+            legalSeller,
+            individualSeller
+            );
         return new GetSellerQueryResponse(showSeller);
     }
 }
