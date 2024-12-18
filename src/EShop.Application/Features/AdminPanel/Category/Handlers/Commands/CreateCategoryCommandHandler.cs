@@ -27,7 +27,7 @@ public class CreateCategoryCommandHandler(
             Picture = string.IsNullOrWhiteSpace(request.PictureBase64) ? null :
             await _fileServices.UploadFileAsync(request.PictureBase64,
                 _filesPath.Category,
-                (int)FileHelpers.MaximumFilesSizeInMegaByte.CategoryPicture)
+                MaximumFilesSizeInMegaByte.CategoryPicture)
         };
 
         if (request.Parent is not null)

@@ -18,7 +18,7 @@
         }
         public static class Subjects
         {
-            public const string VeryfyCodeMailSubject = "کد ثبت حساب کاربری";
+            public const string VerifyCodeMailSubject = "کد ثبت حساب کاربری";
         }
         public static class Errors
         {
@@ -38,7 +38,7 @@
 
             public static string DuplicatedValue(string name)
             {
-                return $"این {name} از قیل موجود است";
+                return $"این {name} از قبل موجود است";
             }
         }
     }

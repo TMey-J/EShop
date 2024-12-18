@@ -78,7 +78,7 @@ public class CreateSellerCommandHandler(
         if (!string.IsNullOrWhiteSpace(request.Logo))
         {
             seller.Logo=await _fileRepository.UploadFileAsync(request.Logo,
-                _filesPath.SellerLogo,(int)FileHelpers.MaximumFilesSizeInMegaByte.SellerLogo);
+                _filesPath.SellerLogo,MaximumFilesSizeInMegaByte.SellerLogo);
         }
         await _sellerRepository.CreateAsync(seller);
         await _sellerRepository.SaveChangesAsync();

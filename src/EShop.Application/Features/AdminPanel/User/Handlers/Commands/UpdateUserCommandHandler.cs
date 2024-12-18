@@ -73,7 +73,7 @@ public class UpdateUserCommandHandler(
         {
             user.Avatar = await _fileServices.UploadFileAsync
                 (request.NewAvatar, _siteSettings.FilesPath.UserAvatar,
-                    (int)FileHelpers.MaximumFilesSizeInMegaByte.UserAvatar,
+                    MaximumFilesSizeInMegaByte.UserAvatar,
                     user.Avatar);
         }
 

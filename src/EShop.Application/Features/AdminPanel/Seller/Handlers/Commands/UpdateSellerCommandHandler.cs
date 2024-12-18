@@ -100,7 +100,7 @@ public class UpdateSellerCommandHandler(
         if (!string.IsNullOrWhiteSpace(request.Logo))
         {
             seller.Logo=await _fileRepository.UploadFileAsync(request.Logo,
-                _filesPath.SellerLogo,(int)FileHelpers.MaximumFilesSizeInMegaByte.SellerLogo,seller.Logo);
+                _filesPath.SellerLogo,MaximumFilesSizeInMegaByte.SellerLogo,seller.Logo);
         }
         _sellerRepository.Update(seller);
         await _sellerRepository.SaveChangesAsync();

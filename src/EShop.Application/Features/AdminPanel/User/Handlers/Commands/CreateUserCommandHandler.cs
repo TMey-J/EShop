@@ -39,7 +39,7 @@ public class CreateUserCommandHandler(
             Avatar = !string.IsNullOrWhiteSpace(request.Avatar)
                 ? await _fileServices.UploadFileAsync(request.Avatar,
                     _filesPath.UserAvatar,
-                    (int)FileHelpers.MaximumFilesSizeInMegaByte.UserAvatar)
+                    MaximumFilesSizeInMegaByte.UserAvatar)
                 : null
         };
         if (userFound.isEmail)

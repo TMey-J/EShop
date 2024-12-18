@@ -45,7 +45,7 @@ public class ReSendVerificationCodeCommandHandler(IApplicationUserManager userMa
             };
             var url = QueryHelpers.AddQueryString(string.Empty, param);// the url should be filled based on the address of the front-end page
             var emailBody = EmailTemplates.VerifyUserCodeEmail(url, user.value.Email!);
-            await _emailSender.SendEmailAsync(user.value.Email!, Subjects.VeryfyCodeMailSubject, emailBody);
+            await _emailSender.SendEmailAsync(user.value.Email!, Subjects.VerifyCodeMailSubject, emailBody);
         }
         else
         {

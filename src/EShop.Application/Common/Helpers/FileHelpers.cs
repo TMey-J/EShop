@@ -41,7 +41,9 @@ public static class FileHelpers
             throw new CustomInternalServerException(["file is not base64"]);
         }
     }
-    public static double GetFileSizeFromBase64String(this string base64String, bool applyPaddingsRules = false, UnitsOfMeasurement unitsOfMeasurement = UnitsOfMeasurement.MegaByte)
+    public static double GetFileSizeFromBase64String(this string base64String,
+        bool applyPaddingsRules = false,
+        UnitsOfMeasurement unitsOfMeasurement = UnitsOfMeasurement.MegaByte)
     {
         if (string.IsNullOrEmpty(base64String)) return 0;
             
@@ -71,11 +73,5 @@ public static class FileHelpers
         /// MB.
         /// </summary>
         MegaByte = 1_048_576
-    }
-    public enum MaximumFilesSizeInMegaByte
-    {
-        UserAvatar=2,
-        CategoryPicture=5,
-        SellerLogo=3
     }
 }

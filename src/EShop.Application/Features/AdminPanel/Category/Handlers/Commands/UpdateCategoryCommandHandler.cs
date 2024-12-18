@@ -26,7 +26,7 @@ public class UpdateCategoryCommandHandler(
                 await _fileServices.UploadFileAsync(
                     request.NewPicture,
                     _filesPath.Category,
-                    (int)FileHelpers.MaximumFilesSizeInMegaByte.CategoryPicture,
+                    MaximumFilesSizeInMegaByte.CategoryPicture,
                     category.Picture);
         }
 
