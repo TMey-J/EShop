@@ -2,7 +2,9 @@
 {
     public interface IFileRepository
     {
-        Task<string> UploadFileAsync(string base64, string path,int maximumFileSizeInMegaByte, string? oldFileName = null);
+        SaveFileBase64Model ReadyToSaveFileAsync(string base64, string path,int maximumFileSizeInMegaByte, string? oldFileName = null);
+        
+        Task SaveFileAsync(SaveFileBase64Model saveFile);
         void DeleteFile(string fileName, string path);
     }
 }

@@ -6,6 +6,7 @@ using EShop.Application.Model;
 using EShop.Domain.Entities.Identity;
 using EShop.Infrastructure.Databases;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -28,6 +29,7 @@ public class ApplicationUserManager(
 {
     private readonly string _defaultUserAvatar = siteSettings.Value.DefaultUserAvatar;
     private readonly DbSet<User> _user = context.Set<User>();
+    private readonly SQLDbContext _context=context;
 
     public async Task<(User?, bool)> FindByEmailOrPhoneNumberWithCheckIsEmailAsync(string emailOrPhoneNumber)
     {
@@ -77,6 +79,11 @@ public class ApplicationUserManager(
             x.Avatar ?? _defaultUserAvatar)).ToListAsync();
 
         return new GetAllUsersQueryResponse(users, search, pagination.pageCount);
+    }
+
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await _context.Database.BeginTransactionAsync();
     }
 
     public async Task<User?> FindByPhoneNumberAsync(string phoneNumber)

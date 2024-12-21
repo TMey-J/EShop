@@ -1,4 +1,5 @@
 ﻿using EShop.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EShop.Application.Contracts;
 
@@ -14,6 +15,9 @@ public interface IGenericRepository<TEntity>
     Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue);
     Task<bool> IsAnyAsync();
     Task SaveChangesAsync();
+    Task<IDbContextTransaction> BeginTransactionAsync();
+    
+    
 
 
 }

@@ -6,7 +6,7 @@ namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 public class UpdateUserCommandHandler(
     IApplicationUserManager userManager,
     IApplicationRoleManager roleManager,
-    IFileRepository fileServices,
+    IFileRepository fileRepository,
     IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger,
     IRabbitmqPublisherService rabbitmqPublisher) : IRequestHandler<UpdateUserCommandRequest, UpdateUserCommandResponse>
@@ -14,7 +14,7 @@ public class UpdateUserCommandHandler(
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
     private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
-    private readonly IFileRepository _fileServices = fileServices;
+    private readonly IFileRepository _fileRepository = fileRepository;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
@@ -48,7 +48,14 @@ public class UpdateUserCommandHandler(
             user.PasswordHash = request.Password.HashPassword(out var salt);
             user.PasswordSalt = salt;
         }
+        SaveFileBase64Model? saveFile = null;
 
+        if (!string.IsNullOrWhiteSpace(request.Avatar))
+        {
+            saveFile = _fileRepository.ReadyToSaveFileAsync(request.Avatar,
+                _siteSettings.FilesPath.SellerLogo, MaximumFilesSizeInMegaByte.SellerLogo,user.Avatar);
+            user.Avatar = saveFile.fileNameWithExtention;
+        }
         #region role logic
 
         request.Roles = request.Roles.Select(x => x.ToUpper()).ToList();
@@ -68,31 +75,38 @@ public class UpdateUserCommandHandler(
         }
 
         #endregion
-
-        if (!string.IsNullOrWhiteSpace(request.NewAvatar))
-        {
-            user.Avatar = await _fileServices.UploadFileAsync
-                (request.NewAvatar, _siteSettings.FilesPath.UserAvatar,
-                    MaximumFilesSizeInMegaByte.UserAvatar,
-                    user.Avatar);
-        }
-
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
-        {
-            throw new CustomBadRequestException(result.GetErrors());
-        }
-        user.UserRoles = null;
-        user.UserClaims = null;
-        user.UserTokens = null;
-        user.UserLogins = null;
-        await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Identity.User>(
-            new(ActionTypes.Create,user),
-            RabbitmqConstants.QueueNames.User,
-            RabbitmqConstants.RoutingKeys.User);
         
-        _logger.LogInformation(
-            $"user with Id {user.Id} has been updated by admin");
-        return new UpdateUserCommandResponse();
+        await using var transaction = await _userManager.BeginTransactionAsync();
+
+        try
+        {
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new CustomBadRequestException(result.GetErrors());
+            }
+            if (saveFile is not null)
+            {
+                await _fileRepository.SaveFileAsync(saveFile);
+            }
+            user.UserRoles = null;
+            user.UserClaims = null;
+            user.UserTokens = null;
+            user.UserLogins = null;
+            await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Identity.User>(
+                new(ActionTypes.Create,user),
+                RabbitmqConstants.QueueNames.User,
+                RabbitmqConstants.RoutingKeys.User);
+        
+            _logger.LogInformation(
+                $"user with Id {user.Id} has been updated by admin");
+            return new UpdateUserCommandResponse();
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            
+            throw;
+        }
     }
 }

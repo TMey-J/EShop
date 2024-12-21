@@ -15,7 +15,7 @@ public record UpdateUserCommandRequest : IRequest<UpdateUserCommandResponse>
     public string? Password { get; set; } = string.Empty;
 
     [DisplayName("آواتار")]
-    public string? NewAvatar { get; set; }
+    public string? Avatar { get; set; }
     
     public bool IsActive { get; set; }
     

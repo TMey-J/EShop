@@ -9,8 +9,8 @@ public class UpdateSellerCommandHandler(
     IFileRepository fileRepository,
     IOptionsSnapshot<SiteSettings> siteSettings,
     IApplicationUserManager userManager,
-    IRabbitmqPublisherService rabbitmqPublisher):
-    IRequestHandler<UpdateSellerCommandRequest,UpdateSellerCommandResponse>
+    IRabbitmqPublisherService rabbitmqPublisher) :
+    IRequestHandler<UpdateSellerCommandRequest, UpdateSellerCommandResponse>
 {
     private readonly ISellerRepository _sellerRepository = sellerRepository;
     private readonly ICityRepository _cityRepository = cityRepository;
@@ -19,19 +19,20 @@ public class UpdateSellerCommandHandler(
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
 
-    public async Task<UpdateSellerCommandResponse> Handle(UpdateSellerCommandRequest request, CancellationToken cancellationToken)
+    public async Task<UpdateSellerCommandResponse> Handle(UpdateSellerCommandRequest request,
+        CancellationToken cancellationToken)
     {
         var seller = await _sellerRepository.FindByIdWithIncludeTypeOfPerson(request.SellerId) ??
-                   throw new CustomBadRequestException(["فروشنده یافت نشد"]);
-        
-        var city=await _cityRepository.FindByIdAsync(request.CityId)??
+                     throw new CustomBadRequestException(["فروشنده یافت نشد"]);
+
+        var city = await _cityRepository.FindByIdAsync(request.CityId) ??
                    throw new CustomBadRequestException(["شهر یافت نشد"]);
 
 
         #region Map Seller
 
-        seller.UserName = seller.User?.UserName??throw new CustomBadRequestException(["کاربر یافت نشد"]);
-        
+        seller.UserName = seller.User?.UserName ?? throw new CustomBadRequestException(["کاربر یافت نشد"]);
+
         seller.Address = request.Address;
         seller.CityId = city.Id;
         seller.City = city;
@@ -42,8 +43,8 @@ public class UpdateSellerCommandHandler(
         seller.ShopName = request.ShopName;
 
         #endregion
-        
-        if (seller is { LegalSeller: not null, IsLegalPerson: true } )
+
+        if (seller is { LegalSeller: not null, IsLegalPerson: true })
         {
             if (request.LegalSeller == null)
             {
@@ -60,18 +61,19 @@ public class UpdateSellerCommandHandler(
             seller.LegalSeller.ShabaNumber = request.LegalSeller.ShabaNumber;
 
             #endregion
-            
+
             if (seller.LegalSeller?.ShabaNumber != request.LegalSeller.ShabaNumber)
             {
                 //TODO: check for valid shaba number 
             }
+
             if (seller.LegalSeller?.RegisterNumber != request.LegalSeller.RegisterNumber)
             {
                 //TODO: check for register number
             }
-            
         }
-        if(seller is { IndividualSeller: not null, IsLegalPerson: false })
+
+        if (seller is { IndividualSeller: not null, IsLegalPerson: false })
         {
             if (request.IndividualSeller == null)
             {
@@ -85,34 +87,53 @@ public class UpdateSellerCommandHandler(
             seller.IndividualSeller.AboutSeller = request.IndividualSeller.AboutSeller;
 
             #endregion
-            
+
             if (seller.IndividualSeller?.NationalId != request.IndividualSeller.NationalId)
             {
                 //TODO:check for valid nationalId id
             }
+
             if (seller.IndividualSeller?.CartOrShebaNumber != request.IndividualSeller.CartOrShebaNumber)
             {
                 //TODO: check for valid cart or shaba number 
             }
-            
         }
+
+        SaveFileBase64Model? saveFile = null;
 
         if (!string.IsNullOrWhiteSpace(request.Logo))
         {
-            seller.Logo=await _fileRepository.UploadFileAsync(request.Logo,
-                _filesPath.SellerLogo,MaximumFilesSizeInMegaByte.SellerLogo,seller.Logo);
+            saveFile = _fileRepository.ReadyToSaveFileAsync(request.Logo,
+                _filesPath.SellerLogo, MaximumFilesSizeInMegaByte.SellerLogo, seller.Logo);
+            seller.Logo = saveFile.fileNameWithExtention;
         }
-        _sellerRepository.Update(seller);
-        await _sellerRepository.SaveChangesAsync();
-        
-        seller.User = null;
-        if(seller.IndividualSeller is not null)
-            seller.IndividualSeller.Seller = null;
-        if(seller.LegalSeller is not null)
-            seller.LegalSeller.Seller = null;
-        await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Seller>(new(ActionTypes.Update, seller),
-            RabbitmqConstants.QueueNames.Seller,
-            RabbitmqConstants.RoutingKeys.Seller);
-        return new UpdateSellerCommandResponse();
+
+        await using var transaction = await _sellerRepository.BeginTransactionAsync();
+        try
+        {
+            _sellerRepository.Update(seller);
+            await _sellerRepository.SaveChangesAsync();
+
+            if (saveFile is not null)
+            {
+                await _fileRepository.SaveFileAsync(saveFile);
+            }
+
+            seller.User = null;
+            if (seller.IndividualSeller is not null)
+                seller.IndividualSeller.Seller = null;
+            if (seller.LegalSeller is not null)
+                seller.LegalSeller.Seller = null;
+            await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Seller>(new(ActionTypes.Update, seller),
+                RabbitmqConstants.QueueNames.Seller,
+                RabbitmqConstants.RoutingKeys.Seller);
+            await transaction.CommitAsync(cancellationToken);
+            return new UpdateSellerCommandResponse();
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }

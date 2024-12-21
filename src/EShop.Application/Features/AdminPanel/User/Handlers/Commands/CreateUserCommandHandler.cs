@@ -6,7 +6,7 @@ namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 public class CreateUserCommandHandler(
     IApplicationUserManager userManager,
     IApplicationRoleManager roleManager,
-    IFileRepository fileServices,
+    IFileRepository fileRepository,
     IOptionsSnapshot<SiteSettings> siteSettings,
     ILogger<RegisterCommandHandler> logger,
     IRabbitmqPublisherService rabbitmqPublisher) : IRequestHandler<CreateUserCommandRequest, CreateUserCommandResponse>
@@ -14,7 +14,7 @@ public class CreateUserCommandHandler(
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IApplicationRoleManager _roleManager = roleManager;
-    private readonly IFileRepository _fileServices = fileServices;
+    private readonly IFileRepository _fileRepository = fileRepository;
     private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
@@ -28,7 +28,7 @@ public class CreateUserCommandHandler(
             throw new DuplicateException("کاربر");
         }
 
-        userFound.user = new()
+        var user = new Domain.Entities.Identity.User()
         {
             UserName = request.UserName,
             Email = userFound.isEmail ? request.EmailOrPhoneNumber : null,
@@ -36,56 +36,82 @@ public class CreateUserCommandHandler(
             PasswordHash = request.Password.HashPassword(out var salt),
             PasswordSalt = salt,
             IsActive = true,
-            Avatar = !string.IsNullOrWhiteSpace(request.Avatar)
-                ? await _fileServices.UploadFileAsync(request.Avatar,
-                    _filesPath.UserAvatar,
-                    MaximumFilesSizeInMegaByte.UserAvatar)
-                : null
         };
+        SaveFileBase64Model? saveFile = null;
+
+        if (!string.IsNullOrWhiteSpace(request.Avatar))
+        {
+            saveFile = _fileRepository.ReadyToSaveFileAsync(request.Avatar,
+                _filesPath.SellerLogo, MaximumFilesSizeInMegaByte.SellerLogo);
+            user.Avatar = saveFile.fileNameWithExtention;
+        }
+
         if (userFound.isEmail)
         {
-            userFound.user.EmailConfirmed = true;
+            user.EmailConfirmed = true;
         }
         else
         {
-            userFound.user.PhoneNumberConfirmed = true;
+            user.PhoneNumberConfirmed = true;
         }
 
-        var result = await _userManager.CreateAsync(userFound.user);
-        if (!result.Succeeded)
+        
+        await using var transaction = await _userManager.BeginTransactionAsync();
+        try
         {
-            throw new CustomInternalServerException(result.GetErrors());
+            var result = await _userManager.CreateAsync(user);
+            if (!result.Succeeded)
+            {
+                throw new CustomInternalServerException(result.GetErrors());
+            }
+            if (saveFile is not null)
+            {
+                await _fileRepository.SaveFileAsync(saveFile);
+            }
+
+            #region role logic
+
+            request.Roles = request.Roles.Select(x => x.ToUpper()).ToList();
+            var notExistsRolesName = await _roleManager.NotExistsRolesNameAsync(request.Roles);
+            if (notExistsRolesName.Count > 0)
+            {
+                throw new CustomBadRequestException(Errors.NotExistsRolesErrors(notExistsRolesName));
+            }
+
+            var addToRulesResult = await _userManager.AddToRolesAsync(user, request.Roles);
+            if (!addToRulesResult.Succeeded)
+            {
+                throw new CustomBadRequestException(addToRulesResult.GetErrors());
+            }
+
+
+            #endregion
+            
+            await _userManager.UpdateAsync(user);
+
+            user.UserRoles = null;
+            user.UserClaims = null;
+            user.UserTokens = null;
+            user.UserLogins = null;
+            await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Identity.User>(
+                new(ActionTypes.Create, user),
+                RabbitmqConstants.QueueNames.User,
+                RabbitmqConstants.RoutingKeys.User);
+            
+            await transaction.CommitAsync(cancellationToken);
+            _logger.LogInformation(
+                $"user with phone Number/email {user.Email ?? user.PhoneNumber} has been created by admin");
+            return new CreateUserCommandResponse();
         }
-
-        #region role logic
-
-        request.Roles = request.Roles.Select(x => x.ToUpper()).ToList();
-        var notExistsRolesName = await _roleManager.NotExistsRolesNameAsync(request.Roles);
-        if (notExistsRolesName.Count > 0)
+        catch
         {
-            throw new CustomBadRequestException(Errors.NotExistsRolesErrors(notExistsRolesName));
+            await transaction.RollbackAsync(cancellationToken);
+            
+            if (saveFile is not null)
+            {
+                _fileRepository.DeleteFile(saveFile.fileNameWithExtention, _filesPath.UserAvatar);
+            }
+            throw;
         }
-
-        var addToRulesResult = await _userManager.AddToRolesAsync(userFound.user, request.Roles);
-        if (!addToRulesResult.Succeeded)
-        {
-            throw new CustomBadRequestException(addToRulesResult.GetErrors());
-        }
-
-        await _userManager.UpdateAsync(userFound.user);
-
-        #endregion
-
-        userFound.user.UserRoles = null;
-        userFound.user.UserClaims = null;
-        userFound.user.UserTokens = null;
-        userFound.user.UserLogins = null;
-        await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Identity.User>(
-            new(ActionTypes.Create, userFound.user),
-            RabbitmqConstants.QueueNames.User,
-            RabbitmqConstants.RoutingKeys.User);
-        _logger.LogInformation(
-            $"user with phone Number/email {userFound.user.Email ?? userFound.user.PhoneNumber} has been created by admin");
-        return new CreateUserCommandResponse();
     }
 }

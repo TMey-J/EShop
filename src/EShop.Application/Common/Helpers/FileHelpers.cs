@@ -24,23 +24,6 @@ public static class FileHelpers
             _ => string.Empty
         };
     }
-    public static async Task SaveFileBase64Async(SaveFileBase64Model model)
-    {
-        var filePath = Path.Combine(Directory.GetCurrentDirectory(), model.path);
-        if (!Directory.Exists(filePath))
-            Directory.CreateDirectory(filePath);
-        var fullFilePath = filePath + $"/{model.fileName}.{model.extension}";
-        try
-        {
-            var fileBytes = Convert.FromBase64String(model.fileBase64);
-            await File.WriteAllBytesAsync(fullFilePath, fileBytes);
-
-        }
-        catch (FormatException)
-        {
-            throw new CustomInternalServerException(["file is not base64"]);
-        }
-    }
     public static double GetFileSizeFromBase64String(this string base64String,
         bool applyPaddingsRules = false,
         UnitsOfMeasurement unitsOfMeasurement = UnitsOfMeasurement.MegaByte)

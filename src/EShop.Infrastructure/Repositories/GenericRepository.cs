@@ -2,6 +2,7 @@
 using EShop.Domain.Entities;
 using EShop.Infrastructure.Databases;
 using EShop.Application.Common.Helpers;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EShop.Infrastructure.Repositories;
 
@@ -37,6 +38,11 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
     public async Task SaveChangesAsync()
     {
        await _context.SaveChangesAsync();
+    }
+
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await _context.Database.BeginTransactionAsync();
     }
 
     public void SoftDeleteAsync(TEntity entity)
