@@ -21,6 +21,7 @@ public class UpdateTagCommandHandler(ITagRepository tagRepository,IRabbitmqPubli
             throw new DuplicateException(NameToReplaceInException.Tag);
 
         tag.Title = request.Title;
+        tag.IsConfirmed = request.IsConfirmed;
         await _tagRepository.SaveChangesAsync();
         await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Tag>(
             new(ActionTypes.Update, tag),

@@ -1,6 +1,4 @@
-﻿using Blogger.Application.Common.Exceptions;
-using EShop.Application.Common.Exceptions;
-using EShop.Application.Contracts.Services;
+﻿using EShop.Application.Common.Exceptions;
 using EShop.Application.Model;
 using Microsoft.Extensions.Logging;
 

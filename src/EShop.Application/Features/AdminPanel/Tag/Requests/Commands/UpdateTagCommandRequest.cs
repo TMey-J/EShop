@@ -7,5 +7,7 @@ public record UpdateTagCommandRequest:IRequest<UpdateTagCommandResponse>
     
     [DisplayName("عنوان")]
     public string Title { get; set; } = string.Empty;
+
+    public bool IsConfirmed { get; set; }
 }
 public record UpdateTagCommandResponse;
