@@ -24,7 +24,7 @@ public class GetAllTagsQueryHandlerTests
         var tagTitle = "test";
         var tags = new List<ShowTagDto>()
         {
-           new(tagId, tagTitle)
+           new(tagId, tagTitle,true)
         };
         
         var search = new SearchTagDto()

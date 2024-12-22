@@ -38,7 +38,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             #endregion
 
             var tags = await MongoQueryable.ToListAsync(tagQuery.Select
-                (x => new ShowTagDto(x.Id, x.Title)));
+                (x => new ShowTagDto(x.Id, x.Title,x.IsConfirmed)));
 
             return new GetAllTagsQueryResponse(tags, search, pagination.pageCount);
         }
