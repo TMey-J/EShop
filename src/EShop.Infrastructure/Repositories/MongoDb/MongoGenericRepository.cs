@@ -4,10 +4,11 @@ using MongoDB.Driver;
 
 namespace EShop.Infrastructure.Repositories.MongoDb;
 
-public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb) : IMongoGenericRepository<TEntity>
+public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb,string?collectionName=null) :
+    IMongoGenericRepository<TEntity>
     where TEntity : BaseEntity
 {
-    private readonly IMongoCollection<TEntity> _collection = mongoDb.GetCollection<TEntity>();
+    private readonly IMongoCollection<TEntity> _collection = mongoDb.GetCollection<TEntity>(collectionName);
 
     public async Task CreateAsync(TEntity entity)
     {
