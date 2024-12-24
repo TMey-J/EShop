@@ -20,6 +20,8 @@ public class DbInitializer(
     IOptionsSnapshot<SiteSettings> siteSettings,
     IProvinceRepository province,
     ICityRepository city,
+    IColorRepository color,
+    IMongoColorRepository mongoColor,
     IMongoProvinceRepository mongoProvince,
     IMongoCityRepository mongoCity,
     IRabbitmqPublisherService publisher) : IDbInitializer
@@ -30,6 +32,8 @@ public class DbInitializer(
     private readonly IProvinceRepository _province = province;
     private readonly IMongoProvinceRepository _mongoProvince = mongoProvince;
     private readonly ICityRepository _city = city;
+    private readonly IColorRepository _color = color;
+    private readonly IMongoColorRepository _mongoColor = mongoColor;
     private readonly IMongoCityRepository _mongoCity = mongoCity;
     private readonly IRabbitmqPublisherService _publisher = publisher;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
@@ -51,6 +55,7 @@ public class DbInitializer(
             dbInitializer.SeedSystemSeller(_siteSettings.SystemSeller).GetAwaiter().GetResult();
             dbInitializer.SeedProvinces().GetAwaiter().GetResult();
             dbInitializer.SeedCities().GetAwaiter().GetResult();
+            dbInitializer.SeedColors().GetAwaiter().GetResult();
         });
     }
 
@@ -256,5 +261,27 @@ public class DbInitializer(
         await _publisher.PublishMessageAsync<Seller>(new(ActionTypes.Create, seller), 
             RabbitmqConstants.QueueNames.Seller,
             RabbitmqConstants.RoutingKeys.Seller);
+    }
+
+    public async Task SeedColors()
+    {
+        if (await _color.IsAnyAsync())
+        {
+           return; 
+        }
+        var colorsFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot",
+            "colors.json");
+        var colorsDto = JsonConvert.DeserializeObject<Dictionary<string,string>>(await File.ReadAllTextAsync(colorsFilePath));
+        if (colorsDto is null)
+        {
+            throw new CustomInternalServerException(["colors file is not found"]);
+        }
+
+        var colors = colorsDto.Select(x =>
+            new Color { ColorName = x.Key.Trim(), ColorCode = x.Value.Trim() }).ToList();
+        await _color.CreateAllAsync(colors);
+        await _color.SaveChangesAsync();
+        await _mongoColor.CreateAllAsync(colors);
+        
     }
 }

@@ -96,6 +96,7 @@ namespace EShop.Infrastructure
             services.AddScoped<IMongoCategoryRepository, MongoCategoryRepository>();
             services.AddScoped<IMongoSellerRepository, MongoSellerRepository>();
             services.AddScoped<IMongoProductRepository, MongoProductRepository>();
+            services.AddScoped<IMongoColorRepository, MongoColorRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {

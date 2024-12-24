@@ -9,4 +9,5 @@ public interface IDbInitializer
     Task SeedProvinces();
     Task SeedCities();
     Task SeedSystemSeller(SystemSeller systemSeller);
+    Task SeedColors();
 }
