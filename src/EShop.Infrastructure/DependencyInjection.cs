@@ -82,6 +82,8 @@ namespace EShop.Infrastructure
             services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<IFeatureRepository, FeatureRepository>();
             services.AddScoped<ISellerRepository, SellerRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IColorRepository, ColorRepository>();
         }
         private static void ConfigureMongoRepositories(this IServiceCollection services)
         {
@@ -93,6 +95,7 @@ namespace EShop.Infrastructure
             services.AddScoped<IMongoCategoryFeatureRepository, MongoCategoryFeatureRepository>();
             services.AddScoped<IMongoCategoryRepository, MongoCategoryRepository>();
             services.AddScoped<IMongoSellerRepository, MongoSellerRepository>();
+            services.AddScoped<IMongoProductRepository, MongoProductRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {
