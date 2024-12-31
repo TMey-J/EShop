@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
+using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 
@@ -23,13 +24,13 @@ public class AddFeaturesToCategoryCommandHandler(
         }
         List<string> errors = [];
         var categoryFeatures = new List<CategoryFeature>();
-        var readCategoryFeaturesDto = new List<ReadCategoryFeaturesDto>();
+        List<MongoCategoryFeature> mongoCategoryFeature;
         foreach (var featureName in request.FeaturesName)
         {
             var feature= await _feature.FindByAsync(nameof(Domain.Entities.Feature.Name), featureName);
             if (feature is not null)
             {
-                categoryFeatures.Add(new()
+                categoryFeatures.Add(new CategoryFeature
                 {
                     CategoryId = request.CategoryId,
                     FeatureId = feature.Id,
@@ -48,13 +49,14 @@ public class AddFeaturesToCategoryCommandHandler(
 
         if (category.CategoryFeatures is not null && category.CategoryFeatures.Count != 0)
         {
-            readCategoryFeaturesDto = category.CategoryFeatures.Select(x =>
-                new ReadCategoryFeaturesDto(x.CategoryId, x.FeatureId)).ToList();
+            mongoCategoryFeature = category.CategoryFeatures.Select(x =>
+                new MongoCategoryFeature{CategoryId = x.CategoryId,FeatureId = x.FeatureId}).ToList();
             _categoryFeature.DeleteAllFeaturesFromCategory(request.CategoryId);
             await _categoryFeature.SaveChangesAsync();
-            foreach (var categoryFeature in readCategoryFeaturesDto)
+            
+            foreach (var categoryFeature in mongoCategoryFeature)
             {
-                await _rabbitmqPublisher.PublishMessageAsync<ReadCategoryFeaturesDto>(
+                await _rabbitmqPublisher.PublishMessageAsync<MongoCategoryFeature>(
                     new(ActionTypes.Delete, categoryFeature),
                     RabbitmqConstants.QueueNames.CategoryFeature,
                     RabbitmqConstants.RoutingKeys.CategoryFeature);
@@ -64,11 +66,11 @@ public class AddFeaturesToCategoryCommandHandler(
         category.CategoryFeatures = categoryFeatures;
         _category.Update(category);
         await _category.SaveChangesAsync();
-        readCategoryFeaturesDto = categoryFeatures.
-            Select(x=>new ReadCategoryFeaturesDto(x.CategoryId,x.FeatureId)).ToList();
-        foreach (var categoryFeature in readCategoryFeaturesDto)
+        mongoCategoryFeature = categoryFeatures.
+            Select(x=>new MongoCategoryFeature{CategoryId = x.CategoryId,FeatureId = x.FeatureId}).ToList();
+        foreach (var categoryFeature in mongoCategoryFeature)
         {
-            await _rabbitmqPublisher.PublishMessageAsync<ReadCategoryFeaturesDto>(
+            await _rabbitmqPublisher.PublishMessageAsync<MongoCategoryFeature>(
                 new(ActionTypes.Create, categoryFeature),
                 RabbitmqConstants.QueueNames.CategoryFeature,
                 RabbitmqConstants.RoutingKeys.CategoryFeature);

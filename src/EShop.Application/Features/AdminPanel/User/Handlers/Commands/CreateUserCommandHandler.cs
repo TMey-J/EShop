@@ -1,5 +1,6 @@
 ﻿using EShop.Application.Features.AdminPanel.User.Requests.Commands;
 using EShop.Application.Features.Authorize.Handlers.Commands;
+using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.AdminPanel.User.Handlers.Commands;
 
@@ -89,12 +90,29 @@ public class CreateUserCommandHandler(
             
             await _userManager.UpdateAsync(user);
 
-            user.UserRoles = null;
-            user.UserClaims = null;
-            user.UserTokens = null;
-            user.UserLogins = null;
-            await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Identity.User>(
-                new(ActionTypes.Create, user),
+            var mongoUser = new MongoUser{
+                UserName = user.UserName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                PasswordHash = user.PasswordHash,
+                PasswordSalt = user.PasswordSalt,
+                Avatar = user.Avatar,
+                IsActive = true,
+                EmailConfirmed = user.EmailConfirmed,
+                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+                Id = user.Id,
+                NormalizedUserName = user.NormalizedUserName,
+                NormalizedEmail = user.NormalizedEmail,
+                ConcurrencyStamp = user.ConcurrencyStamp,
+                LockoutEnabled = user.LockoutEnabled,
+                LockoutEnd = user.LockoutEnd,
+                SecurityStamp = user.SecurityStamp,
+                AccessFailedCount = user.AccessFailedCount,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                SendCodeLastTime = user.SendCodeLastTime
+            };
+            await _rabbitmqPublisher.PublishMessageAsync<MongoUser>(
+                new(ActionTypes.Create, mongoUser),
                 RabbitmqConstants.QueueNames.User,
                 RabbitmqConstants.RoutingKeys.User);
             

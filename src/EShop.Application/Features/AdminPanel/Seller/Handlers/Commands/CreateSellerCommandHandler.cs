@@ -1,5 +1,6 @@
 ﻿using EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
+using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.AdminPanel.Seller.Handlers.Commands;
 
@@ -32,8 +33,7 @@ public class CreateSellerCommandHandler(
 
         var city = await _cityRepository.FindByIdAsync(request.CityId) ??
                    throw new CustomBadRequestException(["شهر یافت نشد"]);
-        var seller = new Domain.Entities.Seller()
-        {
+        var seller = new Domain.Entities.Seller() {
             UserId = user.Id,
             UserName = user.UserName,
             IsLegalPerson = request.IsLegalPerson,
@@ -48,6 +48,8 @@ public class CreateSellerCommandHandler(
         };
         if (request.LegalSeller != null)
         {
+            //TODO: check for valid shaba number
+            //TODO: check for register number
             seller.LegalSeller = new LegalSeller()
             {
                 CompanyName = request.LegalSeller.CompanyName!,
@@ -57,19 +59,19 @@ public class CreateSellerCommandHandler(
                 SignatureOwners = request.LegalSeller.SignatureOwners!,
                 ShabaNumber = request.LegalSeller.ShabaNumber
             };
-            //TODO: check for valid shaba number
-            //TODO: check for register number
+            
         }
         else if (request.IndividualSeller != null)
         {
+            //TODO:check for valid nationalId id
+            //TODO:check for valid shaba or cart number
             seller.IndividualSeller = new IndividualSeller()
             {
                 NationalId = request.IndividualSeller.NationalId!,
                 CartOrShebaNumber = request.IndividualSeller.CartOrShebaNumber,
                 AboutSeller = request.IndividualSeller.AboutSeller
             };
-            //TODO:check for valid nationalId id
-            //TODO:check for valid shaba or cart number
+            
         }
         else
         {
@@ -96,12 +98,61 @@ public class CreateSellerCommandHandler(
                 await _fileRepository.SaveFileAsync(saveFile);
             }
 
-            seller.User = null;
-            if (seller.IndividualSeller is not null)
-                seller.IndividualSeller.Seller = null;
-            if (seller.LegalSeller is not null)
-                seller.LegalSeller.Seller = null;
-            await _rabbitmqPublisher.PublishMessageAsync<Domain.Entities.Seller>(new(ActionTypes.Create, seller),
+            var mongoCity = new MongoCity()
+            {
+                Id = city.Id,
+                ProvinceId = city.ProvinceId,
+                Title = city.Title,
+                IsDelete = city.IsDelete,
+                Province = new MongoProvince()
+                {
+                 Id   = city.Province!.Id,
+                 Title = city.Province!.Title
+                }
+            };
+            MongoLegalSeller? mongoLegalSeller = null;
+            if (seller.LegalSeller != null)
+            {
+                mongoLegalSeller =new MongoLegalSeller
+                {
+                    CompanyName = seller.LegalSeller.CompanyName,
+                    EconomicCode = seller.LegalSeller.EconomicCode,
+                    CompanyType = seller.LegalSeller.CompanyType,
+                    RegisterNumber = seller.LegalSeller.RegisterNumber,
+                    SignatureOwners = seller.LegalSeller.SignatureOwners,
+                    ShabaNumber = seller.LegalSeller.ShabaNumber
+                };
+            }
+            MongoIndividualSeller? mongoIndividualSeller = null;
+            if (seller.IndividualSeller != null)
+            {
+                mongoIndividualSeller= new MongoIndividualSeller()
+                {
+                    NationalId = seller.IndividualSeller.NationalId,
+                    CartOrShebaNumber = seller.IndividualSeller.CartOrShebaNumber,
+                    AboutSeller = seller.IndividualSeller.AboutSeller
+                };
+            }
+            
+            var mongoSeller = new MongoSeller() {
+                Id = seller.Id,
+                UserId = seller.UserId,
+                UserName = seller.UserName,
+                IsLegalPerson = seller.IsLegalPerson,
+                Address = seller.Address,
+                CityId = seller.CityId,
+                City = mongoCity,
+                Website = seller.Website,
+                IsActive = true,
+                DocumentStatus = DocumentStatus.Confirmed,
+                PostalCode = seller.PostalCode,
+                ShopName = seller.ShopName,
+                Logo = seller.Logo,
+                RejectReason = seller.RejectReason,
+                LegalSeller = mongoLegalSeller,
+                IndividualSeller = mongoIndividualSeller
+            };
+            await _rabbitmqPublisher.PublishMessageAsync<MongoSeller>(new(ActionTypes.Create, mongoSeller),
                 RabbitmqConstants.QueueNames.Seller,
                 RabbitmqConstants.RoutingKeys.Seller);
             

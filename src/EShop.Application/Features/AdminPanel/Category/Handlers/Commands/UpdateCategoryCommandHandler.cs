@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
+using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.AdminPanel.Category.Handlers.Commands;
 
@@ -53,10 +54,15 @@ public class UpdateCategoryCommandHandler(
                 await _fileServices.SaveFileAsync(saveFile);
             }
 
-            var readCategoryDto = new ReadCategoryDto(category.Id, category.Title, category.ParentId, category.Picture,
-                category.IsDelete);
-            await _rabbitmqPublisher.PublishMessageAsync<ReadCategoryDto>(
-                new(ActionTypes.Update, readCategoryDto),
+            var mongoCategory = new MongoCategory
+            {
+                Id = category.Id,
+                Title = category.Title,
+                Picture = category.Picture,
+                ParentId = category.ParentId
+            };
+            await _rabbitmqPublisher.PublishMessageAsync<MongoCategory>(
+                new(ActionTypes.Update, mongoCategory),
                 RabbitmqConstants.QueueNames.Category,
                 RabbitmqConstants.RoutingKeys.Category);
             

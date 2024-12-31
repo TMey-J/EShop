@@ -34,7 +34,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ProductsId");
 
-                    b.ToTable("ColorProduct", (string)null);
+                    b.ToTable("ColorProduct");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Category", b =>
@@ -64,7 +64,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.CategoryFeature", b =>
@@ -85,10 +85,7 @@ namespace EShop.Infrastructure.Migrations
             modelBuilder.Entity("EShop.Domain.Entities.City", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -105,7 +102,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("City", (string)null);
+                    b.ToTable("City");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Color", b =>
@@ -131,7 +128,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Color", (string)null);
+                    b.ToTable("Color");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Comment", b =>
@@ -165,7 +162,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Comment", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Feature", b =>
@@ -186,7 +183,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Feature", (string)null);
+                    b.ToTable("Feature");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Identity.Role", b =>
@@ -443,7 +440,7 @@ namespace EShop.Infrastructure.Migrations
                     b.HasIndex("SellerId")
                         .IsUnique();
 
-                    b.ToTable("IndividualSeller", (string)null);
+                    b.ToTable("IndividualSeller");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.LegalSeller", b =>
@@ -493,7 +490,7 @@ namespace EShop.Infrastructure.Migrations
                     b.HasIndex("SellerId")
                         .IsUnique();
 
-                    b.ToTable("LegalSeller", (string)null);
+                    b.ToTable("LegalSeller");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Product", b =>
@@ -537,7 +534,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Product", (string)null);
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.ProductFeature", b =>
@@ -573,7 +570,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("ProductFeature", (string)null);
+                    b.ToTable("ProductFeature");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.ProductImages", b =>
@@ -599,16 +596,13 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Province", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -620,7 +614,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Province", (string)null);
+                    b.ToTable("Province");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Seller", b =>
@@ -686,7 +680,7 @@ namespace EShop.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Seller", (string)null);
+                    b.ToTable("Seller");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.SellerProduct", b =>
@@ -728,7 +722,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag", (string)null);
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("ProductTag", b =>
@@ -743,7 +737,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("ProductTag", (string)null);
+                    b.ToTable("ProductTag");
                 });
 
             modelBuilder.Entity("ColorProduct", b =>

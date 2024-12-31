@@ -6,6 +6,7 @@ using EShop.Application.Contracts.Identity;
 using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Contracts.Services;
 using EShop.Application.Model;
+using EShop.Domain.Entities.Mongodb;
 using EShop.Infrastructure.Databases;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,8 @@ public class DbInitializer(
     ICityRepository city,
     IColorRepository color,
     IMongoColorRepository mongoColor,
+    IMongoUserRepository mongoUserRepository,
+    IMongoSellerRepository mongoSellerRepository,
     IMongoProvinceRepository mongoProvince,
     IMongoCityRepository mongoCity,
     IRabbitmqPublisherService publisher) : IDbInitializer
@@ -34,6 +37,8 @@ public class DbInitializer(
     private readonly ICityRepository _city = city;
     private readonly IColorRepository _color = color;
     private readonly IMongoColorRepository _mongoColor = mongoColor;
+    private readonly IMongoUserRepository _mongoUserRepository = mongoUserRepository;
+    private readonly IMongoSellerRepository _mongoSellerRepository = mongoSellerRepository;
     private readonly IMongoCityRepository _mongoCity = mongoCity;
     private readonly IRabbitmqPublisherService _publisher = publisher;
     private readonly SiteSettings _siteSettings = siteSettings.Value;
@@ -52,9 +57,9 @@ public class DbInitializer(
             dbInitializer.SeedRole(RoleNames.Seller).GetAwaiter().GetResult();
             dbInitializer.SeedRole(RoleNames.SystemSeller).GetAwaiter().GetResult();
             dbInitializer.SeedAdmin(_siteSettings.AdminUser).GetAwaiter().GetResult();
-            dbInitializer.SeedSystemSeller(_siteSettings.SystemSeller).GetAwaiter().GetResult();
             dbInitializer.SeedProvinces().GetAwaiter().GetResult();
             dbInitializer.SeedCities().GetAwaiter().GetResult();
+            dbInitializer.SeedSystemSeller(_siteSettings.SystemSeller).GetAwaiter().GetResult();
             dbInitializer.SeedColors().GetAwaiter().GetResult();
         });
     }
@@ -142,17 +147,18 @@ public class DbInitializer(
             var provinces = provincesDto.Select(x => new Province
             {
                 Title = x.Name,
+                Id = x.Id
             }).ToList();
             await _province.CreateAllAsync(provinces);
             await _province.SaveChangesAsync();
 
             // add provinces to mongodb
-            provinces = provincesDto.Select(x => new Province
+            var mongoProvinces = provincesDto.Select(x => new MongoProvince
             {
                 Id = x.Id,
                 Title = x.Name,
             }).ToList();
-            await _mongoProvince.CreateAllAsync(provinces);
+            await _mongoProvince.CreateAllAsync(mongoProvinces);
         }
     }
 
@@ -170,20 +176,20 @@ public class DbInitializer(
 
             var cities = citiesDto.Select(x => new City
             {
+                Id = x.Id,
                 Title = x.Name,
                 ProvinceId = x.Province_Id
             }).ToList();
             await _city.CreateAllAsync(cities);
             await _city.SaveChangesAsync();
-
-            // add cities to mongodb
-            cities = citiesDto.Select(x => new City
+            
+            var mongoCities = citiesDto.Select(x => new MongoCity
             {
                 Id = x.Id,
                 Title = x.Name,
                 ProvinceId = x.Province_Id
             }).ToList();
-            await _mongoCity.CreateAllAsync(cities);
+            await _mongoCity.CreateAllAsync(mongoCities);
         }
     }
 
@@ -205,8 +211,7 @@ public class DbInitializer(
                    ?? throw new CustomInternalServerException(["City not found"]);
         city.Province = await _province.FindByIdAsync(city.ProvinceId);
         var isEmail = systemSeller.EmailOrPhoneNumber.IsEmail();
-        user = new User
-        {
+        user = new User {
             UserName = systemSeller.UserName,
             Email = isEmail ? systemSeller.EmailOrPhoneNumber : null,
             PhoneNumber = isEmail ? null : systemSeller.EmailOrPhoneNumber,
@@ -216,9 +221,9 @@ public class DbInitializer(
             IsActive = true,
             EmailConfirmed = isEmail,
             PhoneNumberConfirmed = !isEmail,
+            SendCodeLastTime = DateTime.Now
         };
-        var seller = new Seller()
-        {
+        var seller = new Seller{
             ShopName = systemSeller.ShopName,
             Address = systemSeller.Address,
             DocumentStatus = DocumentStatus.Confirmed,
@@ -245,20 +250,65 @@ public class DbInitializer(
         {
             throw new CustomBadRequestException(addToRulesResult.GetErrors());
         }
-        user.UserRoles = null;
-        user.UserClaims = null;
-        user.UserTokens = null;
-        user.UserLogins = null;
-        user.Seller = null;
-        await _publisher.PublishMessageAsync<User>(new(ActionTypes.Create, user), 
+
+        var mongoUser = new MongoUser{
+            UserName = user.UserName,
+            Email = user.Email,
+            PhoneNumber = user.PhoneNumber,
+            PasswordHash = user.PasswordHash,
+            PasswordSalt = user.PasswordSalt,
+            Avatar = user.Avatar,
+            IsActive = true,
+            EmailConfirmed = user.EmailConfirmed,
+            PhoneNumberConfirmed = user.PhoneNumberConfirmed,
+            Id = user.Id,
+            NormalizedUserName = user.NormalizedUserName,
+            NormalizedEmail = user.NormalizedEmail,
+            ConcurrencyStamp = user.ConcurrencyStamp,
+            LockoutEnabled = user.LockoutEnabled,
+            LockoutEnd = user.LockoutEnd,
+            SecurityStamp = user.SecurityStamp,
+            AccessFailedCount = user.AccessFailedCount,
+            TwoFactorEnabled = user.TwoFactorEnabled,
+            SendCodeLastTime = user.SendCodeLastTime
+        };
+        await _publisher.PublishMessageAsync<MongoUser>(new(ActionTypes.Create, mongoUser), 
             RabbitmqConstants.QueueNames.User,
             RabbitmqConstants.RoutingKeys.User);
-        seller.UserId = user.Id;
-        seller.User = null;
-        seller.IndividualSeller.Seller = null;
-        seller.LegalSeller = null;
-        seller.City.Province!.Cities = null;
-        await _publisher.PublishMessageAsync<Seller>(new(ActionTypes.Create, seller), 
+        var mongoIndividualSeller= new MongoIndividualSeller(){
+            NationalId = seller.IndividualSeller.NationalId,
+            CartOrShebaNumber = seller.IndividualSeller.CartOrShebaNumber,
+            AboutSeller = seller.IndividualSeller.AboutSeller
+        };
+        var mongoCity = new MongoCity() {
+            Id = city.Id,
+            ProvinceId = city.ProvinceId,
+            Title = city.Title,
+            IsDelete = city.IsDelete,
+            Province = new MongoProvince
+            {
+                Id   = city.Province!.Id,
+                Title = city.Province!.Title
+            }
+        };
+        var mongoSeller = new MongoSeller() {
+            Id = seller.Id,
+            UserId = seller.UserId,
+            UserName = seller.UserName,
+            IsLegalPerson = seller.IsLegalPerson,
+            Address = seller.Address,
+            CityId = seller.CityId,
+            City = mongoCity,
+            Website = seller.Website,
+            IsActive = true,
+            DocumentStatus = DocumentStatus.Confirmed,
+            PostalCode = seller.PostalCode,
+            ShopName = seller.ShopName,
+            Logo = seller.Logo,
+            RejectReason = seller.RejectReason,
+            IndividualSeller = mongoIndividualSeller
+        };
+        await _publisher.PublishMessageAsync<MongoSeller>(new(ActionTypes.Create, mongoSeller), 
             RabbitmqConstants.QueueNames.Seller,
             RabbitmqConstants.RoutingKeys.Seller);
     }
@@ -281,7 +331,9 @@ public class DbInitializer(
             new Color { ColorName = x.Key.Trim(), ColorCode = x.Value.Trim() }).ToList();
         await _color.CreateAllAsync(colors);
         await _color.SaveChangesAsync();
-        await _mongoColor.CreateAllAsync(colors);
+        var mongoColors = colors.Select(x =>
+            new MongoColor { ColorName = x.ColorName, ColorCode = x.ColorCode,Id = x.Id}).ToList();
+        await _mongoColor.CreateAllAsync(mongoColors);
         
     }
 }

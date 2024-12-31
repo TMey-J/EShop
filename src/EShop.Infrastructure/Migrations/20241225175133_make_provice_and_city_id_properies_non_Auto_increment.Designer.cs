@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    [Migration("20241213062545_change_seller_entity")]
-    partial class change_seller_entity
+    [Migration("20241225175133_make_provice_and_city_id_properies_non_Auto_increment")]
+    partial class make_provice_and_city_id_properies_non_Auto_increment
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -88,10 +88,7 @@ namespace EShop.Infrastructure.Migrations
             modelBuilder.Entity("EShop.Domain.Entities.City", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -462,7 +459,7 @@ namespace EShop.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<byte?>("CompanyType")
+                    b.Property<byte>("CompanyType")
                         .HasColumnType("tinyint");
 
                     b.Property<string>("EconomicCode")
@@ -473,9 +470,6 @@ namespace EShop.Infrastructure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsRealPerson")
-                        .HasColumnType("bit");
-
                     b.Property<string>("RegisterNumber")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -483,6 +477,11 @@ namespace EShop.Infrastructure.Migrations
 
                     b.Property<long>("SellerId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("ShabaNumber")
+                        .IsRequired()
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
 
                     b.Property<string>("SignatureOwners")
                         .IsRequired()
@@ -606,10 +605,7 @@ namespace EShop.Infrastructure.Migrations
             modelBuilder.Entity("EShop.Domain.Entities.Province", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -652,6 +648,9 @@ namespace EShop.Infrastructure.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsLegalPerson")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Logo")
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
@@ -681,7 +680,8 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("CityId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Seller");
                 });
@@ -711,6 +711,9 @@ namespace EShop.Infrastructure.Migrations
                         .HasColumnType("bigint");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
@@ -946,8 +949,8 @@ namespace EShop.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("EShop.Domain.Entities.Identity.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                        .WithOne("Seller")
+                        .HasForeignKey("EShop.Domain.Entities.Seller", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1018,6 +1021,8 @@ namespace EShop.Infrastructure.Migrations
 
             modelBuilder.Entity("EShop.Domain.Entities.Identity.User", b =>
                 {
+                    b.Navigation("Seller");
+
                     b.Navigation("UserClaims");
 
                     b.Navigation("UserLogins");

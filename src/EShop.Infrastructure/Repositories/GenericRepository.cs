@@ -22,7 +22,7 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
 
     public async Task<TEntity?> FindByIdAsync(long id)
     {
-        return await _entity.SingleOrDefaultAsync(x => x.Id == id);
+        return await _entity.FindAsync(id);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()

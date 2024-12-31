@@ -1,7 +1,7 @@
 ﻿using EShop.Application.Constants;
 using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Model;
-using EShop.Domain.Entities.Identity;
+using EShop.Domain.Entities.Mongodb;
 using Newtonsoft.Json;
 
 namespace RabbitmqConsumers.Consumers
@@ -22,7 +22,7 @@ namespace RabbitmqConsumers.Consumers
         
         protected override async Task HandelMessageAsync(string message)
         {
-            var deserializeMessage = JsonConvert.DeserializeObject<MessageModel<User>>(message);
+            var deserializeMessage = JsonConvert.DeserializeObject<MessageModel<MongoUser>>(message);
             if (deserializeMessage?.Data is null)
                 throw new Exception("message is null");
             switch (deserializeMessage.ActionTypes)

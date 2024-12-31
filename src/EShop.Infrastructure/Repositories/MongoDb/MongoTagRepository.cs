@@ -1,5 +1,7 @@
-﻿using EShop.Application.Contracts.MongoDb;
+﻿using EShop.Application.Constants;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
+using EShop.Domain.Entities.Mongodb;
 using EShop.Infrastructure.Databases;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
@@ -7,9 +9,9 @@ using Tag = EShop.Domain.Entities.Tag;
 
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
-    public class MongoTagRepository(MongoDbContext mongoDb) : MongoGenericRepository<Tag>(mongoDb), IMongoTagRepository
+    public class MongoTagRepository(MongoDbContext mongoDb) : MongoGenericRepository<MongoTag>(mongoDb,MongoCollectionsName.Tag), IMongoTagRepository
     {
-        private readonly IMongoCollection<Tag> _tag = mongoDb.GetCollection<Tag>();
+        private readonly IMongoCollection<MongoTag> _tag = mongoDb.GetCollection<MongoTag>(MongoCollectionsName.Tag);
 
         public async Task<GetAllTagsQueryResponse> GetAllAsync(SearchTagDto search)
         {
@@ -31,7 +33,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #region Paging
 
-            (IQueryable<Tag> query, int pageCount) pagination =
+            (IQueryable<MongoTag> query, int pageCount) pagination =
                 tagQuery.Page(search.Pagination.CurrentPage, search.Pagination.TakeRecord);
             tagQuery = pagination.query;
 

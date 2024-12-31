@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Features.AdminPanel.Product.Requests.Commands;
+using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.AdminPanel.Product.Handlers.Commands;
 
@@ -81,7 +82,6 @@ public class CreateProductCommandHandler(
                 ImageName = saveFile.fileNameWithExtention
             });
         }
-
         product = new Domain.Entities.Product {
             Title = request.Title,
             EnglishTitle = request.EnglishTitle,
@@ -112,7 +112,7 @@ public class CreateProductCommandHandler(
             }
 
             var colorsToDictionary = colors.ToDictionary(color => color.ColorCode, color => color.ColorName);
-            var readProduct = new ReadProduct {
+            var mongoProduct = new MongoProduct {
                 Id = product.Id,
                 Title = product.Title,
                 EnglishTitle = product.EnglishTitle,
@@ -125,10 +125,17 @@ public class CreateProductCommandHandler(
                 Colors = colorsToDictionary,
                 Tags = request.Tags,
                 Images = product.Images.Select(x => x.ImageName).ToList(),
-                SellerId = request.SellerId
+                SellerId = request.SellerId,
+                SellerProduct = new MongoSellerProduct
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    SellerId = request.SellerId,
+                    Count = request.Count,
+                    ProductId = product.Id
+                }
             };
-            await _rabbitmqPublisher.PublishMessageAsync<ReadProduct>(
-                new(ActionTypes.Create, readProduct),
+            await _rabbitmqPublisher.PublishMessageAsync<MongoProduct>(
+                new(ActionTypes.Create, mongoProduct),
                 RabbitmqConstants.QueueNames.Product,
                 RabbitmqConstants.RoutingKeys.Product);
 

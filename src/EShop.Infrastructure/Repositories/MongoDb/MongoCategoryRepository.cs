@@ -1,19 +1,19 @@
-﻿using EShop.Application.Contracts.MongoDb;
+﻿using EShop.Application.Constants;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
-using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
+using EShop.Domain.Entities.Mongodb;
 using EShop.Infrastructure.Databases;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using Tag = EShop.Domain.Entities.Tag;
 
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
     public class MongoCategoryRepository(MongoDbContext mongoDb)
-        : MongoGenericRepository<Category>(mongoDb), IMongoCategoryRepository
+        : MongoGenericRepository<MongoCategory>(mongoDb,MongoCollectionsName.Category), IMongoCategoryRepository
     {
-        private readonly IMongoCollection<Category> _category = mongoDb.GetCollection<Category>();
-        private readonly IMongoCollection<CategoryFeature> _categoryFeature = mongoDb.GetCollection<CategoryFeature>();
-        private readonly IMongoCollection<Feature> _feature = mongoDb.GetCollection<Feature>();
+        private readonly IMongoCollection<MongoCategory> _category = mongoDb.GetCollection<MongoCategory>(MongoCollectionsName.Category);
+        private readonly IMongoCollection<CategoryFeature> _categoryFeature = mongoDb.GetCollection<CategoryFeature>(MongoCollectionsName.CategoryFeature);
+        private readonly IMongoCollection<MongoFeature> _feature = mongoDb.GetCollection<MongoFeature>(MongoCollectionsName.Feature);
 
         public async Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDto search)
         {
@@ -35,7 +35,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #region Paging
 
-            (IQueryable<Category> query, int pageCount) pagination =
+            (IQueryable<MongoCategory> query, int pageCount) pagination =
                 category.Page(search.Pagination.CurrentPage, search.Pagination.TakeRecord);
             category = pagination.query;
 
@@ -49,7 +49,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             return new GetAllCategoryQueryResponse(categories, search, pagination.pageCount);
         }
 
-        public async Task<List<Feature>> GetCategoryFeatures(long categoryId)
+        public async Task<List<MongoFeature>> GetCategoryFeatures(long categoryId)
         {
             var featuresId= await MongoQueryable.ToListAsync(_categoryFeature.AsQueryable()
                 .Where(x => x.CategoryId == categoryId)

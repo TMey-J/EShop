@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EShop.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class change_category_parent_type_to_long : Migration
+    public partial class make_provice_and_city_id_properies_non_Auto_increment : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,8 +65,7 @@ namespace EShop.Infrastructure.Migrations
                 name: "Province",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -97,6 +96,7 @@ namespace EShop.Infrastructure.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -143,7 +143,7 @@ namespace EShop.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     EnglishTitle = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    BasePrice = table.Column<double>(type: "float", maxLength: 200, nullable: false),
+                    BasePrice = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "ntext", nullable: false),
                     DiscountPercentage = table.Column<byte>(type: "tinyint", nullable: true),
                     EndOfDiscount = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -189,8 +189,7 @@ namespace EShop.Infrastructure.Migrations
                 name: "City",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     ProvinceId = table.Column<long>(type: "bigint", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
@@ -342,19 +341,26 @@ namespace EShop.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    ProductId = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "ntext", nullable: false),
                     Rating = table.Column<byte>(type: "tinyint", maxLength: 5, nullable: false),
-                    ProductId = table.Column<long>(type: "bigint", nullable: true),
+                    ParentId = table.Column<long>(type: "bigint", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comment", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Comment_Comment_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Comment",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Comment_Product_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Product",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -409,17 +415,17 @@ namespace EShop.Infrastructure.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
+                    IsLegalPerson = table.Column<bool>(type: "bit", nullable: false),
                     ShopName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Logo = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
                     Website = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CityId = table.Column<long>(type: "bigint", nullable: false),
                     PostalCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Address = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    IsDocumentApproved = table.Column<bool>(type: "bit", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     DocumentStatus = table.Column<byte>(type: "tinyint", nullable: false),
-                    RejectReason = table.Column<string>(type: "ntext", nullable: true),
+                    RejectReason = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -469,12 +475,12 @@ namespace EShop.Infrastructure.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SellerId = table.Column<long>(type: "bigint", nullable: false),
-                    IsRealPerson = table.Column<bool>(type: "bit", nullable: false),
                     CompanyName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     RegisterNumber = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     EconomicCode = table.Column<string>(type: "nvarchar(12)", maxLength: 12, nullable: false),
                     SignatureOwners = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    CompanyType = table.Column<byte>(type: "tinyint", nullable: true),
+                    ShabaNumber = table.Column<string>(type: "nvarchar(24)", maxLength: 24, nullable: false),
+                    CompanyType = table.Column<byte>(type: "tinyint", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -563,6 +569,11 @@ namespace EShop.Infrastructure.Migrations
                 column: "ProductsId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comment_ParentId",
+                table: "Comment",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Comment_ProductId",
                 table: "Comment",
                 column: "ProductId");
@@ -624,7 +635,8 @@ namespace EShop.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Seller_UserId",
                 table: "Seller",
-                column: "UserId");
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_SellerProducts_SellerId",

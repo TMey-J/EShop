@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Contracts.MongoDb;
+using EShop.Domain.Entities.Mongodb;
 using EShop.Infrastructure.Databases;
 using MongoDB.Driver;
 
@@ -6,7 +7,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb;
 
 public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb,string?collectionName=null) :
     IMongoGenericRepository<TEntity>
-    where TEntity : BaseEntity
+    where TEntity : MongoBaseEntity
 {
     private readonly IMongoCollection<TEntity> _collection = mongoDb.GetCollection<TEntity>(collectionName);
 

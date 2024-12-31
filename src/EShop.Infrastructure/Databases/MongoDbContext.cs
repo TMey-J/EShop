@@ -12,8 +12,8 @@ public class MongoDbContext
         var client = new MongoClient(config.GetConnectionString("MongoDbConnection"));
         _database = client.GetDatabase(config.GetSection("MongoDb:DatabaseName").Value);
     }
-    public IMongoCollection<TEntity> GetCollection<TEntity>(string? collectionName = null)
+    public IMongoCollection<TEntity> GetCollection<TEntity>(string collectionName)
     {
-        return _database.GetCollection<TEntity>(collectionName??typeof(TEntity).Name.ToLower());
+        return _database.GetCollection<TEntity>(collectionName.ToLower());
     }
 }

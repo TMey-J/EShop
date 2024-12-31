@@ -1,20 +1,17 @@
-﻿using EShop.Application.Contracts.MongoDb;
+﻿using EShop.Application.Constants;
+using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Features.AdminPanel.Seller.Requests.Queries;
-using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
-using EShop.Application.Features.AdminPanel.User.Requests.Queries;
-using EShop.Application.Model;
+using EShop.Domain.Entities.Mongodb;
 using EShop.Infrastructure.Databases;
-using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using Tag = EShop.Domain.Entities.Tag;
 
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
     public class MongoSellerRepository(MongoDbContext mongoDb)
-        : MongoGenericRepository<Seller>(mongoDb), IMongoSellerRepository
+        : MongoGenericRepository<MongoSeller>(mongoDb,MongoCollectionsName.Seller), IMongoSellerRepository
     {
-        private readonly IMongoCollection<Seller> _seller = mongoDb.GetCollection<Seller>();
+        private readonly IMongoCollection<MongoSeller> _seller = mongoDb.GetCollection<MongoSeller>(MongoCollectionsName.Seller);
 
         public async Task<GetAllSellersQueryResponse> GetAllAsync(SearchSellerDto search)
         {
@@ -45,12 +42,11 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #region Paging
 
-            (IQueryable<Seller> query, int pageCount) pagination =
+            (IQueryable<MongoSeller> query, int pageCount) pagination =
                 sellerQuery.Page(search.Pagination.CurrentPage, search.Pagination.TakeRecord);
             sellerQuery = pagination.query;
 
             #endregion
-
             var sellers = await MongoQueryable.ToListAsync(sellerQuery.Select
             (x => new ShowSellerDto(x.Id,
                 x.UserId,
@@ -59,8 +55,8 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                 x.ShopName,
                 x.Logo,
                 x.Website, 
-                x.City!.Title,
-                x.City.Province!.Title,
+                x.City.Title, 
+                x.City.Province.Title,
                 x.PostalCode,
                 x.Address,
                 x.RejectReason,

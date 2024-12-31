@@ -1,16 +1,12 @@
-﻿using EShop.Application.Contracts.MongoDb;
-using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
+﻿using EShop.Application.Constants;
+using EShop.Application.Contracts.MongoDb;
+using EShop.Domain.Entities.Mongodb;
 using EShop.Infrastructure.Databases;
 using MongoDB.Driver;
-using MongoDB.Driver.Linq;
-using Tag = EShop.Domain.Entities.Tag;
 
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
-    public class MongoProvinceRepository(MongoDbContext mongoDb) : MongoGenericRepository<Province>(mongoDb), IMongoProvinceRepository
+    public class MongoProvinceRepository(MongoDbContext mongoDb) : MongoGenericRepository<MongoProvince>(mongoDb,MongoCollectionsName.Province), IMongoProvinceRepository
     {
-        private readonly IMongoCollection<Province> _province = mongoDb.GetCollection<Province>();
-
-        
     }
 }

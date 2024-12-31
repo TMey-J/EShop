@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Features.AdminPanel.Feature.Requests.Commands;
+using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.AdminPanel.Feature.Handlers.Commands;
 
@@ -16,8 +17,12 @@ public class UpdateFeatureCommandHandler(IFeatureRepository featureRepository,IR
         
         _featureRepository.Update(feature);
         await _featureRepository.SaveChangesAsync();
-       await _publisher.PublishMessageAsync<Domain.Entities.Feature>(new
-               (ActionTypes.Update, feature), RabbitmqConstants.QueueNames.Feature,
+       await _publisher.PublishMessageAsync<MongoFeature>(new
+               (ActionTypes.Update, new MongoFeature()
+               {
+                   Name = feature.Name,
+                   Id = feature.Id
+               }), RabbitmqConstants.QueueNames.Feature,
            RabbitmqConstants.RoutingKeys.Feature);
        return new UpdateFeatureCommandResponse();
     }
