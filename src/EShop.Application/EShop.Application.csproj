@@ -20,15 +20,11 @@
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
     <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
+    <PackageReference Include="MongoDB.Bson" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EShop.Domain\EShop.Domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Features\AdminPanel\Product\Handlers\Queries\" />
-    <Folder Include="Features\AdminPanel\Product\Requests\Queries\Validations\" />
   </ItemGroup>
 
 </Project>

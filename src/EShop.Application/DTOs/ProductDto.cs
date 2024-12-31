@@ -1,4 +1,6 @@
-﻿namespace EShop.Application.DTOs;
+﻿using MongoDB.Bson.Serialization.Attributes;
+
+namespace EShop.Application.DTOs;
 
 public record SearchProductDto : BaseSearchDto
 {
@@ -12,21 +14,24 @@ public record SearchProductDto : BaseSearchDto
     public string EnglishTitle { get; set; } = string.Empty;
 
     [DisplayName("قیمت")]
-    public uint BasePrice { get; set; }
+    public uint? BasePrice { get; set; }
 
-    [DisplayName("تعداد")]
-    public int Count { get; set; }
+    [DisplayName("دسته بندی")]
+    public string? CategoryTitle { get; set; }
 }
 
-public record ShowProductDto(
-    long Id,
-    string Title,
-    string EnglishTitle,
-    uint BasePrice,
-    byte DiscountPercentage,
-    string Image,
-    int Count,
-    string Category);
+public record ShowProductDto
+{
+    public long Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string EnglishTitle { get; set; } = string.Empty;
+    public uint BasePrice { get; set; }
+    public uint? DiscountPercentage { get; set; }
+    public uint? PriceWithDiscount { get; set; }
+    public string Image { get; set; } = string.Empty;
+    public int Count { get; set; }
+    public string CategoryTitle { get; set; } = string.Empty;
+}
 public enum SortingProductBy
 {
     Id,
@@ -36,20 +41,3 @@ public enum SortingProductBy
     DiscountPercentage,
     Count
 }
-
-public class ReadProduct : BaseEntity
-{
-    public string Title { get; set; }=string.Empty;
-    public string EnglishTitle { get; set; }=string.Empty;
-    public uint BasePrice { get; set; }
-    public byte? DiscountPercentage { get; set; }
-    public int Count { get; set; }
-    public long SellerId { get; set; }
-    public string CategoryTitle { get; set; } = string.Empty;
-    public string Description { get; set; }=string.Empty;
-    public DateTime? EndOfDiscount { get; set; }
-    public Dictionary<string, string> Colors { get; set; } = [];
-    public List<string> Tags { get; set; }= [];
-    public List<string> Images { get; set; }= [];
-    
-};

@@ -29,11 +29,11 @@ public class Product : BaseEntity
 
     #region Relationships
     public ICollection<Tag>? Tags { get; set; }
-    public ICollection<ProductImages>? Images { get; set; }
+    public ICollection<ProductImages> Images { get; set; }
     public ICollection<Color>? Colors { get; set; }
     public ICollection<ProductFeature>? ProductFeatures { get; set; }
     public Category? Category { get; set; }
-    public ICollection<SellerProduct>? SellersProducts { get; set; }
+    public ICollection<SellerProduct> SellersProducts { get; set; }
 
     #endregion
 }

@@ -30,6 +30,7 @@ namespace RabbitmqConsumers
             services.AddSingleton<IMongoCategoryRepository, MongoCategoryRepository>();
             services.AddSingleton<IMongoSellerRepository, MongoSellerRepository>();
             services.AddSingleton<IMongoProductRepository, MongoProductRepository>();
+            services.AddSingleton<IMongoSellerProductRepository, MongoSellerProductRepository>();
         }
     }
 }

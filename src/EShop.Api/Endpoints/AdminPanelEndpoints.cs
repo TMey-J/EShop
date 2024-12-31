@@ -4,6 +4,7 @@ using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Feature.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Feature.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Product.Requests.Commands;
+using EShop.Application.Features.AdminPanel.Product.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Seller.Requests.Queries;
 using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
@@ -34,7 +35,7 @@ public class AdminPanelEndpoints : ICarterModule
         group.MapPost(nameof(AddFeaturesToCategory), AddFeaturesToCategory);
         group.MapPut(nameof(UpdateCategory), UpdateCategory);
         group.MapGet(nameof(GetAllCategories), GetAllCategories);
-        group.MapGet(nameof(GetCategoryFeatures), GetCategoryFeatures);
+        group.MapGet(nameof(GetCategoryFeatures)+ "/{categoryId}", GetCategoryFeatures);
         group.MapGet(nameof(GetCategory) + "/{id}", GetCategory);
 
         #endregion
@@ -69,6 +70,7 @@ public class AdminPanelEndpoints : ICarterModule
         #region Product
 
         group.MapPost(nameof(CreateProduct), CreateProduct);
+        group.MapGet(nameof(GetAllProducts), GetAllProducts);
 
         #endregion
     }
@@ -141,10 +143,10 @@ public class AdminPanelEndpoints : ICarterModule
     }
 
     private static async Task<IResult> GetCategoryFeatures(
-        [FromBody] GetCategoryFeaturesQueryRequest request,
+        long categoryId,
         IMediator mediator)
     {
-        var response = await mediator.Send(request);
+        var response = await mediator.Send(new GetCategoryFeaturesQueryRequest { CategoryId = categoryId });
         return TypedResults.Ok(response);
     }
 
@@ -245,9 +247,17 @@ public class AdminPanelEndpoints : ICarterModule
     private static async Task<IResult> CreateProduct(CreateProductCommandRequest request, IMediator mediator)
     {
         //TODO:get seller id by user claim 
-        request.SellerId = 18;
+        request.SellerId = 2;
         await mediator.Send(request);
         return TypedResults.Ok();
+    }
+    
+    private static async Task<IResult> GetAllProducts(
+        [FromBody] GetAllProductsQueryRequest request,
+        IMediator mediator)
+    {
+        var response = await mediator.Send(request);
+        return TypedResults.Ok(response);
     }
 
     #endregion

@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Attributes\" />
+    <Folder Include="wwwroot\pictures\product-images\" />
     <Folder Include="wwwroot\TempMail\" />
     <Folder Include="wwwroot\TempSms\" />
   </ItemGroup>
