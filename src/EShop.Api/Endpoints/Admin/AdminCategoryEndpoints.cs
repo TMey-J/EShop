@@ -13,7 +13,7 @@ namespace EShop.Api.Endpoints.Admin
 
             group.MapPost(nameof(Create), Create);
             group.MapPost(nameof(AddFeaturesToCategory), AddFeaturesToCategory);
-            group.MapPut(nameof(Update), Update);
+            group.MapPut(nameof(Update) + "/{id}", Update);
             group.MapGet(nameof(GetAll), GetAll);
             group.MapGet(nameof(GetCategoryFeatures)+ "/{categoryId}", GetCategoryFeatures);
             group.MapGet(nameof(Get) + "/{id}", Get);
@@ -26,8 +26,9 @@ namespace EShop.Api.Endpoints.Admin
             return TypedResults.Ok();
         }
 
-        private static async Task<IResult> Update(UpdateCategoryCommandRequest request, IMediator mediator)
+        private static async Task<IResult> Update(long id,[FromBody]UpdateCategoryCommandRequest request, IMediator mediator)
         {
+            request.Id = id;
             await mediator.Send(request);
             return TypedResults.Ok();
         }

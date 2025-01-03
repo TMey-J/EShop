@@ -16,7 +16,7 @@ namespace EShop.Api.Endpoints.Admin
             var group = app.MapGroup("api/Admin/Tag").AddEndpointFilter<ApiResultEndpointFilter>();
 
             group.MapPost(nameof(Create), Create);
-            group.MapPut(nameof(Update), Update);
+            group.MapPut(nameof(Update)+ "/{id}", Update);
             group.MapGet(nameof(GetAll), GetAll);
             group.MapGet(nameof(Get) + "/{id}", Get);
         }
@@ -28,8 +28,9 @@ namespace EShop.Api.Endpoints.Admin
             return TypedResults.Ok();
         }
 
-        private static async Task<IResult> Update(UpdateTagCommandRequest request, IMediator mediator)
+        private static async Task<IResult> Update(long id,[FromBody]UpdateTagCommandRequest request, IMediator mediator)
         {
+            request.Id = id;
             await mediator.Send(request);
             return TypedResults.Ok();
         }

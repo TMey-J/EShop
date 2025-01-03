@@ -22,7 +22,7 @@ public class UpdateSellerCommandHandler(
     public async Task<UpdateSellerCommandResponse> Handle(UpdateSellerCommandRequest request,
         CancellationToken cancellationToken)
     {
-        var seller = await _sellerRepository.FindByIdWithIncludeTypeOfPerson(request.SellerId) ??
+        var seller = await _sellerRepository.FindByIdWithIncludeTypeOfPerson(request.Id) ??
                      throw new CustomBadRequestException(["فروشنده یافت نشد"]);
 
         var city = await _cityRepository.FindByIdAsync(request.CityId) ??

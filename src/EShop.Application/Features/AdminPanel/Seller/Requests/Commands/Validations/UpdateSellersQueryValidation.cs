@@ -7,7 +7,7 @@ namespace EShop.Application.Features.AdminPanel.Seller.Requests.Commands.Validat
     {
         public UpdateSellersQueryValidation()
         {
-            RuleFor(x => x.SellerId).GreaterThan(0)
+            RuleFor(x => x.Id).GreaterThan(0)
                 .WithMessage(Messages.Validations.GreaterThanZero);
             
             RuleFor(x => x.ShopName).NotEmpty()

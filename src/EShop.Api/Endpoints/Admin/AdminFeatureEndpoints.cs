@@ -18,7 +18,7 @@ namespace EShop.Api.Endpoints.Admin
             var group = app.MapGroup("api/Admin/Feature").AddEndpointFilter<ApiResultEndpointFilter>();
 
             group.MapPost(nameof(Create), Create);
-            group.MapPut(nameof(Update), Update);
+            group.MapPut(nameof(Update)+ "/{id}", Update);
             group.MapGet(nameof(GetAll), GetAll);
             group.MapGet(nameof(Get) + "/{id}", Get);
         }
@@ -36,8 +36,9 @@ namespace EShop.Api.Endpoints.Admin
             return TypedResults.Ok(response);
         }
 
-        private static async Task<IResult> Update(UpdateFeatureCommandRequest request, IMediator mediator)
+        private static async Task<IResult> Update(long id,[FromBody]UpdateFeatureCommandRequest request, IMediator mediator)
         {
+            request.Id = id;
             await mediator.Send(request);
             return TypedResults.Ok();
         }

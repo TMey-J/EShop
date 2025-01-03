@@ -1,7 +1,10 @@
-﻿namespace EShop.Application.Features.AdminPanel.User.Requests.Commands;
+﻿using System.Text.Json.Serialization;
+
+namespace EShop.Application.Features.AdminPanel.User.Requests.Commands;
 
 public record UpdateUserCommandRequest : IRequest<UpdateUserCommandResponse>
 {
+    [JsonIgnore]
     [DisplayName("شناسه")]
     public long Id { get; set; }
     

@@ -1,7 +1,10 @@
-﻿namespace EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
+﻿using System.Text.Json.Serialization;
+
+namespace EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 
 public record UpdateTagCommandRequest:IRequest<UpdateTagCommandResponse>
 {
+    [JsonIgnore]
     [DisplayName("شناسه")]
     public long Id { get; set; }
     

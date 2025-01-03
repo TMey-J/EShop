@@ -1,9 +1,12 @@
-﻿namespace EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
+﻿using System.Text.Json.Serialization;
+
+namespace EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
 
 public record UpdateSellerCommandRequest : IRequest<UpdateSellerCommandResponse>
 {
+    [JsonIgnore]
     [DisplayName("شناسه فروشنده")]
-    public long SellerId { get; set; }
+    public long Id { get; set; }
     
     [DisplayName("نام فروشگاه")]
     public string ShopName { get; set; } = string.Empty;
