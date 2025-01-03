@@ -21,16 +21,14 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
         public async Task Update(MongoSellerProduct entity)
         {
-            var filter = Builders<MongoSellerProduct>.Filter.Eq(x => x.SellerId, entity.SellerId)
-                & Builders<MongoSellerProduct>.Filter.Eq(x => x.ProductId, entity.ProductId);
+            var filter = Builders<MongoSellerProduct>.Filter.Eq(x=>x.Id, entity.Id);
             
             await _sellerProduct.ReplaceOneAsync(filter, entity);
         }
 
         public async Task Delete(MongoSellerProduct entity)
         {
-            var filter = Builders<MongoSellerProduct>.Filter.Eq(x=>x.SellerId,entity.SellerId)
-                         & Builders<MongoSellerProduct>.Filter.Eq(x => x.ProductId, entity.ProductId);
+            var filter = Builders<MongoSellerProduct>.Filter.Eq(x=>x.Id, entity.Id);
 
             await _sellerProduct.DeleteOneAsync(filter);
         }

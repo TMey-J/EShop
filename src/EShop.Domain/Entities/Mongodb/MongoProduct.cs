@@ -9,7 +9,6 @@ public class MongoProduct : MongoBaseEntity
     public string EnglishTitle { get; set; }=string.Empty;
     public uint BasePrice { get; set; }
     public uint? DiscountPercentage { get; set; }
-    public int Count { get; set; }
     public long SellerId { get; set; }
     public string CategoryTitle { get; set; } = string.Empty;
     public string Description { get; set; }=string.Empty;

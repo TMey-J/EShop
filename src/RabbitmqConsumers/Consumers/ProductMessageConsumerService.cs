@@ -44,14 +44,14 @@ namespace RabbitmqConsumers.Consumers
                     await _productRepository.Update(deserializeMessage.Data);
                     if (deserializeMessage.Data.SellerProduct is not null)
                     {
-                        await _sellerProductRepository.Delete(deserializeMessage.Data.SellerProduct);
+                        await _sellerProductRepository.Update(deserializeMessage.Data.SellerProduct);
                     }
                     break;
                 case ActionTypes.Delete:
                     await _productRepository.Delete(deserializeMessage.Data);
                     if (deserializeMessage.Data.SellerProduct is not null)
                     {
-                        await _sellerProductRepository.Update(deserializeMessage.Data.SellerProduct);
+                        await _sellerProductRepository.Delete(deserializeMessage.Data.SellerProduct);
                     }
                     break;
                 default:

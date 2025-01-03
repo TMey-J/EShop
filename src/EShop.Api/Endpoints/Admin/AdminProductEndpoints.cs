@@ -22,7 +22,7 @@ namespace EShop.Api.Endpoints.Admin
             var group = app.MapGroup("api/Admin/Product").AddEndpointFilter<ApiResultEndpointFilter>();
 
             group.MapPost(nameof(Create), Create);
-            //group.MapPut(nameof(Update), Update);
+            group.MapPut(nameof(Update)+ "/{id}", Update);
             group.MapGet(nameof(GetAll), GetAll);
             //group.MapGet(nameof(Get) + "/{id}", Get);
         }
@@ -42,6 +42,15 @@ namespace EShop.Api.Endpoints.Admin
         {
             var response = await mediator.Send(request);
             return TypedResults.Ok(response);
+        }
+        
+        private static async Task<IResult> Update(long id,[FromBody]UpdateProductCommandRequest request, IMediator mediator)
+        {
+            //TODO:get seller id by user claim 
+            request.SellerId = 2;
+            request.Id = id;
+            await mediator.Send(request);
+            return TypedResults.Ok();
         }
 
         #endregion

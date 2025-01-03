@@ -3,7 +3,7 @@ using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.AdminPanel.Product.Handlers.Commands;
 
-public class CreateProductCommandHandler(
+public class UpdateProductCommandHandler(
     IProductRepository productRepository,
     IColorRepository colorRepository,
     ITagRepository tagRepository,
@@ -11,7 +11,7 @@ public class CreateProductCommandHandler(
     IFileRepository fileRepository,
     IOptionsSnapshot<SiteSettings> siteSettings,
     IRabbitmqPublisherService rabbitmqPublisher) :
-    IRequestHandler<CreateProductCommandRequest, CreateProductCommandResponse>
+    IRequestHandler<UpdateProductCommandRequest, CreateProductCommandResponse>
 {
     private readonly IProductRepository _productRepository = productRepository;
     private readonly IColorRepository _colorRepository = colorRepository;
@@ -21,48 +21,55 @@ public class CreateProductCommandHandler(
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
     private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
 
-    public async Task<CreateProductCommandResponse> Handle(CreateProductCommandRequest request,
+    public async Task<CreateProductCommandResponse> Handle(UpdateProductCommandRequest request,
         CancellationToken cancellationToken)
     {
-        var product = await _productRepository.FindByAsync(nameof(Domain.Entities.Product.Title), request.Title);
-        if (product != null)
-        {
-            throw new CustomBadRequestException([Errors.DuplicatedValue("محصول")]);
-        }
+        var product = await _productRepository.FindByIdAsync(request.Id) ??
+                      throw new NotFoundException(NameToReplaceInException.Product);
 
         var category = await _categoryRepository.FindByIdAsync(request.CategoryId)
                        ?? throw new CustomBadRequestException(["دسته بندی یافت نشد"]);
         List<string> errors = [];
 
-        List<Color> colors = [];
-        foreach (var colorCode in request.ColorsCode)
+        var colors = await _productRepository.GetProductColorsAsync(product.Id);
+        var isAllColorsMatch = request.ColorsCode.SequenceEqual(colors.Select(c => c.ColorCode));
+        if (!isAllColorsMatch)
         {
-            var color = await _colorRepository.FindByAsync(nameof(Color.ColorCode), colorCode);
-            if (color == null)
+            colors.Clear();
+            foreach (var colorCode in request.ColorsCode)
             {
-                errors.Add($"رنگی با کد {colorCode} موجود نیست");
-            }
-            else
-            {
-                colors.Add(color);
+                var color = await _colorRepository.FindByAsync(nameof(Color.ColorCode), colorCode);
+                if (color == null)
+                {
+                    errors.Add($"رنگی با کد {colorCode} موجود نیست");
+                }
+                else
+                {
+                    colors.Add(color);
+                }
             }
         }
 
-        List<Domain.Entities.Tag> tags = [];
-        foreach (var tagTitle in request.Tags)
+        var tags = await _productRepository.GetProductTagsAsync(product.Id);
+        var isAllTagsMatch = request.Tags.SequenceEqual(tags.Select(c => c.Title));
+        if (!isAllTagsMatch)
         {
-            var tag = await _tagRepository.FindByAsync(nameof(Domain.Entities.Tag.Title), tagTitle);
-            if (tag == null)
+            foreach (var tagTitle in request.Tags)
             {
-                tag = new Domain.Entities.Tag
+                tags.Clear();
+                var tag = await _tagRepository.FindByAsync(nameof(Domain.Entities.Tag.Title), tagTitle);
+                if (tag == null)
                 {
-                    Title = tagTitle,
-                    IsConfirmed = false
-                };
-                await _tagRepository.CreateAsync(tag);
-            }
+                    tag = new Domain.Entities.Tag
+                    {
+                        Title = tagTitle,
+                        IsConfirmed = false
+                    };
+                    await _tagRepository.CreateAsync(tag);
+                }
 
-            tags.Add(tag);
+                tags.Add(tag);
+            }
         }
 
         if (errors.Count != 0)
@@ -70,7 +77,7 @@ public class CreateProductCommandHandler(
             throw new CustomBadRequestException(errors);
         }
 
-        List<ProductImages> images = [];
+        var images = await _productRepository.GetImagesByProductIdAsync(product.Id);
         List<SaveFileBase64Model> files = [];
         foreach (var image in request.Images)
         {
@@ -82,34 +89,31 @@ public class CreateProductCommandHandler(
                 ImageName = saveFile.fileNameWithExtention
             });
         }
-        product = new Domain.Entities.Product {
-            Title = request.Title,
-            EnglishTitle = request.EnglishTitle,
-            Description = request.Description,
-            DiscountPercentage = request.DiscountPercentage == 0 ? null : request.DiscountPercentage,
-            BasePrice = request.BasePrice,
-            EndOfDiscount = request.EndOfDiscount,
-            CategoryId = request.CategoryId,
-            ProductColors = colors.Select(x=>new ProductColor
-            {
-                ColorId = x.Id
-            }).ToList(),
-            ProductTags = tags.Select(x=>new ProductTag
-            {
-                TagId = x.Id
-            }).ToList(),
-            Images = images,
-            SellersProducts = new List<SellerProduct>() {
-                new()
-                {
-                    Count = request.Count, SellerId = request.SellerId
-                }
-            }
-        };
+
+        product.Id = product.Id;
+        product.Title = request.Title;
+        product.EnglishTitle = request.EnglishTitle;
+        product.Description = request.Description;
+        product.DiscountPercentage = request.DiscountPercentage == 0 ? null : request.DiscountPercentage;
+        product.BasePrice = request.BasePrice;
+        product.EndOfDiscount = request.EndOfDiscount;
+        product.CategoryId = request.CategoryId;
+        product.ProductColors = colors.Select(x => new ProductColor
+        {
+            ColorId = x.Id
+        }).ToList();
+        product.ProductTags = tags.Select(x => new ProductTag
+        {
+            TagId = x.Id
+        }).ToList();
+        product.Images = images;
+        await _productRepository.UpdateCountAsync(request.SellerId, product.Id, request.Count);
         await using var transaction = await _productRepository.BeginTransactionAsync();
         try
         {
-            await _productRepository.CreateAsync(product);
+            await _productRepository.DeleteColorsAsync(product.Id);
+            await _productRepository.DeleteTagsAsync(product.Id);
+            _productRepository.Update(product);
             await _productRepository.SaveChangesAsync();
             foreach (var file in files)
             {
@@ -117,7 +121,8 @@ public class CreateProductCommandHandler(
             }
 
             var colorsToDictionary = colors.ToDictionary(color => color.ColorCode, color => color.ColorName);
-            var mongoProduct = new MongoProduct {
+            var mongoProduct = new MongoProduct
+            {
                 Id = product.Id,
                 Title = product.Title,
                 EnglishTitle = product.EnglishTitle,
@@ -139,10 +144,9 @@ public class CreateProductCommandHandler(
                 }
             };
             await _rabbitmqPublisher.PublishMessageAsync<MongoProduct>(
-                new(ActionTypes.Create, mongoProduct),
+                new(ActionTypes.Update, mongoProduct),
                 RabbitmqConstants.QueueNames.Product,
                 RabbitmqConstants.RoutingKeys.Product);
-
             await transaction.CommitAsync(cancellationToken);
             return new CreateProductCommandResponse();
         }
@@ -150,9 +154,9 @@ public class CreateProductCommandHandler(
         {
             await transaction.RollbackAsync(cancellationToken);
 
-            foreach (var image in product.Images)
+            foreach (var image in request.Images)
             {
-                _fileRepository.DeleteFile(image.ImageName, _filesPath.ProductImage);
+                _fileRepository.DeleteFile(image, _filesPath.ProductImage);
             }
 
             throw;

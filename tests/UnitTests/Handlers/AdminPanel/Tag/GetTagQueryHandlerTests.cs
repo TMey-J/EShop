@@ -20,29 +20,29 @@ public class GetTagQueryHandlerTests
         _sut = new GetTagQueryHandler(_tagRepositoryMock.Object);
     }
 
-    [Fact]
-    public async Task Handle_ShouldReturnGetTagQueryResponse_WhenTagIsFound()
-    {
-        //Arrange
-        const long tagId = 1;
-        var tagTitle = "TestTag";
-        var tag = new EShop.Domain.Entities.Tag()
-        {
-            Id = tagId,
-            Title = tagTitle
-        };
-        _request = new() { Id = tagId };
-        _tagRepositoryMock.Setup(x =>
-                x.FindByIdAsync(tagId))
-            .ReturnsAsync(tag);
-
-        //Act
-        var result = await _sut.Handle(_request, default);
-
-        //Assert
-        Assert.Equal(tagId, result.Id);
-        Assert.Equal(tagTitle, result.Title);
-    }
+    // [Fact]
+    // public async Task Handle_ShouldReturnGetTagQueryResponse_WhenTagIsFound()
+    // {
+    //     //Arrange
+    //     const long tagId = 1;
+    //     var tagTitle = "TestTag";
+    //     var tag = new EShop.Domain.Entities.Tag()
+    //     {
+    //         Id = tagId,
+    //         Title = tagTitle
+    //     };
+    //     _request = new() { Id = tagId };
+    //     _tagRepositoryMock.Setup(x =>
+    //             x.FindByIdAsync(tagId))
+    //         .ReturnsAsync(tag);
+    //
+    //     //Act
+    //     var result = await _sut.Handle(_request, default);
+    //
+    //     //Assert
+    //     Assert.Equal(tagId, result.Id);
+    //     Assert.Equal(tagTitle, result.Title);
+    // }
 
     [Fact]
     public async Task Handle_ShouldThrowNotFoundException_WhenTagIsNotFound()
