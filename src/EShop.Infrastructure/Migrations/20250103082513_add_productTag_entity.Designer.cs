@@ -4,6 +4,7 @@ using EShop.Infrastructure.Databases;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    partial class SQLDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250103082513_add_productTag_entity")]
+    partial class add_productTag_entity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +52,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Category", (string)null);
+                    b.ToTable("Category");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.CategoryFeature", b =>
@@ -87,7 +90,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ProvinceId");
 
-                    b.ToTable("City", (string)null);
+                    b.ToTable("City");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Color", b =>
@@ -113,7 +116,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Color", (string)null);
+                    b.ToTable("Color");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Comment", b =>
@@ -147,7 +150,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Comment", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Feature", b =>
@@ -168,7 +171,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Feature", (string)null);
+                    b.ToTable("Feature");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Identity.Role", b =>
@@ -425,7 +428,7 @@ namespace EShop.Infrastructure.Migrations
                     b.HasIndex("SellerId")
                         .IsUnique();
 
-                    b.ToTable("IndividualSeller", (string)null);
+                    b.ToTable("IndividualSeller");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.LegalSeller", b =>
@@ -475,7 +478,7 @@ namespace EShop.Infrastructure.Migrations
                     b.HasIndex("SellerId")
                         .IsUnique();
 
-                    b.ToTable("LegalSeller", (string)null);
+                    b.ToTable("LegalSeller");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Product", b =>
@@ -519,7 +522,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Product", (string)null);
+                    b.ToTable("Product");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.ProductColor", b =>
@@ -570,7 +573,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("SellerId");
 
-                    b.ToTable("ProductFeature", (string)null);
+                    b.ToTable("ProductFeature");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.ProductImages", b =>
@@ -596,7 +599,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages", (string)null);
+                    b.ToTable("ProductImages");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.ProductTag", b =>
@@ -629,7 +632,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Province", (string)null);
+                    b.ToTable("Province");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Seller", b =>
@@ -695,7 +698,7 @@ namespace EShop.Infrastructure.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Seller", (string)null);
+                    b.ToTable("Seller");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.SellerProduct", b =>
@@ -737,7 +740,7 @@ namespace EShop.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Tag", (string)null);
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Category", b =>
