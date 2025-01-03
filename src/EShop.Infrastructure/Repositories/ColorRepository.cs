@@ -10,5 +10,10 @@ namespace EShop.Infrastructure.Repositories
         {
             await _color.AddRangeAsync(colors);
         }
+
+        public async Task<List<Color>> GetProductColorsAsync(long productId)
+        {
+            return await _color.ToListAsync();
+        }
     }
 }

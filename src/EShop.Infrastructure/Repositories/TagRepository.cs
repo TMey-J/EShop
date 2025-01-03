@@ -37,5 +37,10 @@ namespace EShop.Infrastructure.Repositories
 
             return new GetAllTagsQueryResponse(tags, search, pagination.pageCount);
         }
+
+        public async Task<List<Tag>> GetProductTagsAsync(long productId)
+        {
+            return await _tag.Include(x=>x.Products.Where(p=>p.Id==productId)).ToListAsync();
+        }
     }
 }
