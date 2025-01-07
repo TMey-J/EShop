@@ -94,7 +94,7 @@ public class UpdateProductCommandHandler(
         product.Title = request.Title;
         product.EnglishTitle = request.EnglishTitle;
         product.Description = request.Description;
-        product.DiscountPercentage = request.DiscountPercentage == 0 ? null : request.DiscountPercentage;
+        product.DiscountPercentage = request.DiscountPercentage > 0 ? (byte)0 : request.DiscountPercentage;
         product.BasePrice = request.BasePrice;
         product.EndOfDiscount = request.EndOfDiscount;
         product.CategoryId = request.CategoryId;

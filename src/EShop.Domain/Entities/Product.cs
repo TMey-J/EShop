@@ -21,7 +21,7 @@ public class Product : BaseEntity
     public string Description { get; set; } = string.Empty;
     
     [Length(1,100)]
-    public byte? DiscountPercentage { get; set; }
+    public byte DiscountPercentage { get; set; }
     
     public DateTime? EndOfDiscount { get; set; }
 

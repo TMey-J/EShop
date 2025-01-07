@@ -6,6 +6,7 @@ namespace EShop.Application.Contracts.MongoDb
     public interface IMongoProductRepository:IMongoGenericRepository<MongoProduct>
     {
         Task<GetAllProductQueryResponse> GetAllAsync(SearchProductDto search);
+        Task<int> CountProductByIdAsync(long productId);
 
     }
 }

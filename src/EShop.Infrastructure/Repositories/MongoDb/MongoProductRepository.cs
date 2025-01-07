@@ -8,12 +8,16 @@ using MongoDB.Driver.Linq;
 
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
-    public class MongoProductRepository(MongoDbContext mongoDb) : MongoGenericRepository<MongoProduct>(mongoDb,MongoCollectionsName.Product),
-        IMongoProductRepository
+    public class MongoProductRepository(MongoDbContext mongoDb)
+        : MongoGenericRepository<MongoProduct>(mongoDb, MongoCollectionsName.Product),
+            IMongoProductRepository
     {
-        private readonly IMongoCollection<MongoProduct> _product = mongoDb.GetCollection<MongoProduct>(MongoCollectionsName.Product);
-        private readonly IMongoCollection<MongoSellerProduct> _sellerProduct = mongoDb.GetCollection<MongoSellerProduct>(MongoCollectionsName.SellerProduct);
-        
+        private readonly IMongoCollection<MongoProduct> _product =
+            mongoDb.GetCollection<MongoProduct>(MongoCollectionsName.Product);
+
+        private readonly IMongoCollection<MongoSellerProduct> _sellerProduct =
+            mongoDb.GetCollection<MongoSellerProduct>(MongoCollectionsName.SellerProduct);
+
         public async Task<GetAllProductQueryResponse> GetAllAsync(SearchProductDto search)
         {
             var productQuery = _product
@@ -26,11 +30,12 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             if (search.BasePrice > 0)
             {
-                productQuery=productQuery.Where(x=>x.BasePrice==search.BasePrice);
+                productQuery = productQuery.Where(x => x.BasePrice == search.BasePrice);
             }
+
             if (!string.IsNullOrWhiteSpace(search.CategoryTitle))
             {
-                productQuery = productQuery.Where(x=>x.CategoryTitle==search.CategoryTitle);
+                productQuery = productQuery.Where(x => x.CategoryTitle == search.CategoryTitle);
             }
 
             #endregion
@@ -52,12 +57,13 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             #endregion
 
             var sellerProductQuery = _sellerProduct.AsQueryable();
-            var productsId=await MongoQueryable.ToListAsync( sellerProductQuery
-                .Select(x=>x.ProductId));
-            var totalCount = sellerProductQuery.Where(x => productsId.Contains(x.ProductId) ).Select(x => x.Count).Sum();
+            var productsId = await MongoQueryable.ToListAsync(sellerProductQuery
+                .Select(x => x.ProductId));
+            var totalCount = await MongoQueryable.SumAsync(sellerProductQuery
+                .Where(x => productsId.Contains(x.ProductId)).Select(x => x.Count));
 
             var products = await MongoQueryable.ToListAsync(productQuery.Select(x =>
-                new ShowProductDto
+                new ShowAllProductDto
                 {
                     Id = x.Id,
                     Title = x.Title,
@@ -67,12 +73,19 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                     BasePrice = x.BasePrice,
                     Count = totalCount,
                     Image = x.Images.First(),
-                    PriceWithDiscount = x.DiscountPercentage != null ?
-                        x.BasePrice-(x.BasePrice * x.DiscountPercentage / 100)
-                        : null
                 }));
+            foreach (var product in products.Where(product => product.DiscountPercentage > 0))
+            {
+                product.PriceWithDiscount = MathHelper.CalculatePriceWithDiscount(product.BasePrice, product.DiscountPercentage);
+            }
 
             return new GetAllProductQueryResponse(products, search, pagination.pageCount);
+        }
+
+        public async Task<int> CountProductByIdAsync(long productId)
+        {
+            return await MongoQueryable.SumAsync(_sellerProduct.AsQueryable()
+                .Where(x => x.ProductId == productId).Select(x => x.Count));
         }
     }
 }

@@ -10,8 +10,8 @@ public class GetAllProductsQueryHandler(IMongoProductRepository product):
 
     public async Task<GetAllProductQueryResponse> Handle(GetAllProductsQueryRequest request, CancellationToken cancellationToken)
     {
-        var tags = await _product.GetAllAsync(request.Search);
+        var products = await _product.GetAllAsync(request.Search);
         
-        return tags;
+        return products;
     }
 }
