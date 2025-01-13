@@ -13,8 +13,7 @@ public class Color:BaseEntity
     public string ColorCode { get; set; }=string.Empty;
     
     #region Relationships
-
-    public ICollection<ProductColor> ProductColors { get; set; }
+    public ICollection<SellerProduct> SellerProducts { get; set; }
 
     #endregion
 }

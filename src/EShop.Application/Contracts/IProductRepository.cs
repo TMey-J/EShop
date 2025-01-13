@@ -5,9 +5,6 @@
         Task<List<ProductImages>> GetImagesByProductIdAsync(long productId);
         Task<List<Color>> GetProductColorsAsync(long productId);
         Task<List<Tag>> GetProductTagsAsync(long productId);
-        
-        Task UpdateCountAsync(long sellerId,long productId, int count);
-        Task DeleteColorsAsync(long productId);
         Task DeleteTagsAsync(long productId);
     }
 }

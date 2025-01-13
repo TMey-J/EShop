@@ -1,5 +1,4 @@
-﻿using Carter;
-using EShop.Application.Features.AdminPanel.Product.Requests.Commands;
+﻿using EShop.Application.Features.AdminPanel.Product.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Product.Requests.Queries;
 
 namespace EShop.Api.Endpoints.Admin
@@ -20,8 +19,6 @@ namespace EShop.Api.Endpoints.Admin
 
         private static async Task<IResult> Create(CreateProductCommandRequest request, IMediator mediator)
         {
-            //TODO:get seller id by user claim 
-            request.SellerId = 2;
             await mediator.Send(request);
             return TypedResults.Ok();
         }
@@ -37,8 +34,6 @@ namespace EShop.Api.Endpoints.Admin
         private static async Task<IResult> Update(long id, [FromBody] UpdateProductCommandRequest request,
             IMediator mediator)
         {
-            //TODO:get seller id by user claim 
-            request.SellerId = 2;
             request.Id = id;
             await mediator.Send(request);
             return TypedResults.Ok();

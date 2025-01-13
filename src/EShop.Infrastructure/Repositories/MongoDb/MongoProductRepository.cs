@@ -28,11 +28,6 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             productQuery = productQuery.CreateContainsExpression(nameof(Product.Title), search.Title);
             productQuery = productQuery.CreateContainsExpression(nameof(Product.EnglishTitle), search.EnglishTitle);
 
-            if (search.BasePrice > 0)
-            {
-                productQuery = productQuery.Where(x => x.BasePrice == search.BasePrice);
-            }
-
             if (!string.IsNullOrWhiteSpace(search.CategoryTitle))
             {
                 productQuery = productQuery.Where(x => x.CategoryTitle == search.CategoryTitle);
@@ -60,7 +55,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             var productsId = await MongoQueryable.ToListAsync(sellerProductQuery
                 .Select(x => x.ProductId));
             var totalCount = await MongoQueryable.SumAsync(sellerProductQuery
-                .Where(x => productsId.Contains(x.ProductId)).Select(x => x.Count));
+                .Where(x => productsId.Contains(x.ProductId)).Select(x => (int)x.Count));
 
             var products = await MongoQueryable.ToListAsync(productQuery.Select(x =>
                 new ShowAllProductDto
@@ -69,15 +64,9 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                     Title = x.Title,
                     EnglishTitle = x.EnglishTitle,
                     CategoryTitle = x.CategoryTitle,
-                    DiscountPercentage = x.DiscountPercentage,
-                    BasePrice = x.BasePrice,
-                    Count = totalCount,
+                    Count = (short)totalCount,
                     Image = x.Images.First(),
                 }));
-            foreach (var product in products.Where(product => product.DiscountPercentage > 0))
-            {
-                product.PriceWithDiscount = MathHelper.CalculatePriceWithDiscount(product.BasePrice, product.DiscountPercentage);
-            }
 
             return new GetAllProductQueryResponse(products, search, pagination.pageCount);
         }
@@ -85,7 +74,14 @@ namespace EShop.Infrastructure.Repositories.MongoDb
         public async Task<int> CountProductByIdAsync(long productId)
         {
             return await MongoQueryable.SumAsync(_sellerProduct.AsQueryable()
-                .Where(x => x.ProductId == productId).Select(x => x.Count));
+                .Where(x => x.ProductId == productId).Select(x => (int)x.Count));
+        }
+
+        public async Task<List<long>> GetProductColorsIdAsync(long productId)
+        {
+            return  await MongoQueryable.ToListAsync(_sellerProduct.AsQueryable().Where(x => x.ProductId == productId)
+                .Select(x => x.ColorId));
+            
         }
     }
 }

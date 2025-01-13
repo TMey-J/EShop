@@ -6,7 +6,6 @@ namespace EShop.Infrastructure.Repositories
     {
         private readonly DbSet<Product> _product = context.Set<Product>();
         private readonly DbSet<SellerProduct> _sellerProduct = context.Set<SellerProduct>();
-        private readonly DbSet<ProductColor> _productColors = context.Set<ProductColor>();
         private readonly DbSet<ProductTag> _productTags = context.Set<ProductTag>();
 
         public async Task<List<ProductImages>> GetImagesByProductIdAsync(long productId)
@@ -18,10 +17,8 @@ namespace EShop.Infrastructure.Repositories
 
         public async Task<List<Color>> GetProductColorsAsync(long productId)
         {
-            return await _product.Include(x => x.ProductColors.Where(p => p.ProductId == productId))
-                .ThenInclude(x => x.Color)
-                .SelectMany(x => x.ProductColors)
-                .Select(x => x.Color)
+            return await _sellerProduct.Include(x => x.Color)
+                .Where(x => x.ProductId == productId).Select(x => x.Color)
                 .ToListAsync();
         }
 
@@ -32,20 +29,6 @@ namespace EShop.Infrastructure.Repositories
                 .SelectMany(x => x.ProductTags)
                 .Select(x => x.Tag)
                 .ToListAsync();
-        }
-
-        public async Task UpdateCountAsync(long sellerId, long productId, int count)
-        {
-            await _sellerProduct
-                .Where(x=>x.ProductId == productId && x.SellerId == sellerId)
-                .ExecuteUpdateAsync(s =>
-                    s.SetProperty(p => p.Count, count));
-        }
-
-        public async Task DeleteColorsAsync(long productId)
-        {
-            await _productColors.Where(x => x.ProductId == productId)
-                .ExecuteDeleteAsync();
         }
 
         public async Task DeleteTagsAsync(long productId)

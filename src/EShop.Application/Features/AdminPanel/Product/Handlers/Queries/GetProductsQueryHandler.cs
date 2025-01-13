@@ -13,27 +13,15 @@ public class GetProductQueryHandler(IMongoProductRepository product) :
     {
         var product = await _product.FindByIdAsync(request.Id)
                       ?? throw new NotFoundException(NameToReplaceInException.Product);
-        var totalCount = await _product.CountProductByIdAsync(product.Id);
-        uint priceWithDiscount = 0;
-        if (product.DiscountPercentage > 0)
-        {
-            priceWithDiscount=MathHelper.CalculatePriceWithDiscount(product.BasePrice, product.DiscountPercentage);
-        }
-
         var responseModel = new ShowProductDto
         {
             Id = product.Id,
             Title = product.Title,
             EnglishTitle = product.EnglishTitle,
-            BasePrice = product.BasePrice,
-            Count = totalCount,
-            DiscountPercentage = product.DiscountPercentage,
-            PriceWithDiscount = priceWithDiscount,
-            EndOfDiscount = product.EndOfDiscount,
             CategoryId = product.CategoryId,
             Images = product.Images,
             Tags = product.Tags,
-            ColorsCode = product.Colors.Select(x => x.Key).ToList()
+            Description = product.Description
         };
         return new GetProductQueryResponse(responseModel);
     }

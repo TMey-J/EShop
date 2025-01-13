@@ -34,20 +34,6 @@ public class CreateProductCommandHandler(
                        ?? throw new CustomBadRequestException(["دسته بندی یافت نشد"]);
         List<string> errors = [];
 
-        List<Color> colors = [];
-        foreach (var colorCode in request.ColorsCode)
-        {
-            var color = await _colorRepository.FindByAsync(nameof(Color.ColorCode), colorCode);
-            if (color == null)
-            {
-                errors.Add($"رنگی با کد {colorCode} موجود نیست");
-            }
-            else
-            {
-                colors.Add(color);
-            }
-        }
-
         List<Domain.Entities.Tag> tags = [];
         foreach (var tagTitle in request.Tags)
         {
@@ -86,25 +72,12 @@ public class CreateProductCommandHandler(
             Title = request.Title,
             EnglishTitle = request.EnglishTitle,
             Description = request.Description,
-            DiscountPercentage = request.DiscountPercentage > 0 ? (byte)0 : request.DiscountPercentage,
-            BasePrice = request.BasePrice,
-            EndOfDiscount = request.EndOfDiscount,
             CategoryId = request.CategoryId,
-            ProductColors = colors.Select(x=>new ProductColor
-            {
-                ColorId = x.Id
-            }).ToList(),
             ProductTags = tags.Select(x=>new ProductTag
             {
                 TagId = x.Id
             }).ToList(),
             Images = images,
-            SellersProducts = new List<SellerProduct>() {
-                new()
-                {
-                    Count = request.Count, SellerId = request.SellerId
-                }
-            }
         };
         await using var transaction = await _productRepository.BeginTransactionAsync();
         try
@@ -115,29 +88,15 @@ public class CreateProductCommandHandler(
             {
                 await _fileRepository.SaveFileAsync(file);
             }
-
-            var colorsToDictionary = colors.ToDictionary(color => color.ColorCode, color => color.ColorName);
             var mongoProduct = new MongoProduct {
                 Id = product.Id,
                 Title = product.Title,
                 EnglishTitle = product.EnglishTitle,
-                BasePrice = product.BasePrice,
-                DiscountPercentage = product.DiscountPercentage,
-                EndOfDiscount = product.EndOfDiscount,
                 CategoryId = category.Id,
                 CategoryTitle = category.Title,
                 Description = product.Description,
-                Colors = colorsToDictionary,
                 Tags = request.Tags,
                 Images = product.Images.Select(x => x.ImageName).ToList(),
-                SellerId = request.SellerId,
-                SellerProduct = new MongoSellerProduct
-                {
-                    Id = $"{request.SellerId}{product.Id}",
-                    SellerId = request.SellerId,
-                    Count = request.Count,
-                    ProductId = product.Id
-                }
             };
             await _rabbitmqPublisher.PublishMessageAsync<MongoProduct>(
                 new(ActionTypes.Create, mongoProduct),

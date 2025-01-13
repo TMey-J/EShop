@@ -1,8 +1,6 @@
 ﻿using EShop.Application.Constants;
 using EShop.Application.Contracts.MongoDb;
-using EShop.Application.DTOs;
 using EShop.Application.Model;
-using EShop.Domain.Entities;
 using EShop.Domain.Entities.Mongodb;
 using Newtonsoft.Json;
 
@@ -35,24 +33,12 @@ namespace RabbitmqConsumers.Consumers
             {
                 case ActionTypes.Create:
                     await _productRepository.CreateAsync(deserializeMessage.Data);
-                    if (deserializeMessage.Data.SellerProduct is not null)
-                    {
-                        await _sellerProductRepository.CreateAsync(deserializeMessage.Data.SellerProduct);
-                    }
                     break;
                 case ActionTypes.Update:
                     await _productRepository.Update(deserializeMessage.Data);
-                    if (deserializeMessage.Data.SellerProduct is not null)
-                    {
-                        await _sellerProductRepository.Update(deserializeMessage.Data.SellerProduct);
-                    }
                     break;
                 case ActionTypes.Delete:
                     await _productRepository.Delete(deserializeMessage.Data);
-                    if (deserializeMessage.Data.SellerProduct is not null)
-                    {
-                        await _sellerProductRepository.Delete(deserializeMessage.Data.SellerProduct);
-                    }
                     break;
                 default:
                     break;

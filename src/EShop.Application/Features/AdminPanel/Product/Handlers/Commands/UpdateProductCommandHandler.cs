@@ -11,7 +11,7 @@ public class UpdateProductCommandHandler(
     IFileRepository fileRepository,
     IOptionsSnapshot<SiteSettings> siteSettings,
     IRabbitmqPublisherService rabbitmqPublisher) :
-    IRequestHandler<UpdateProductCommandRequest, CreateProductCommandResponse>
+    IRequestHandler<UpdateProductCommandRequest, UpdateProductCommandResponse>
 {
     private readonly IProductRepository _productRepository = productRepository;
     private readonly IColorRepository _colorRepository = colorRepository;
@@ -21,7 +21,7 @@ public class UpdateProductCommandHandler(
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
     private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
 
-    public async Task<CreateProductCommandResponse> Handle(UpdateProductCommandRequest request,
+    public async Task<UpdateProductCommandResponse> Handle(UpdateProductCommandRequest request,
         CancellationToken cancellationToken)
     {
         var product = await _productRepository.FindByIdAsync(request.Id) ??
@@ -30,25 +30,6 @@ public class UpdateProductCommandHandler(
         var category = await _categoryRepository.FindByIdAsync(request.CategoryId)
                        ?? throw new CustomBadRequestException(["دسته بندی یافت نشد"]);
         List<string> errors = [];
-
-        var colors = await _productRepository.GetProductColorsAsync(product.Id);
-        var isAllColorsMatch = request.ColorsCode.SequenceEqual(colors.Select(c => c.ColorCode));
-        if (!isAllColorsMatch)
-        {
-            colors.Clear();
-            foreach (var colorCode in request.ColorsCode)
-            {
-                var color = await _colorRepository.FindByAsync(nameof(Color.ColorCode), colorCode);
-                if (color == null)
-                {
-                    errors.Add($"رنگی با کد {colorCode} موجود نیست");
-                }
-                else
-                {
-                    colors.Add(color);
-                }
-            }
-        }
 
         var tags = await _productRepository.GetProductTagsAsync(product.Id);
         var isAllTagsMatch = request.Tags.SequenceEqual(tags.Select(c => c.Title));
@@ -94,24 +75,15 @@ public class UpdateProductCommandHandler(
         product.Title = request.Title;
         product.EnglishTitle = request.EnglishTitle;
         product.Description = request.Description;
-        product.DiscountPercentage = request.DiscountPercentage > 0 ? (byte)0 : request.DiscountPercentage;
-        product.BasePrice = request.BasePrice;
-        product.EndOfDiscount = request.EndOfDiscount;
         product.CategoryId = request.CategoryId;
-        product.ProductColors = colors.Select(x => new ProductColor
-        {
-            ColorId = x.Id
-        }).ToList();
         product.ProductTags = tags.Select(x => new ProductTag
         {
             TagId = x.Id
         }).ToList();
         product.Images = images;
-        await _productRepository.UpdateCountAsync(request.SellerId, product.Id, request.Count);
         await using var transaction = await _productRepository.BeginTransactionAsync();
         try
         {
-            await _productRepository.DeleteColorsAsync(product.Id);
             await _productRepository.DeleteTagsAsync(product.Id);
             _productRepository.Update(product);
             await _productRepository.SaveChangesAsync();
@@ -119,36 +91,22 @@ public class UpdateProductCommandHandler(
             {
                 await _fileRepository.SaveFileAsync(file);
             }
-
-            var colorsToDictionary = colors.ToDictionary(color => color.ColorCode, color => color.ColorName);
             var mongoProduct = new MongoProduct
             {
                 Id = product.Id,
                 Title = product.Title,
                 EnglishTitle = product.EnglishTitle,
-                BasePrice = product.BasePrice,
-                DiscountPercentage = product.DiscountPercentage,
-                EndOfDiscount = product.EndOfDiscount,
                 CategoryTitle = category.Title,
                 Description = product.Description,
-                Colors = colorsToDictionary,
                 Tags = request.Tags,
                 Images = product.Images.Select(x => x.ImageName).ToList(),
-                SellerId = request.SellerId,
-                SellerProduct = new MongoSellerProduct
-                {
-                    Id = $"{request.SellerId}{product.Id}",
-                    SellerId = request.SellerId,
-                    Count = request.Count,
-                    ProductId = product.Id
-                }
             };
             await _rabbitmqPublisher.PublishMessageAsync<MongoProduct>(
                 new(ActionTypes.Update, mongoProduct),
                 RabbitmqConstants.QueueNames.Product,
                 RabbitmqConstants.RoutingKeys.Product);
             await transaction.CommitAsync(cancellationToken);
-            return new CreateProductCommandResponse();
+            return new UpdateProductCommandResponse();
         }
         catch
         {
