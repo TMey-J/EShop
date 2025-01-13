@@ -1,5 +1,4 @@
 ﻿using EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
-using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
 
 namespace EShop.Application.Features.AdminPanel.Seller.Handlers.Commands;
 
@@ -8,7 +7,6 @@ public class UpdateSellerCommandHandler(
     ICityRepository cityRepository,
     IFileRepository fileRepository,
     IOptionsSnapshot<SiteSettings> siteSettings,
-    IApplicationUserManager userManager,
     IRabbitmqPublisherService rabbitmqPublisher) :
     IRequestHandler<UpdateSellerCommandRequest, UpdateSellerCommandResponse>
 {
@@ -16,7 +14,6 @@ public class UpdateSellerCommandHandler(
     private readonly ICityRepository _cityRepository = cityRepository;
     private readonly IFileRepository _fileRepository = fileRepository;
     private readonly FilesPath _filesPath = siteSettings.Value.FilesPath;
-    private readonly IApplicationUserManager _userManager = userManager;
     private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
 
     public async Task<UpdateSellerCommandResponse> Handle(UpdateSellerCommandRequest request,

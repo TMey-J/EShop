@@ -1,17 +1,7 @@
-﻿using Carter;
-using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
-using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
-using EShop.Application.Features.AdminPanel.Feature.Requests.Commands;
-using EShop.Application.Features.AdminPanel.Feature.Requests.Queries;
-using EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
+﻿using EShop.Application.Features.AdminPanel.Seller.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Seller.Requests.Queries;
-using EShop.Application.Features.AdminPanel.Tag.Requests.Commands;
-using EShop.Application.Features.AdminPanel.Tag.Requests.Queries;
-using EShop.Application.Features.AdminPanel.User.Requests.Commands;
-using EShop.Application.Features.AdminPanel.User.Requests.Queries;
-using EShop.Application.Features.Authorize.Requests.Commands;
 
-namespace EShop.Api.Endpoints.Admin
+namespace EShop.Api.Endpoints.AdminPanel
 {
     public class AdminSellerEndpoints : ICarterModule
     {

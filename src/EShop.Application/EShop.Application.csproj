@@ -27,4 +27,9 @@
     <ProjectReference Include="..\EShop.Domain\EShop.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\SellerPanel\Handlers\Queries\" />
+    <Folder Include="Features\SellerPanel\Requests\Queries\" />
+  </ItemGroup>
+
 </Project>

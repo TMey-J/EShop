@@ -9,15 +9,13 @@ namespace RabbitmqConsumers.Consumers
     public class ProductMessageConsumerService : BaseRabbitmqConsumer<ProductMessageConsumerService>
     {
         private readonly IMongoProductRepository _productRepository;
-        private readonly IMongoSellerProductRepository _sellerProductRepository;
 
 
         public ProductMessageConsumerService(
           IMongoProductRepository productRepository, ILogger<ProductMessageConsumerService> logger,
-          IConfiguration configuration, IMongoSellerProductRepository sellerProductRepository) : base(logger, configuration)
+          IConfiguration configuration) : base(logger, configuration)
         {
             _productRepository = productRepository;
-            _sellerProductRepository = sellerProductRepository;
             Channel.QueueDeclareAsync(QueueName,false,false,false,null);
         }
 
@@ -41,7 +39,7 @@ namespace RabbitmqConsumers.Consumers
                     await _productRepository.Delete(deserializeMessage.Data);
                     break;
                 default:
-                    break;
+                    throw new Exception("Unknown action type");
             }
 
 

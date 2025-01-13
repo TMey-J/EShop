@@ -11,6 +11,7 @@ public static class RabbitmqConstants
         public const string Seller = nameof(Seller);
         public const string Feature = nameof(Feature);
         public const string Product = nameof(Product);
+        public const string SellerProduct = nameof(SellerProduct);
     }
     public static class RoutingKeys
     {
@@ -21,5 +22,7 @@ public static class RabbitmqConstants
         public const string Feature = nameof(Feature);
         public const string Seller = nameof(Seller);
         public const string Product = nameof(Product);
+        public const string SellerProduct = nameof(SellerProduct);
+
     }
 }

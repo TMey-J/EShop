@@ -84,6 +84,7 @@ namespace EShop.Infrastructure
             services.AddScoped<ISellerRepository, SellerRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IColorRepository, ColorRepository>();
+            services.AddScoped<ISellerProductRepository, SellerProductRepository>();
         }
         private static void ConfigureMongoRepositories(this IServiceCollection services)
         {

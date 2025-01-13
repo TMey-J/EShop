@@ -9,4 +9,5 @@ public static class NameToReplaceInException
     public const string Seller = "فروشنده";
     public const string Feature = "ویژگی";
     public const string Product = "محصول";
+    public const string Color = "رنگ";
 }

@@ -1,8 +1,12 @@
-﻿namespace EShop.Domain.Entities.Mongodb;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace EShop.Domain.Entities.Mongodb;
 
 public class MongoSellerProduct
 {
-    public long Id { get; set; }
+    [BsonId][BsonRepresentation(BsonType.String)]
+    public string Id { get; set; }
     public long SellerId { get; set; }
     public long ProductId { get; set; }
     public long ColorId { get; set; }

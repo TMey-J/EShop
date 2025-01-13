@@ -1,7 +1,7 @@
 ﻿using EShop.Application.Features.AdminPanel.Product.Requests.Commands;
 using EShop.Application.Features.AdminPanel.Product.Requests.Queries;
 
-namespace EShop.Api.Endpoints.Admin
+namespace EShop.Api.Endpoints.AdminPanel
 {
     public class AdminProductEndpoints : ICarterModule
     {

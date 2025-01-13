@@ -1,11 +1,7 @@
-﻿using Carter;
-using EShop.Application.Features.AdminPanel.Category.Requests.Commands;
-using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
-using EShop.Application.Features.AdminPanel.User.Requests.Commands;
+﻿using EShop.Application.Features.AdminPanel.User.Requests.Commands;
 using EShop.Application.Features.AdminPanel.User.Requests.Queries;
-using EShop.Application.Features.Authorize.Requests.Commands;
 
-namespace EShop.Api.Endpoints.Admin
+namespace EShop.Api.Endpoints.AdminPanel
 {
     public class AdminUserEndpoints : ICarterModule
     {

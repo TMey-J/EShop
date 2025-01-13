@@ -37,7 +37,7 @@ namespace RabbitmqConsumers.Consumers
                     await _userRepository.Delete(deserializeMessage.Data);
                     break;
                 default:
-                    break;
+                    throw new Exception("Unknown action type");
             }
 
 
