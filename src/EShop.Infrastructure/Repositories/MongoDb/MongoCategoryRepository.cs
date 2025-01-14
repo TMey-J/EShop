@@ -56,7 +56,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                 .Select(x=>x.FeatureId));
             var features= await MongoQueryable.ToListAsync(_feature.AsQueryable()
                 .Where(x => featuresId.Contains(x.Id)));
-            return features??[];
+            return features;
         }
     }
 }

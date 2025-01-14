@@ -12,6 +12,7 @@ namespace EShop.Infrastructure.Repositories
         { 
             _categoryFeature.RemoveRange(_categoryFeature.Where(c => c.CategoryId == categoryId));
         }
+        
 
         public async Task SaveChangesAsync()
         {

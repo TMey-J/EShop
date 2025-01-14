@@ -5,11 +5,11 @@ namespace EShop.Application.Features.SellerPanel.Handlers.Queries;
 
 public class SearchProductQueryHandler(
     IMongoProductRepository productRepository)
-    : IRequestHandler<SearchProductQueryRequest, SearchProductQueryResonse>
+    : IRequestHandler<SearchProductQueryRequest, SearchProductQueryResponse>
 {
     private readonly IMongoProductRepository _productRepository = productRepository;
 
-    public async Task<SearchProductQueryResonse> Handle(SearchProductQueryRequest request,
+    public async Task<SearchProductQueryResponse> Handle(SearchProductQueryRequest request,
         CancellationToken cancellationToken)
     {
         var products = await _productRepository.SearchProductByTitleAsync(request.Title,cancellationToken);
@@ -21,6 +21,6 @@ public class SearchProductQueryHandler(
             CategoryTitle = x.CategoryTitle,
             Image = x.Images.First()
         }).ToList();
-        return new SearchProductQueryResonse(model);
+        return new SearchProductQueryResponse(model);
     }
 }

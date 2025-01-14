@@ -11,6 +11,7 @@ namespace EShop.Api.Endpoints
 
             group.MapPost(nameof(ReserveProduct), ReserveProduct);
             group.MapGet(nameof(SearchProduct)+"/{title}", SearchProduct);
+            group.MapGet(nameof(ShowProduct)+"/{id}", ShowProduct);
         }
 
         #region Api Bodies
@@ -24,7 +25,12 @@ namespace EShop.Api.Endpoints
         private static async Task<IResult> SearchProduct(string title, IMediator mediator)
         {
            var response= await mediator.Send(new SearchProductQueryRequest{Title = title});
-            return TypedResults.Ok(response.Products);
+            return TypedResults.Ok(response);
+        }
+        private static async Task<IResult> ShowProduct(long id, IMediator mediator)
+        {
+            var response= await mediator.Send(new ShowProductQueryRequest{Id = id});
+            return TypedResults.Ok(response);
         }
         #endregion
     }

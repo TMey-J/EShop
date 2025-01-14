@@ -8,5 +8,6 @@ public interface IMongoGenericRepository<TEntity>
     Task Delete(TEntity entity);
     Task SoftDeleteAsync(TEntity entity);
     Task<TEntity?> FindByIdAsync(long id);
+    Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue);
     Task<IEnumerable<TEntity>> GetAllAsync();
 }
