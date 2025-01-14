@@ -19,7 +19,6 @@ public record ShowAllProductDto
     public string Title { get; set; } = string.Empty;
     public string EnglishTitle { get; set; } = string.Empty;
     public string Image { get; set; } = string.Empty;
-    public short Count { get; set; }
     public string CategoryTitle { get; set; } = string.Empty;
 }
 

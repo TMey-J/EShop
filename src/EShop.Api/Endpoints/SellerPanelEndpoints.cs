@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Features.SellerPanel.Requests.Commands;
+using EShop.Application.Features.SellerPanel.Requests.Queries;
 
 namespace EShop.Api.Endpoints
 {
@@ -9,6 +10,7 @@ namespace EShop.Api.Endpoints
             var group = app.MapGroup("api/sellerPanel").AddEndpointFilter<ApiResultEndpointFilter>();
 
             group.MapPost(nameof(ReserveProduct), ReserveProduct);
+            group.MapGet(nameof(SearchProduct)+"/{title}", SearchProduct);
         }
 
         #region Api Bodies
@@ -19,7 +21,11 @@ namespace EShop.Api.Endpoints
             await mediator.Send(request);
             return TypedResults.Ok();
         }
-
+        private static async Task<IResult> SearchProduct(string title, IMediator mediator)
+        {
+           var response= await mediator.Send(new SearchProductQueryRequest{Title = title});
+            return TypedResults.Ok(response.Products);
+        }
         #endregion
     }
 }

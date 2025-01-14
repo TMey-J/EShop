@@ -51,12 +51,6 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #endregion
 
-            var sellerProductQuery = _sellerProduct.AsQueryable();
-            var productsId = await MongoQueryable.ToListAsync(sellerProductQuery
-                .Select(x => x.ProductId));
-            var totalCount = await MongoQueryable.SumAsync(sellerProductQuery
-                .Where(x => productsId.Contains(x.ProductId)).Select(x => (int)x.Count));
-
             var products = await MongoQueryable.ToListAsync(productQuery.Select(x =>
                 new ShowAllProductDto
                 {
@@ -64,7 +58,6 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                     Title = x.Title,
                     EnglishTitle = x.EnglishTitle,
                     CategoryTitle = x.CategoryTitle,
-                    Count = (short)totalCount,
                     Image = x.Images.First(),
                 }));
 
@@ -79,9 +72,16 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
         public async Task<List<long>> GetProductColorsIdAsync(long productId)
         {
-            return  await MongoQueryable.ToListAsync(_sellerProduct.AsQueryable().Where(x => x.ProductId == productId)
+            return await MongoQueryable.ToListAsync(_sellerProduct.AsQueryable().Where(x => x.ProductId == productId)
                 .Select(x => x.ColorId));
-            
+        }
+
+        public async Task<List<MongoProduct>> SearchProductByTitleAsync(string title,CancellationToken cancellationToken)
+        {
+            return await MongoQueryable.ToListAsync(
+                _product.AsQueryable()
+                    .Where(x => x.Title.Contains(title, StringComparison.CurrentCultureIgnoreCase) ||
+                                x.EnglishTitle.Contains(title, StringComparison.CurrentCultureIgnoreCase)), cancellationToken);
         }
     }
 }

@@ -9,13 +9,13 @@ namespace EShop.Application.Features.Authorize.Handlers.Commands;
 
 public class LoginCommandHandler(IApplicationUserManager userManager,
     IJwtService jwt,
-    ILogger<RegisterCommandHandler> logger) : IRequestHandler<LoginCommandRequest, LoginCommandResponde>
+    ILogger<RegisterCommandHandler> logger) : IRequestHandler<LoginCommandRequest, LoginCommandResponse>
 {
     private readonly IApplicationUserManager _userManager = userManager;
     private readonly IJwtService _jwt = jwt;
     private readonly ILogger<RegisterCommandHandler> _logger = logger;
 
-    public async Task<LoginCommandResponde> Handle(LoginCommandRequest request, CancellationToken cancellationToken)
+    public async Task<LoginCommandResponse> Handle(LoginCommandRequest request, CancellationToken cancellationToken)
     {
         (User? value, bool isEmail) user = await _userManager.FindByEmailOrPhoneNumberWithCheckIsEmailAsync(request.EmailOrPhoneNumber);
 
