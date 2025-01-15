@@ -76,6 +76,13 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                 .Select(x => x.ColorId));
         }
 
+        public async Task<Dictionary<string, string>> GetProductFeaturesAsync(long productId)
+        {
+            return await MongoQueryable.FirstAsync(_product.AsQueryable()
+                .Where(x => x.Id == productId)
+                .Select(x => x.Features));
+        }
+
         public async Task<List<MongoProduct>> SearchProductByTitleAsync(string title,CancellationToken cancellationToken)
         {
             return await MongoQueryable.ToListAsync(

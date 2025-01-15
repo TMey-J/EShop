@@ -11,8 +11,7 @@ public record SearchTagDto : BaseSearchDto
 
 public record ShowTagDto(
     long Id,
-    string Title,
-    bool IsConfirmed);
+    string Title);
 public enum SortingTagBy
 {
     Id,

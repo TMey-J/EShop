@@ -20,6 +20,9 @@ public record CreateProductCommandRequest : IRequest<CreateProductCommandRespons
     public List<string> Tags { get; set; } = [];
     [DisplayName("تضاویر")]
     public List<string> Images { get; set; } = [];
+    
+    [DisplayName("ویژگی ها")]
+    public Dictionary<string, string> Features { get; set; } = [];
 }
 
 public record CreateProductCommandResponse();

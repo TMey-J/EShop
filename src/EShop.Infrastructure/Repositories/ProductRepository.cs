@@ -7,6 +7,7 @@ namespace EShop.Infrastructure.Repositories
         private readonly DbSet<Product> _product = context.Set<Product>();
         private readonly DbSet<SellerProduct> _sellerProduct = context.Set<SellerProduct>();
         private readonly DbSet<ProductTag> _productTags = context.Set<ProductTag>();
+        private readonly DbSet<ProductFeature> _productFeatures = context.Set<ProductFeature>();
 
         public async Task<List<ProductImages>> GetImagesByProductIdAsync(long productId)
         {
@@ -31,9 +32,21 @@ namespace EShop.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<List<ProductFeature>> GetProductFeaturesAsync(long productId)
+        {
+            return await _productFeatures.Where(x=>x.ProductId == productId)
+                .ToListAsync();
+        }
+
         public async Task DeleteTagsAsync(long productId)
         {
             await _productTags.Where(x => x.ProductId == productId)
+                .ExecuteDeleteAsync();
+        }
+
+        public async Task DeleteFeaturesAsync(long productId)
+        {
+            await _productFeatures.Where(x => x.ProductId == productId)
                 .ExecuteDeleteAsync();
         }
     }

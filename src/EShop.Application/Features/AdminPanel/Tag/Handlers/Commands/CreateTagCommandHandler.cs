@@ -20,8 +20,7 @@ public class CreateTagCommandHandler(ITagRepository tagRepository,
         
         tag = new Domain.Entities.Tag()
         {
-            Title = request.Title,
-            IsConfirmed = true
+            Title = request.Title
         };
         await _tagRepository.CreateAsync(tag);
         await _tagRepository.SaveChangesAsync();

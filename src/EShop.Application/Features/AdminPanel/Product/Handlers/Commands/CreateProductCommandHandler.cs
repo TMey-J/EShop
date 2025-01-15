@@ -30,7 +30,7 @@ public class CreateProductCommandHandler(
             throw new CustomBadRequestException([Errors.DuplicatedValue("محصول")]);
         }
 
-        var category = await _categoryRepository.FindByIdAsync(request.CategoryId)
+        var category = await _categoryRepository.FindByIdWithIncludeFeatures(request.CategoryId)
                        ?? throw new CustomBadRequestException(["دسته بندی یافت نشد"]);
         List<string> errors = [];
 
@@ -42,8 +42,7 @@ public class CreateProductCommandHandler(
             {
                 tag = new Domain.Entities.Tag
                 {
-                    Title = tagTitle,
-                    IsConfirmed = false
+                    Title = tagTitle
                 };
                 await _tagRepository.CreateAsync(tag);
             }
@@ -55,7 +54,16 @@ public class CreateProductCommandHandler(
         {
             throw new CustomBadRequestException(errors);
         }
-
+        var categoryFeature = category.CategoryFeatures?.Select(x=>x.Feature).ToList()??[];
+        if (!categoryFeature.All(x => request.Features.ContainsKey(x.Name)))
+        {
+            throw new CustomBadRequestException(["ویژگی های دسته بندی باید وجود داشته باشد"]);
+        }
+        var productFeature = request.Features.Select(x => new ProductFeature
+        {
+            FeatureName = x.Key,
+            FeatureValue = x.Value
+        }).ToList();
         List<ProductImages> images = [];
         List<SaveFileBase64Model> files = [];
         foreach (var image in request.Images)
@@ -68,16 +76,19 @@ public class CreateProductCommandHandler(
                 ImageName = saveFile.fileNameWithExtention
             });
         }
-        product = new Domain.Entities.Product {
+
+        product = new Domain.Entities.Product
+        {
             Title = request.Title,
             EnglishTitle = request.EnglishTitle,
             Description = request.Description,
             CategoryId = request.CategoryId,
-            ProductTags = tags.Select(x=>new ProductTag
+            ProductTags = tags.Select(x => new ProductTag
             {
                 TagId = x.Id
             }).ToList(),
             Images = images,
+            ProductFeatures = productFeature
         };
         await using var transaction = await _productRepository.BeginTransactionAsync();
         try
@@ -88,7 +99,11 @@ public class CreateProductCommandHandler(
             {
                 await _fileRepository.SaveFileAsync(file);
             }
-            var mongoProduct = new MongoProduct {
+
+            #region publish message
+
+            var mongoProduct = new MongoProduct
+            {
                 Id = product.Id,
                 Title = product.Title,
                 EnglishTitle = product.EnglishTitle,
@@ -97,11 +112,14 @@ public class CreateProductCommandHandler(
                 Description = product.Description,
                 Tags = request.Tags,
                 Images = product.Images.Select(x => x.ImageName).ToList(),
+                Features = product.ProductFeatures.ToDictionary(x=>x.FeatureName,x=>x.FeatureValue)
             };
             await _rabbitmqPublisher.PublishMessageAsync<MongoProduct>(
                 new(ActionTypes.Create, mongoProduct),
                 RabbitmqConstants.QueueNames.Product,
                 RabbitmqConstants.RoutingKeys.Product);
+
+            #endregion
 
             await transaction.CommitAsync(cancellationToken);
             return new CreateProductCommandResponse();

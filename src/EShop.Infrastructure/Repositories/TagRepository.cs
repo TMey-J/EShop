@@ -33,7 +33,7 @@ namespace EShop.Infrastructure.Repositories
             #endregion
 
             var tags = await tagQuery.Select
-                (x => new ShowTagDto(x.Id, x.Title,x.IsConfirmed)).ToListAsync();
+                (x => new ShowTagDto(x.Id, x.Title)).ToListAsync();
 
             return new GetAllTagsQueryResponse(tags, search, pagination.pageCount);
         }

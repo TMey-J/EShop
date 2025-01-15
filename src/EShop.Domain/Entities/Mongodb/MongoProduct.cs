@@ -12,4 +12,5 @@ public class MongoProduct : MongoBaseEntity
     public string Description { get; set; } = string.Empty;
     public List<string> Tags { get; set; } = [];
     public List<string> Images { get; set; } = [];
+    public Dictionary<string,string> Features { get; set; } = [];
 };

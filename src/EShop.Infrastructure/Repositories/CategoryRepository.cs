@@ -6,6 +6,7 @@ namespace EShop.Infrastructure.Repositories
     public class CategoryRepository(SQLDbContext context) : GenericRepository<Category>(context), ICategoryRepository
     {
         private readonly DbSet<Category> _category = context.Set<Category>();
+        private readonly DbSet<CategoryFeature> _categoryFeatures = context.Set<CategoryFeature>();
 
         public async Task<bool> IsHasChild(Category category)
         {

@@ -1,5 +1,4 @@
-﻿using EShop.Application.Features.AdminPanel.User.Requests.Commands;
-using FluentValidation;
+﻿using FluentValidation;
 
 namespace EShop.Application.Features.SellerPanel.Requests.Commands.Validations;
 

@@ -27,7 +27,7 @@ public class UpdateProductCommandHandler(
         var product = await _productRepository.FindByIdAsync(request.Id) ??
                       throw new NotFoundException(NameToReplaceInException.Product);
 
-        var category = await _categoryRepository.FindByIdAsync(request.CategoryId)
+        var category = await _categoryRepository.FindByIdWithIncludeFeatures(request.CategoryId)
                        ?? throw new CustomBadRequestException(["دسته بندی یافت نشد"]);
         List<string> errors = [];
 
@@ -43,8 +43,7 @@ public class UpdateProductCommandHandler(
                 {
                     tag = new Domain.Entities.Tag
                     {
-                        Title = tagTitle,
-                        IsConfirmed = false
+                        Title = tagTitle
                     };
                     await _tagRepository.CreateAsync(tag);
                 }
@@ -56,6 +55,12 @@ public class UpdateProductCommandHandler(
         if (errors.Count != 0)
         {
             throw new CustomBadRequestException(errors);
+        }
+
+        var categoryFeature = category.CategoryFeatures?.Select(x => x.Feature).ToList() ?? [];
+        if (!categoryFeature.All(x => request.Features.ContainsKey(x.Name)))
+        {
+            throw new CustomBadRequestException(["ویژگی های دسته بندی باید وجود داشته باشد"]);
         }
 
         var images = await _productRepository.GetImagesByProductIdAsync(product.Id);
@@ -80,17 +85,25 @@ public class UpdateProductCommandHandler(
         {
             TagId = x.Id
         }).ToList();
+        product.ProductFeatures = request.Features.Select(x => new ProductFeature
+        {
+            ProductId = product.Id,
+            FeatureName = x.Key, 
+            FeatureValue = x.Value
+        }).ToList();
         product.Images = images;
         await using var transaction = await _productRepository.BeginTransactionAsync();
         try
         {
             await _productRepository.DeleteTagsAsync(product.Id);
+            await _productRepository.DeleteFeaturesAsync(product.Id);
             _productRepository.Update(product);
             await _productRepository.SaveChangesAsync();
             foreach (var file in files)
             {
                 await _fileRepository.SaveFileAsync(file);
             }
+
             var mongoProduct = new MongoProduct
             {
                 Id = product.Id,
@@ -100,6 +113,7 @@ public class UpdateProductCommandHandler(
                 Description = product.Description,
                 Tags = request.Tags,
                 Images = product.Images.Select(x => x.ImageName).ToList(),
+                Features = product.ProductFeatures.ToDictionary(x => x.FeatureName, x => x.FeatureValue)
             };
             await _rabbitmqPublisher.PublishMessageAsync<MongoProduct>(
                 new(ActionTypes.Update, mongoProduct),

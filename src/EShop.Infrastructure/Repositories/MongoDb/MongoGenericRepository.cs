@@ -5,7 +5,7 @@ using MongoDB.Driver;
 
 namespace EShop.Infrastructure.Repositories.MongoDb;
 
-public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb,string?collectionName=null) :
+public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb,string collectionName) :
     IMongoGenericRepository<TEntity>
     where TEntity : MongoBaseEntity
 {

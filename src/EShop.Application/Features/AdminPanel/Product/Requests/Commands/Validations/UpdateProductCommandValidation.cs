@@ -24,6 +24,10 @@ namespace EShop.Application.Features.AdminPanel.Product.Requests.Commands.Valida
             
             RuleFor(x => x.Tags).NotEmpty()
                 .WithMessage(Messages.Validations.Required);
+            
+            RuleFor(x => x.Features).Must(x =>
+                    x.All(f=>!string.IsNullOrWhiteSpace(f.Key)&& !string.IsNullOrWhiteSpace(f.Value)))
+                .WithMessage(Messages.Validations.Required);
         }
     }
 }

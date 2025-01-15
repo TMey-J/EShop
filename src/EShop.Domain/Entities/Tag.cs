@@ -7,8 +7,6 @@ namespace EShop.Domain.Entities
         [Required]
         [MaxLength(100)]
         public string Title { get; set; }=string.Empty;
-
-        public bool IsConfirmed { get; set; }
         
         #region Relationships
 

@@ -19,6 +19,11 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             await _sellerProduct.InsertOneAsync(entity);
         }
 
+        public async Task CreateAllAsync(List<MongoSellerProduct> entities)
+        {
+            await _sellerProduct.InsertManyAsync(entities);
+        }
+
         public async Task Update(MongoSellerProduct entity)
         {
             var filter = Builders<MongoSellerProduct>.Filter.Eq(x=>x.Id, entity.Id);
