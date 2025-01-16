@@ -14,7 +14,14 @@ public class GetProductQueryHandler(IMongoProductRepository product,IMongoCatego
     {
         var product = await _product.FindByIdAsync(request.Id)
                       ?? throw new NotFoundException(NameToReplaceInException.Product);
+        var categoryFeatures = await _categoryRepository.GetCategoryFeatures(product.CategoryId);
         var productFeatures = await _product.GetProductFeaturesAsync(product.Id);
+        var features = productFeatures.Select(x => new ShowProductFeatureDto
+        {
+            Name = x.Key,
+            Value = x.Value,
+            IsCategoryFeature = categoryFeatures.Select(c => c.Name).Contains(x.Key)
+        }).ToList();
         var responseModel = new ShowProductDto
         {
             Id = product.Id,
@@ -24,7 +31,7 @@ public class GetProductQueryHandler(IMongoProductRepository product,IMongoCatego
             Images = product.Images,
             Tags = product.Tags,
             Description = product.Description,
-            Features = productFeatures
+            Features = features
         };
         return new GetProductQueryResponse(responseModel);
     }

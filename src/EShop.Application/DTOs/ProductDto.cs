@@ -31,7 +31,7 @@ public record ShowProductDto
     public string Description { get; set; } = string.Empty;
     public List<string> Tags { get; set; } = [];
     public List<string> Images { get; set; } = [];
-    public Dictionary<string, string> Features { get; set; } = [];
+    public List<ShowProductFeatureDto> Features { get; set; } = [];
 }
 
 public record ShowProductForSellerPanelDto
@@ -40,7 +40,12 @@ public record ShowProductForSellerPanelDto
     public string Title { get; set; } = string.Empty;
     public string Image { get; set; } = string.Empty;
 }
-
+public record ShowProductFeatureDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public bool IsCategoryFeature { get; set; }
+}
 public enum SortingProductBy
 {
     Id,
