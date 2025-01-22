@@ -18,8 +18,8 @@ public class GetAllReservedProductsQueryHandler(
         var products = await _sellerProductRepository
             .GetAllReservedProductsAsync(request.Search, request.SellerId);
         var colors = await _colorRepository
-            .GetAllColorsByIdAsync(products.ReservedProducts.Select(x => x.ColorId).ToList());
-        foreach (var reserved in products.ReservedProducts)
+            .GetAllColorsByIdAsync(products.Reserves.Select(x => x.ColorId).ToList());
+        foreach (var reserved in products.Reserves)
         {
             reserved.ColorCode = colors.First(x => x.Id == reserved.ColorId).ColorCode;
         }

@@ -52,6 +52,12 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             return await _sellerProduct.Find(x => x.ProductId == productId).ToListAsync();
         }
 
+        public async Task<MongoSellerProduct?> FindReserveAsync(long productId, long colorId,long sellerId)
+        {
+            return  await MongoQueryable.SingleOrDefaultAsync( _sellerProduct.AsQueryable()
+                .Where(x=>x.ProductId==productId && x.ColorId==colorId&& x.SellerId==sellerId));
+        }
+
         public async Task<GetAllReservedProductsQueryResponse> GetAllReservedProductsAsync(
             SearchSellerProductDto search, long sellerId)
         {
@@ -90,7 +96,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             #endregion
 
             var products = await MongoQueryable.ToListAsync(sellerProductQuery.Select
-            (x => new ShowReservedProductDto
+            (x => new ShowAllReservedProductDto
             {
                 ProductId = x.ProductId,
                 Title = x.Product.Title,

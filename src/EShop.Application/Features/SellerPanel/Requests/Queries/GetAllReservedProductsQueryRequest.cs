@@ -10,4 +10,4 @@ public record GetAllReservedProductsQueryRequest
     [DisplayName("شناسه فروشنده")]
     public long SellerId { get; set; }
 }
-public record GetAllReservedProductsQueryResponse(List<ShowReservedProductDto> ReservedProducts,SearchSellerProductDto Search,int PageCount);
+public record GetAllReservedProductsQueryResponse(List<ShowAllReservedProductDto> Reserves,SearchSellerProductDto Search,int PageCount);

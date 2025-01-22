@@ -13,6 +13,7 @@ namespace EShop.Api.Endpoints
             group.MapPut(nameof(UpdateReservedProduct), UpdateReservedProduct);
             group.MapGet(nameof(SearchProduct)+"/{title}", SearchProduct);
             group.MapGet(nameof(ShowProduct)+"/{id}", ShowProduct);
+            group.MapGet(nameof(GetReserve)+"/{productId}/{colorId}", GetReserve);
             group.MapGet(nameof(GetAllReserves), GetAllReserves);
         }
 
@@ -36,6 +37,18 @@ namespace EShop.Api.Endpoints
             //TODO: Get SellerId from claim
             request.SellerId = 3;
             var response= await mediator.Send(request);
+            return TypedResults.Ok(response);
+        }
+        private static async Task<IResult> GetReserve(long productId,long colorId, IMediator mediator)
+        {
+            //TODO: Get SellerId from claim
+            var sellerId= 3;
+            var response= await mediator.Send(new GetReservedProductQueryRequest
+            {
+                ProductId = productId,
+                ColorId = colorId,
+                SellerId = sellerId
+            });
             return TypedResults.Ok(response);
         }
         private static async Task<IResult> SearchProduct(string title, IMediator mediator)

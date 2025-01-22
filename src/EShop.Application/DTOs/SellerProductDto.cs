@@ -15,7 +15,7 @@ public record SearchSellerProductDto : BaseSearchDto
     public override DeleteStatus DeleteStatus { get; set; }
 }
 
-public record ShowReservedProductDto
+public record ShowAllReservedProductDto
 {
     public long ProductId { get; set; }
     public long ColorId { get; set; }
@@ -25,7 +25,11 @@ public record ShowReservedProductDto
     public uint BasePrice { get; set; }
     public string ColorCode { get; set; }=string.Empty;
 }
-
+public record ShowReservedProductDto: ShowAllReservedProductDto
+{
+    public byte DiscountPercentage { get; set; }
+    public DateTime? EndOfDiscount { get; set; }
+}
 public record ShowProductForSellerPanelDto
 {
     public long Id { get; set; }
