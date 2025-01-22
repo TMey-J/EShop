@@ -18,9 +18,9 @@ namespace EShop.Infrastructure.Repositories
 
             #region Sort
 
-            tagQuery = tagQuery.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+            tagQuery = tagQuery.CreateOrderByExpression(search.SortingBy.ToString(), search.SortingAs);
 
-            tagQuery = tagQuery.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+            tagQuery = tagQuery.CreateDeleteStatusExpression(nameof(BaseEntity.IsDelete), search.DeleteStatus);
 
             #endregion
 

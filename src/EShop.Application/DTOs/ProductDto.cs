@@ -33,13 +33,6 @@ public record ShowProductDto
     public List<string> Images { get; set; } = [];
     public List<ShowProductFeatureDto> Features { get; set; } = [];
 }
-
-public record ShowProductForSellerPanelDto
-{
-    public long Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Image { get; set; } = string.Empty;
-}
 public record ShowProductFeatureDto
 {
     public string Name { get; set; } = string.Empty;

@@ -49,9 +49,9 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #region Sort
 
-            userQuery = userQuery.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+            userQuery = userQuery.CreateOrderByExpression(search.SortingBy.ToString(), search.SortingAs);
 
-            userQuery = userQuery.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+            userQuery = userQuery.CreateDeleteStatusExpression(nameof(BaseEntity.IsDelete), search.DeleteStatus);
 
             userQuery = search.ActivationStatus switch
             {

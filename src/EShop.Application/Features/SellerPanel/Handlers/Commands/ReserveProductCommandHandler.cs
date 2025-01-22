@@ -25,18 +25,17 @@ public class ReserveProductCommandHandler(
             throw new NotFoundException(NameToReplaceInException.Product);
         }
 
-        if (!await _productRepository.IsExistsByAsync(nameof(Product.Id), request.ProductId))
-        {
-            throw new NotFoundException(NameToReplaceInException.Product);
-        }
-
+        var product = await _productRepository.FindByIdAsync(request.ProductId) ??
+                      throw new CustomBadRequestException(["محصول موردنظر یافت نشد"]);
+        var images = await _productRepository.GetImagesByProductIdAsync(product.Id);
         var color = await _colorRepository.FindByAsync(nameof(Color.ColorCode), request.ColorCode)
                     ?? throw new NotFoundException(NameToReplaceInException.Color);
-        
+
         if (await _sellerProductRepository.IsExistAsync(request.SellerId, request.ProductId, color.Id))
         {
             throw new CustomBadRequestException(["این محصول با این مشخصات قبلا توسط شما رزرو شده است"]);
         }
+
         var sellerProduct = new SellerProduct()
         {
             ProductId = request.ProductId,
@@ -61,7 +60,14 @@ public class ReserveProductCommandHandler(
                 SellerId = request.SellerId,
                 ColorId = color.Id,
                 DiscountPercentage = request.DiscountPercentage,
-                EndOfDiscount = request.EndOfDiscount
+                EndOfDiscount = request.EndOfDiscount,
+                Product = new CustomMongoProduct()
+                {
+                    Title = product.Title,
+                    EnglishTitle = product.EnglishTitle,
+                    Images = images.Select(x => x.ImageName).ToList(),
+                    CategoryId = product.CategoryId
+                }
             };
             await _rabbitmqPublisher.PublishMessageAsync(
                 new MessageModel<MongoSellerProduct>(ActionTypes.Create, mongoSellerProduct),

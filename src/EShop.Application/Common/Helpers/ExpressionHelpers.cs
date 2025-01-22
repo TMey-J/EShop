@@ -1,12 +1,10 @@
 ﻿using System.Linq.Expressions;
-using System.Reflection;
-using EShop.Application.DTOs;
 
 namespace EShop.Application.Common.Helpers;
 
-public static class ExperssionHelpers
+public static class ExpressionHelpers
 {
-    public static Expression<Func<T, bool>> CreateAnyExperssion<T>(string propertyName, object propertyValue)
+    public static Expression<Func<T, bool>> CreateAnyExpression<T>(string propertyName, object propertyValue)
     {
         var parameter = Expression.Parameter(typeof(T));
         var property = Expression.Property(parameter, propertyName);
@@ -20,7 +18,7 @@ public static class ExperssionHelpers
         return Expression.Lambda<Func<T, bool>>(equal, parameter);
     }
 
-    public static Expression<Func<T, bool>> CreateFindByExperssion<T>(string propertyName, object propertyValue)
+    public static Expression<Func<T, bool>> CreateFindByExpression<T>(string propertyName, object propertyValue)
     {
         var parameter = Expression.Parameter(typeof(T));
         var property = Expression.Property(parameter, propertyName);
@@ -34,14 +32,27 @@ public static class ExperssionHelpers
         return Expression.Lambda<Func<T, bool>>(equal, parameter);
     }
 
-   public static IQueryable<T> CreateContainsExpression<T>(this IQueryable<T> query,string propertyName, string propertyValue)
+    public static IQueryable<T> CreateContainsExpression<T>(this IQueryable<T> query, string propertyName,
+        string propertyValue)
     {
         if (string.IsNullOrWhiteSpace(propertyValue))
         {
             return query;
         }
-        var parameterExp = Expression.Parameter(typeof(T), "type");
-        var propertyExp = Expression.Property(parameterExp, propertyName);
+
+        var parameterExp = Expression.Parameter(typeof(T));
+        Expression propertyExp = parameterExp;
+        if (propertyName.Contains('.'))
+        {
+            foreach (var member in propertyName.Split('.'))
+            {
+                propertyExp = Expression.PropertyOrField(propertyExp, member);
+            }
+        }
+        else
+        {
+            propertyExp = Expression.Property(parameterExp, propertyName);
+        }
         var method = typeof(string).GetMethod("Contains", [typeof(string)])!;
         var someValue = Expression.Constant(propertyValue, typeof(string));
         var containsMethodExp = Expression.Call(propertyExp, method, someValue);
@@ -49,20 +60,34 @@ public static class ExperssionHelpers
         return query.Where(exp);
     }
 
-    public static IOrderedQueryable<T> CreateOrderByExperssion<T>(
+    public static IOrderedQueryable<T> CreateOrderByExpression<T>(
         this IQueryable<T> query,
         string propertyName,
-        SortingAs sortintAs)
+        SortingAs sortingAs)
     {
-        var parameter = Expression.Parameter(typeof(T));
-        var conversion = Expression.Convert(Expression.Property(parameter, propertyName), typeof(object));
-        var exp = Expression.Lambda<Func<T, object>>(conversion, parameter);
-        IOrderedQueryable<T> result =
-            sortintAs == SortingAs.Ascending ? query.OrderBy(exp) : query.OrderByDescending(exp);
+        var parameterExp = Expression.Parameter(typeof(T));
+        Expression propertyExp = parameterExp;
+        if (propertyName.Contains('_'))
+        {
+            propertyName = propertyName.Replace('_', '.');
+            foreach (var member in propertyName.Split('.'))
+            {
+                propertyExp = Expression.PropertyOrField(propertyExp, member);
+            }
+        }
+        else
+        {
+            propertyExp = Expression.Property(parameterExp, propertyName);
+        }
+
+        var conversion = Expression.Convert(propertyExp, typeof(object));
+        var exp = Expression.Lambda<Func<T, object>>(conversion, parameterExp);
+        var result =
+            sortingAs == SortingAs.Ascending ? query.OrderBy(exp) : query.OrderByDescending(exp);
         return result;
     }
 
-    public static IQueryable<T> CreateDeleteStatusExperssion<T>(
+    public static IQueryable<T> CreateDeleteStatusExpression<T>(
         this IQueryable<T> query,
         string propertyName,
         DeleteStatus deleteStatus)

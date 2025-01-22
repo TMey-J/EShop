@@ -49,7 +49,7 @@ public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb,string colle
 
     public async Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue)
     {
-        var exp = ExperssionHelpers.CreateFindByExperssion<TEntity>(propertyToFilter, propertyValue);
+        var exp = ExpressionHelpers.CreateFindByExpression<TEntity>(propertyToFilter, propertyValue);
         var entity=await _collection.FindAsync(exp);
         return await entity.SingleOrDefaultAsync();
     }

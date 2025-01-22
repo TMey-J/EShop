@@ -27,9 +27,9 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #region Sort
 
-            category = category.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+            category = category.CreateOrderByExpression(search.SortingBy.ToString(), search.SortingAs);
 
-            category = category.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+            category = category.CreateDeleteStatusExpression(nameof(BaseEntity.IsDelete), search.DeleteStatus);
 
             #endregion
 

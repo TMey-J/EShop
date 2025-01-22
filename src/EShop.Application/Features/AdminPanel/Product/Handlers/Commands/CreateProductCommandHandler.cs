@@ -40,20 +40,19 @@ public class CreateProductCommandHandler(
             var tag = await _tagRepository.FindByAsync(nameof(Domain.Entities.Tag.Title), tagTitle);
             if (tag == null)
             {
-                tag = new Domain.Entities.Tag
-                {
-                    Title = tagTitle
-                };
-                await _tagRepository.CreateAsync(tag);
+                errors.Add($"تگی با نام {tagTitle} یافت نشد");
             }
-
-            tags.Add(tag);
+            else
+            {
+                tags.Add(tag);
+            }
         }
 
         if (errors.Count != 0)
         {
             throw new CustomBadRequestException(errors);
         }
+
         var categoryFeature = category.CategoryFeatures?.Select(x=>x.Feature).ToList()??[];
         if (!categoryFeature.All(x => request.Features.ContainsKey(x.Name)))
         {

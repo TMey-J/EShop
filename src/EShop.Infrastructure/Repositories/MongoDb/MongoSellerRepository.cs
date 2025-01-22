@@ -28,9 +28,9 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #region Sort
 
-            sellerQuery = sellerQuery.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+            sellerQuery = sellerQuery.CreateOrderByExpression(search.SortingBy.ToString(), search.SortingAs);
 
-            sellerQuery = sellerQuery.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+            sellerQuery = sellerQuery.CreateDeleteStatusExpression(nameof(BaseEntity.IsDelete), search.DeleteStatus);
             sellerQuery = search.ActivationStatus switch
             {
                 ActivationStatus.OnlyActive => sellerQuery.Where(x => x.IsActive),

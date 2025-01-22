@@ -23,9 +23,9 @@ namespace EShop.Infrastructure.Repositories.MongoDb;
 
             #region Sort
 
-            featureQuery = featureQuery.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+            featureQuery = featureQuery.CreateOrderByExpression(search.SortingBy.ToString(), search.SortingAs);
 
-            featureQuery = featureQuery.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+            featureQuery = featureQuery.CreateDeleteStatusExpression(nameof(BaseEntity.IsDelete), search.DeleteStatus);
 
             #endregion
 

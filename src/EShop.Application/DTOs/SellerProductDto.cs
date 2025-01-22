@@ -1,0 +1,42 @@
+﻿using System.Text.Json.Serialization;
+
+namespace EShop.Application.DTOs;
+
+public record SearchSellerProductDto : BaseSearchDto
+{
+    [DisplayName("مرتب کردن بر اساس")]
+    public SortingSellerProductBy SortingBy { get; set; }
+    
+    [DisplayName("عنوان محصول")]
+    public string Title { get; init; } = string.Empty;
+
+    public long CategoryId { get; init; }
+    [JsonIgnore]
+    public override DeleteStatus DeleteStatus { get; set; }
+}
+
+public record ShowReservedProductDto
+{
+    public long ProductId { get; set; }
+    public long ColorId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Image { get; set; } = string.Empty;
+    public short Count { get; set; }
+    public uint BasePrice { get; set; }
+    public string ColorCode { get; set; }=string.Empty;
+}
+
+public record ShowProductForSellerPanelDto
+{
+    public long Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Image { get; set; } = string.Empty;
+}
+
+public enum SortingSellerProductBy
+{
+    ProductId,
+    Product_Title,
+    Count,
+    BasePrice
+}

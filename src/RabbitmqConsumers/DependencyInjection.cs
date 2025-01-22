@@ -18,6 +18,7 @@ namespace RabbitmqConsumers
             services.AddHostedService<CategoryMessageConsumerService>();
             services.AddHostedService<SellerMessageConsumerService>();
             services.AddHostedService<ProductMessageConsumerService>();
+            services.AddHostedService<SellerProductMessageConsumerService>();
             return services;
         }
         

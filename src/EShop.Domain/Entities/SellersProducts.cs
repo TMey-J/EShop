@@ -18,7 +18,7 @@ public class SellerProduct
 
     #region Relations
     public Seller? Seller { get; set; }
-    public Product? Product { get; set; }
+    public Product Product { get; set; }
     public Color Color { get; set; }
     #endregion
 }
