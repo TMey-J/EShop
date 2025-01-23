@@ -1,4 +1,5 @@
-﻿using EShop.Application.Constants;
+﻿using Blogger.Application.Common.Exceptions;
+using EShop.Application.Constants;
 using EShop.Application.Contracts.MongoDb;
 using EShop.Application.Features.AdminPanel.Category.Requests.Queries;
 using EShop.Domain.Entities.Mongodb;
@@ -57,6 +58,23 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             var features= await MongoQueryable.ToListAsync(_feature.AsQueryable()
                 .Where(x => featuresId.Contains(x.Id)));
             return features;
+        }
+
+        public async Task<List<string>> GetCategoryHierarchyAsync(long categoryId)
+        {
+            var categories= new List<string>();
+            var category=await _category.Find(x=>x.Id==categoryId).SingleOrDefaultAsync()
+                ?? throw new CustomInternalServerException([$"Category with id {categoryId} not found"]);
+            categories.Add(category.Title);
+            while (category.ParentId!=null)
+            {
+                category=await _category.Find(x=>x.Id==category.ParentId).SingleOrDefaultAsync()
+                         ?? throw new CustomInternalServerException([$"Category with id {category.ParentId} not found"]);
+                categories.Add(category.Title);
+            }
+
+            categories.Reverse();
+            return categories;
         }
     }
 }

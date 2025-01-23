@@ -58,7 +58,7 @@ namespace EShop.Api.Endpoints
         }
         private static async Task<IResult> ShowProduct(long id, IMediator mediator)
         {
-            var response= await mediator.Send(new ShowProductQueryRequest{Id = id});
+            var response= await mediator.Send(new ShowProductForSellerPanelQueryRequest{Id = id});
             return TypedResults.Ok(response);
         }
         #endregion

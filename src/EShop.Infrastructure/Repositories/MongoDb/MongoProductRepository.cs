@@ -17,6 +17,9 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
         private readonly IMongoCollection<MongoSellerProduct> _sellerProduct =
             mongoDb.GetCollection<MongoSellerProduct>(MongoCollectionsName.SellerProduct);
+        
+        private readonly IMongoCollection<MongoColor> _color =
+            mongoDb.GetCollection<MongoColor>(MongoCollectionsName.Color);
 
         public async Task<GetAllProductQueryResponse> GetAllAsync(SearchProductDto search)
         {
@@ -52,7 +55,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             #endregion
 
             var products = await MongoQueryable.ToListAsync(productQuery.Select(x =>
-                new ShowAllProductDto
+                new ShowAllProductForAdminPanelDto
                 {
                     Id = x.Id,
                     Title = x.Title,
@@ -70,10 +73,19 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                 .Where(x => x.ProductId == productId).Select(x => (int)x.Count));
         }
 
-        public async Task<List<long>> GetProductColorsIdAsync(long productId)
+        public async Task<List<MongoColor>> GetProductColorsAsync(long productId)
         {
-            return await MongoQueryable.ToListAsync(_sellerProduct.AsQueryable().Where(x => x.ProductId == productId)
-                .Select(x => x.ColorId));
+            var colorsIQueryable = from s in _sellerProduct.AsQueryable()
+                    .Where(x => x.ProductId == productId)
+                join c in _color on s.ColorId equals c.Id
+                select new MongoColor()
+                {
+                    ColorCode = c.ColorCode,
+                    ColorName = c.ColorName,
+                    Id =c.Id
+                };
+            var colors =await MongoQueryable.ToListAsync(colorsIQueryable);
+            return colors ?? [];
         }
 
         public async Task<Dictionary<string, string>> GetProductFeaturesAsync(long productId)

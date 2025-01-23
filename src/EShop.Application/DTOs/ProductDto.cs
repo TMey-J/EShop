@@ -12,8 +12,14 @@ public record SearchProductDto : BaseSearchDto
 
     [DisplayName("دسته بندی")] public string? CategoryTitle { get; set; }
 }
-
-public record ShowAllProductDto
+public enum SortingProductBy
+{
+    Id,
+    Title,
+    EnglishTitle,
+    Count
+}
+public record ShowAllProductForAdminPanelDto
 {
     public long Id { get; set; }
     public string Title { get; set; } = string.Empty;
@@ -22,7 +28,7 @@ public record ShowAllProductDto
     public string CategoryTitle { get; set; } = string.Empty;
 }
 
-public record ShowProductDto
+public record ShowProductForAdminPanelDto
 {
     public long Id { get; set; }
     public string Title { get; set; } = string.Empty;
@@ -39,10 +45,16 @@ public record ShowProductFeatureDto
     public string Value { get; set; } = string.Empty;
     public bool IsCategoryFeature { get; set; }
 }
-public enum SortingProductBy
+
+public record ShowProductDto
 {
-    Id,
-    Title,
-    EnglishTitle,
-    Count
+    public long Id { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string EnglishTitle { get; set; } = string.Empty;
+    public List<string> Categories { get; set; } = [];
+    public string Description { get; set; } = string.Empty;
+    public List<string> Tags { get; set; } = [];
+    public List<string> Images { get; set; } = [];
+    public Dictionary<string, string> Features { get; set; } = [];
+    public Dictionary<string, string> Colors { get; set; } = [];
 }

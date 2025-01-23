@@ -2,7 +2,7 @@
 
 namespace EShop.Application.Features.SellerPanel.Requests.Queries.Validations;
 
-public class ShowProductQueryValidation: AbstractValidator<ShowProductQueryRequest>
+public class ShowProductQueryValidation: AbstractValidator<ShowProductForSellerPanelQueryRequest>
 {
     public ShowProductQueryValidation()
     {

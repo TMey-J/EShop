@@ -13,7 +13,7 @@ public class SearchProductQueryHandler(
         CancellationToken cancellationToken)
     {
         var products = await _productRepository.SearchProductByTitleAsync(request.Title,cancellationToken);
-        var model = products.Select(x => new ShowAllProductDto
+        var model = products.Select(x => new ShowAllProductForAdminPanelDto
         {
             Id = x.Id,
             Title = x.Title,

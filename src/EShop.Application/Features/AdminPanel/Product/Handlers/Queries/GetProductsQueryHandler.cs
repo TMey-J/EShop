@@ -22,7 +22,7 @@ public class GetProductQueryHandler(IMongoProductRepository product,IMongoCatego
             Value = x.Value,
             IsCategoryFeature = categoryFeatures.Select(c => c.Name).Contains(x.Key)
         }).ToList();
-        var responseModel = new ShowProductDto
+        var responseModel = new ShowProductForAdminPanelDto
         {
             Id = product.Id,
             Title = product.Title,

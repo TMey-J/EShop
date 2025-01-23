@@ -1,6 +1,6 @@
 ﻿namespace EShop.Application.Features.SellerPanel.Requests.Queries;
 
-public record ShowProductQueryRequest: IRequest<ShowProductQueryResponse>
+public record ShowProductForSellerPanelQueryRequest: IRequest<ShowProductQueryResponse>
 {
     [DisplayName("شناسه")]
     public long Id { get; set; }

@@ -6,5 +6,6 @@ namespace EShop.Application.Contracts.MongoDb
     {
         Task<GetAllCategoryQueryResponse> GetAllAsync(SearchCategoryDto search);
         Task<List<MongoFeature>> GetCategoryFeatures(long categoryId);
+        Task<List<string>> GetCategoryHierarchyAsync(long categoryId);
     }
 }

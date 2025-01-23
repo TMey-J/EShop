@@ -6,11 +6,11 @@ namespace EShop.Application.Features.SellerPanel.Handlers.Queries;
 
 public class ShowProductQueryHandler(
     IMongoProductRepository productRepository)
-    : IRequestHandler<ShowProductQueryRequest, ShowProductQueryResponse>
+    : IRequestHandler<ShowProductForSellerPanelQueryRequest, ShowProductQueryResponse>
 {
     private readonly IMongoProductRepository _productRepository = productRepository;
 
-    public async Task<ShowProductQueryResponse> Handle(ShowProductQueryRequest request,
+    public async Task<ShowProductQueryResponse> Handle(ShowProductForSellerPanelQueryRequest request,
         CancellationToken cancellationToken)
     {
         var product = await _productRepository.FindByIdAsync(request.Id)

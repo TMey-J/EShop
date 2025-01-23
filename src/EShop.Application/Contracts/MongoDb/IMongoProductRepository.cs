@@ -7,7 +7,7 @@ namespace EShop.Application.Contracts.MongoDb
     {
         Task<GetAllProductQueryResponse> GetAllAsync(SearchProductDto search);
         Task<int> CountProductByIdAsync(long productId);
-        Task<List<long>> GetProductColorsIdAsync(long productId);
+        Task<List<MongoColor>> GetProductColorsAsync(long productId);
         Task<Dictionary<string,string>> GetProductFeaturesAsync(long productId);
         Task<List<MongoProduct>> SearchProductByTitleAsync(string title,CancellationToken cancellationToken);
 
