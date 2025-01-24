@@ -30,7 +30,6 @@
   <ItemGroup>
     <Folder Include="Features\Product\Handlers\Command\" />
     <Folder Include="Features\Product\Requests\Command\Validations\" />
-    <Folder Include="Features\Product\Requests\Queries\Validations\" />
   </ItemGroup>
 
 </Project>

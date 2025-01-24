@@ -13,6 +13,8 @@ namespace EShop.Infrastructure.Repositories.MongoDb
     {
         private readonly IMongoCollection<MongoSellerProduct> _sellerProduct =
             mongoDb.GetCollection<MongoSellerProduct>(MongoCollectionsName.SellerProduct);
+        private readonly IMongoCollection<MongoSeller> _seller =
+            mongoDb.GetCollection<MongoSeller>(MongoCollectionsName.Seller);
 
         private readonly IMongoCollection<MongoProduct> _product =
             mongoDb.GetCollection<MongoProduct>(MongoCollectionsName.Product);
@@ -42,14 +44,33 @@ namespace EShop.Infrastructure.Repositories.MongoDb
             await _sellerProduct.DeleteOneAsync(filter);
         }
 
-        public async Task<IEnumerable<MongoSellerProduct>> GetAllBySellerIdAsync(long sellerId)
+        public async Task<List<MongoSellerProduct>> GetAllBySellerIdAsync(long sellerId)
         {
             return await _sellerProduct.Find(x => x.SellerId == sellerId).ToListAsync();
         }
 
-        public async Task<IEnumerable<MongoSellerProduct>> GetAllByProductIdAsync(long productId)
+        public async Task<List<GetSellersProductDto>> GetAllByProductAndColorIdAsync(long productId,long colorId)
         {
-            return await _sellerProduct.Find(x => x.ProductId == productId).ToListAsync();
+            var sellerProductIQueryable = from sellerProduct in _sellerProduct.AsQueryable()
+                    .Where(x => x.ProductId == productId)
+                join seller in _seller on sellerProduct.SellerId equals seller.Id
+                select new GetSellersProductDto()
+                {
+                    BasePrice = sellerProduct.BasePrice,
+                    ColorId = sellerProduct.ColorId,
+                    Count = sellerProduct.Count,
+                    DiscountPercentage = sellerProduct.DiscountPercentage,
+                    SellerId = sellerProduct.SellerId,
+                    EndOfDiscount = sellerProduct.EndOfDiscount,
+                    ShopName = seller.ShopName
+                };
+             var results= await MongoQueryable.ToListAsync(sellerProductIQueryable);
+             foreach (var result in results.Where(result => result.DiscountPercentage>0))
+             {
+                 result.PriceWithDiscount=MathHelper.CalculatePriceWithDiscount(result.BasePrice, result.DiscountPercentage);
+             }
+
+             return results;
         }
 
         public async Task<MongoSellerProduct?> FindReserveAsync(long productId, long colorId,long sellerId)

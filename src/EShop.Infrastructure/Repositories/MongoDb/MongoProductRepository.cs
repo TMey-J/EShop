@@ -75,14 +75,14 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
         public async Task<List<MongoColor>> GetProductColorsAsync(long productId)
         {
-            var colorsIQueryable = from s in _sellerProduct.AsQueryable()
+            var colorsIQueryable = from sellerProduct in _sellerProduct.AsQueryable()
                     .Where(x => x.ProductId == productId)
-                join c in _color on s.ColorId equals c.Id
+                join color in _color on sellerProduct.ColorId equals color.Id
                 select new MongoColor()
                 {
-                    ColorCode = c.ColorCode,
-                    ColorName = c.ColorName,
-                    Id =c.Id
+                    ColorCode = color.ColorCode,
+                    ColorName = color.ColorName,
+                    Id =color.Id
                 };
             var colors =await MongoQueryable.ToListAsync(colorsIQueryable);
             return colors ?? [];

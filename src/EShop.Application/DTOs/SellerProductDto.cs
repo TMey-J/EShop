@@ -36,7 +36,17 @@ public record ShowProductForSellerPanelDto
     public string Title { get; set; } = string.Empty;
     public string Image { get; set; } = string.Empty;
 }
-
+public record GetSellersProductDto
+{
+    public long SellerId { get; set; }
+    public string ShopName { get; set; }=string.Empty;
+    public long ColorId { get; set; }
+    public short Count { get; set; }
+    public uint BasePrice { get; set; }
+    public uint PriceWithDiscount { get; set; }
+    public byte DiscountPercentage { get; set; }
+    public DateTime? EndOfDiscount { get; set; }
+}
 public enum SortingSellerProductBy
 {
     ProductId,

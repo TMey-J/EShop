@@ -52,12 +52,16 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
         public async Task<List<MongoFeature>> GetCategoryFeatures(long categoryId)
         {
-            var featuresId= await MongoQueryable.ToListAsync(_categoryFeature.AsQueryable()
-                .Where(x => x.CategoryId == categoryId)
-                .Select(x=>x.FeatureId));
-            var features= await MongoQueryable.ToListAsync(_feature.AsQueryable()
-                .Where(x => featuresId.Contains(x.Id)));
-            return features;
+            var featuresIQueryable = from categoryFeature in _categoryFeature.AsQueryable()
+                    .Where(x => x.CategoryId == categoryId)
+                join feature in _feature on categoryFeature.FeatureId equals feature.Id
+                select new MongoFeature()
+                {
+                    Id = feature.Id,
+                    Name = feature.Name,
+                    IsDelete = feature.IsDelete
+                };
+            return await MongoQueryable.ToListAsync(featuresIQueryable);
         }
 
         public async Task<List<string>> GetCategoryHierarchyAsync(long categoryId)
