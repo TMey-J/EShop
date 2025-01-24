@@ -58,5 +58,9 @@ public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb,string colle
     {
         return await _collection.Find(_=>true).ToListAsync();
     }
-    
+
+    public async Task<bool> IsExistByIdAsync(long id)
+    {
+        return await _collection.CountDocumentsAsync(x=>x.Id==id) > 0;
+    }
 }

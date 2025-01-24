@@ -10,4 +10,5 @@ public interface IMongoGenericRepository<TEntity>
     Task<TEntity?> FindByIdAsync(long id);
     Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue);
     Task<IEnumerable<TEntity>> GetAllAsync();
+    Task<bool> IsExistByIdAsync(long id);
 }

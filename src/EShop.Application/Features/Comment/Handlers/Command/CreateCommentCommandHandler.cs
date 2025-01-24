@@ -1,13 +1,16 @@
 ﻿using EShop.Application.Features.Comment.Requests.Command;
+using EShop.Domain.Entities.Mongodb;
 
 namespace EShop.Application.Features.Comment.Handlers.Command;
 
 public class CreateCommentCommandHandler(IProductRepository productRepository,
-    ICommentRepository commentRepository) :
+    ICommentRepository commentRepository,
+    IRabbitmqPublisherService rabbitmqPublisher) :
     IRequestHandler<CreateCommentCommandRequest, CreateCommentCommandResponse>
 {
     private readonly IProductRepository _product = productRepository;
     private readonly ICommentRepository _commentRepository = commentRepository;
+    private readonly IRabbitmqPublisherService _rabbitmqPublisher = rabbitmqPublisher;
 
 
     public async Task<CreateCommentCommandResponse> Handle(CreateCommentCommandRequest request, CancellationToken cancellationToken)
@@ -36,8 +39,33 @@ public class CreateCommentCommandHandler(IProductRepository productRepository,
             }
             newComment.ParentId = request.ReplayId;
         }
-        await _commentRepository.CreateAsync(newComment);
-        await _commentRepository.SaveChangesAsync();
-        return new CreateCommentCommandResponse();
+        await using var transaction = await _commentRepository.BeginTransactionAsync();
+        try
+        {
+            await _commentRepository.CreateAsync(newComment);
+            await _commentRepository.SaveChangesAsync();
+            var mongoComment = new MongoComment
+            {
+                ProductId = newComment.ProductId,
+                Body = newComment.Body,
+                Rating = newComment.Rating,
+                IsConfirmed = newComment.IsConfirmed,
+                CreateDateTime = newComment.CreateDateTime,
+                ModifiedDateTime = newComment.ModifiedDateTime,
+                ParentId = newComment.ParentId,
+                Id = newComment.Id
+            };
+            await _rabbitmqPublisher.PublishMessageAsync<MongoComment>(
+                new(ActionTypes.Create, mongoComment),
+                RabbitmqConstants.QueueNames.Comment,
+                RabbitmqConstants.RoutingKeys.Comment);
+           await transaction.CommitAsync(cancellationToken);
+            return new CreateCommentCommandResponse();
+        }
+        catch (Exception e)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }

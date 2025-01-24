@@ -1,4 +1,5 @@
 ﻿using EShop.Application.Features.Comment.Requests.Command;
+using EShop.Application.Features.Comment.Requests.Queries;
 
 namespace EShop.Api.Endpoints
 {
@@ -9,6 +10,7 @@ namespace EShop.Api.Endpoints
             var group = app.MapGroup("api/comment").AddEndpointFilter<ApiResultEndpointFilter>();
 
             group.MapPost(nameof(Create), Create);
+            group.MapGet(nameof(GetAll), GetAll);
         }
 
         #region Api Bodies
@@ -18,7 +20,11 @@ namespace EShop.Api.Endpoints
             await mediator.Send(request);
             return TypedResults.Ok();
         }
-
+        private static async Task<IResult> GetAll([FromBody]GetAllCommentsQueryRequest request, IMediator mediator)
+        {
+            var response= await mediator.Send(request);
+            return TypedResults.Ok(response);
+        }
         #endregion
     }
 }

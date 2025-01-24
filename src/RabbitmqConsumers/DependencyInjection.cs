@@ -19,6 +19,7 @@ namespace RabbitmqConsumers
             services.AddHostedService<SellerMessageConsumerService>();
             services.AddHostedService<ProductMessageConsumerService>();
             services.AddHostedService<SellerProductMessageConsumerService>();
+            services.AddHostedService<CommentMessageConsumerService>();
             return services;
         }
         
@@ -32,6 +33,7 @@ namespace RabbitmqConsumers
             services.AddSingleton<IMongoSellerRepository, MongoSellerRepository>();
             services.AddSingleton<IMongoProductRepository, MongoProductRepository>();
             services.AddSingleton<IMongoSellerProductRepository, MongoSellerProductRepository>();
+            services.AddSingleton<IMongoCommentRepository, MongoCommentRepository>();
         }
     }
 }
