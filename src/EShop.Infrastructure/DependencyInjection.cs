@@ -85,6 +85,7 @@ namespace EShop.Infrastructure
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IColorRepository, ColorRepository>();
             services.AddScoped<ISellerProductRepository, SellerProductRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
         }
         private static void ConfigureMongoRepositories(this IServiceCollection services)
         {
@@ -99,6 +100,7 @@ namespace EShop.Infrastructure
             services.AddScoped<IMongoProductRepository, MongoProductRepository>();
             services.AddScoped<IMongoColorRepository, MongoColorRepository>();
             services.AddScoped<IMongoSellerProductRepository, MongoSellerProductRepository>();
+            services.AddScoped<IMongoCommentRepository, MongoCommentRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {

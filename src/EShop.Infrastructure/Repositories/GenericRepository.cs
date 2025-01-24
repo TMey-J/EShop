@@ -61,6 +61,11 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
         return await _entity.Where(x => id == null || x.Id != id).AnyAsync(exp);
     }
 
+    public async Task<bool> IsExistsByIdAsync(long id)
+    {
+        return await _entity.AnyAsync(x => x.Id == id);
+    }
+
     public virtual async Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue)
     {
         var exp = ExpressionHelpers.CreateFindByExpression<TEntity>(propertyToFilter, propertyValue);

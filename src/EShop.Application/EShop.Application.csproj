@@ -28,6 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Features\Comment\Handlers\Queries\" />
+    <Folder Include="Features\Comment\Requests\Queries\Validations\" />
     <Folder Include="Features\Product\Handlers\Command\" />
     <Folder Include="Features\Product\Requests\Command\Validations\" />
   </ItemGroup>

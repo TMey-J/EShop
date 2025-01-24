@@ -13,4 +13,5 @@ public static class MongoCollectionsName
     public const string CategoryFeature = nameof(CategoryFeature);
     public const string Feature = nameof(Feature);
     public const string Tag = nameof(Tag);
+    public const string Comment = nameof(Comment);
 }
