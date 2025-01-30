@@ -12,14 +12,17 @@ using MongoDB.Driver.Linq;
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
     public class MongoCommentRepository(MongoDbContext mongoDb)
-        : MongoGenericRepository<MongoComment>(mongoDb,MongoCollectionsName.Comment),IMongoCommentRepository
+        : MongoGenericRepository<MongoComment>(mongoDb, MongoCollectionsName.Comment), IMongoCommentRepository
     {
-        private readonly IMongoCollection<MongoComment> _comment = mongoDb.GetCollection<MongoComment>(MongoCollectionsName.Comment);
+        private readonly IMongoCollection<MongoComment> _comment =
+            mongoDb.GetCollection<MongoComment>(MongoCollectionsName.Comment);
 
-        public async Task<GetAllCommentsQueryResponse> GetAllForProductAsync(long productId,Pagination page,CancellationToken cancellationToken)
+        public async Task<GetAllCommentsQueryResponse> GetAllForProductAsync(long productId, Pagination page,
+            CancellationToken cancellationToken)
         {
-            var commentQuery=_comment.AsQueryable().Where(x=>x.ProductId==productId);
-            
+            var commentQuery = _comment.AsQueryable()
+                .Where(x => x.ProductId == productId && x.IsConfirmed);
+
             #region Paging
 
             (IQueryable<MongoComment> query, int pageCount) pagination =
@@ -28,7 +31,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
 
             #endregion
 
-            var comments= await MongoQueryable.ToListAsync(commentQuery.Select(x =>
+            var comments = await MongoQueryable.ToListAsync(commentQuery.Select(x =>
                 new ShowCommentDto(x.Id, x.Body, x.ParentId, x.Rating, x.CreateDateTime, x.ModifiedDateTime)
             ), cancellationToken);
             return new GetAllCommentsQueryResponse(comments, pagination.pageCount);

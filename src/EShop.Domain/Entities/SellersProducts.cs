@@ -20,5 +20,6 @@ public class SellerProduct
     public Seller? Seller { get; set; }
     public Product Product { get; set; }
     public Color Color { get; set; }
+    public ICollection<OrderDetail> OrderDetails { get; set; }
     #endregion
 }
