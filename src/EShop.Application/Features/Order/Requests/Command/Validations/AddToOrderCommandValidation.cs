@@ -14,5 +14,7 @@ public class AddToOrderCommandValidation: AbstractValidator<AddToOrderCommandReq
             .WithMessage(Messages.Validations.GreaterThanZero);
         RuleFor(x => x.Quantity).GreaterThan((short)0)
             .WithMessage(Messages.Validations.GreaterThanZero);
+        RuleFor(x => x.UserId).GreaterThan(0)
+            .WithMessage(Messages.Validations.GreaterThanZero);
     }
 }

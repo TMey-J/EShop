@@ -9,10 +9,19 @@ namespace EShop.Api.Endpoints
             var group = app.MapGroup("api/order").AddEndpointFilter<ApiResultEndpointFilter>();
             
             group.MapPost(nameof(Add), Add);
+            group.MapPost(nameof(ChangeCount), ChangeCount);
         }
 
         #region Api Bodies
         private static async Task<IResult> Add(AddToOrderCommandRequest request,IMediator mediator)
+        {
+            //TODO:get userId from cliam
+            request.UserId = 3;
+            await mediator.Send(request);
+            return TypedResults.Ok();
+        }
+        
+        private static async Task<IResult> ChangeCount(ChangeOrderCountCommandRequest request,IMediator mediator)
         {
             //TODO:get userId from cliam
             request.UserId = 3;

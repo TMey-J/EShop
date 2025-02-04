@@ -10,6 +10,10 @@ namespace EShop.Infrastructure.Repositories
         {
             return await _orders.SingleOrDefaultAsync(x => x.UserId == userId && !x.IsPayed);
         }
-        
+
+        public async Task<bool> IsOrderBelongToUserAsync(long userId, long orderId)
+        {
+            return await _orders.AnyAsync(x=>x.Id==orderId && x.UserId == userId&&!x.IsPayed);
+        }
     }
 }
