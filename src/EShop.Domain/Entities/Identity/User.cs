@@ -28,7 +28,6 @@ namespace EShop.Domain.Entities.Identity
         public virtual ICollection<UserToken>? UserTokens { get; set; }
         public virtual ICollection<UserRole>? UserRoles { get; set; }
         public Seller? Seller { get; set; }
-        public ICollection<Order> Orders { get; set; }
 
         #endregion Relations
     }

@@ -13,6 +13,7 @@ namespace EShop.Domain.Entities
         #region Relationships
 
         public SellerProduct SellerProduct { get; set; }
+        public Order Order { get; set; }
 
         #endregion
     }

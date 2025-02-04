@@ -4,6 +4,6 @@ public static class MathHelper
 {
     public static uint CalculatePriceWithDiscount(uint price, byte discount)
     {
-        return  price-(discount*price/100);
+        return discount > 0 ? price - (discount * price / 100) : price;
     }
 }

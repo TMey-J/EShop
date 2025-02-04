@@ -52,7 +52,7 @@ namespace EShop.Infrastructure.Repositories.MongoDb
         public async Task<List<GetSellersProductDto>> GetAllByProductAndColorIdAsync(long productId,long colorId)
         {
             var sellerProductIQueryable = from sellerProduct in _sellerProduct.AsQueryable()
-                    .Where(x => x.ProductId == productId)
+                    .Where(x => x.ProductId == productId&&x.ColorId == colorId)
                 join seller in _seller on sellerProduct.SellerId equals seller.Id
                 select new GetSellersProductDto()
                 {
