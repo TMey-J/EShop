@@ -14,6 +14,7 @@ namespace EShop.Api.Endpoints
         #region Api Bodies
         private static async Task<IResult> Add(AddToOrderCommandRequest request,IMediator mediator)
         {
+            //TODO:get userId from cliam
             request.UserId = 3;
             await mediator.Send(request);
             return TypedResults.Ok();
