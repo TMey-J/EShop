@@ -24,7 +24,7 @@ public class AddToOrderCommandHandler(
         {
             throw new CustomBadRequestException(["این محصول یافت نشد"]);
         }
-        
+
         var order = await _orderRepository.GetOpenOrderByUserIdAsync(request.UserId);
         if (order is null)
         {
@@ -54,17 +54,18 @@ public class AddToOrderCommandHandler(
                 };
                 await _rabbitmqPublisherService.PublishMessageAsync<MongoOrder>(new(ActionTypes.Create, mongoOrder),
                     RabbitmqConstants.QueueNames.Order, RabbitmqConstants.RoutingKeys.Order);
-                
+
                 var mongoOrderDetail = new MongoOrderDetail
                 {
-                    Id=order.OrderDetails.First().Id,
+                    Id = order.OrderDetails.First().Id,
                     ProductId = request.ProductId,
                     ColorId = request.ColorId,
                     Count = request.Quantity,
                     OrderId = order.Id,
                     SellerId = request.SellerId
                 };
-                await _rabbitmqPublisherService.PublishMessageAsync<MongoOrderDetail>(new(ActionTypes.Create, mongoOrderDetail),
+                await _rabbitmqPublisherService.PublishMessageAsync<MongoOrderDetail>(
+                    new(ActionTypes.Create, mongoOrderDetail),
                     RabbitmqConstants.QueueNames.OrderDetail, RabbitmqConstants.RoutingKeys.OrderDetail);
                 await transaction.CommitAsync(cancellationToken);
             }
@@ -81,51 +82,37 @@ public class AddToOrderCommandHandler(
             var orderDetail = orderDetails.SingleOrDefault(o =>
                 o.ProductId == request.ProductId && o.ColorId == request.ColorId &&
                 o.SellerId == request.SellerId);
+            if (orderDetail is not null)
+            {
+                throw new DuplicateException(NameToReplaceInException.Order);
+            }
+
             await using var transaction = await _orderDetailRepository.BeginTransactionAsync();
             try
             {
-                
-                if (orderDetail is null)
+                orderDetail = new OrderDetail
                 {
-                    orderDetail = new OrderDetail
-                    {
-                        ProductId = request.ProductId,
-                        ColorId = request.ColorId,
-                        SellerId = request.SellerId,
-                        Count = request.Quantity,
-                        OrderId = order.Id
-                    };
-                    await _orderDetailRepository.CreateAsync(orderDetail);
-                    await _orderDetailRepository.SaveChangesAsync();
+                    ProductId = request.ProductId,
+                    ColorId = request.ColorId,
+                    SellerId = request.SellerId,
+                    Count = request.Quantity,
+                    OrderId = order.Id
+                };
+                await _orderDetailRepository.CreateAsync(orderDetail);
+                await _orderDetailRepository.SaveChangesAsync();
 
-                    var mongoOrderDetail = new MongoOrderDetail
-                    {
-                        Id=orderDetail.Id,
-                        ProductId = request.ProductId,
-                        ColorId = request.ColorId,
-                        Count = request.Quantity,
-                        OrderId = order.Id,
-                        SellerId = request.SellerId
-                    };
-                    await _rabbitmqPublisherService.PublishMessageAsync<MongoOrderDetail>(new(ActionTypes.Create, mongoOrderDetail),
-                        RabbitmqConstants.QueueNames.OrderDetail, RabbitmqConstants.RoutingKeys.OrderDetail);
-                }
-                else
+                var mongoOrderDetail = new MongoOrderDetail
                 {
-                    await _orderDetailRepository.ChangeCountOfOrderDetailAsync(orderDetail.Id, request.Quantity);
-                    var mongoOrderDetail = new MongoOrderDetail
-                    {
-                        Id=orderDetail.Id,
-                        ProductId = request.ProductId,
-                        ColorId = request.ColorId,
-                        Count = request.Quantity,
-                        OrderId = order.Id,
-                        SellerId = request.SellerId
-                    };
-                    await _rabbitmqPublisherService.PublishMessageAsync<MongoOrderDetail>(new(ActionTypes.Update, mongoOrderDetail),
-                        RabbitmqConstants.QueueNames.OrderDetail, RabbitmqConstants.RoutingKeys.OrderDetail);
-                }
-                
+                    Id = orderDetail.Id,
+                    ProductId = request.ProductId,
+                    ColorId = request.ColorId,
+                    Count = request.Quantity,
+                    OrderId = order.Id,
+                    SellerId = request.SellerId
+                };
+                await _rabbitmqPublisherService.PublishMessageAsync<MongoOrderDetail>(
+                    new(ActionTypes.Create, mongoOrderDetail),
+                    RabbitmqConstants.QueueNames.OrderDetail, RabbitmqConstants.RoutingKeys.OrderDetail);
                 await transaction.CommitAsync(cancellationToken);
             }
             catch
