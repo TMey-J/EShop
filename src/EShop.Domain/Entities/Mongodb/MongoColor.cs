@@ -2,7 +2,7 @@
 
 public class MongoColor:MongoBaseEntity
 {
-    public string ColorName { get; set; }=string.Empty;
+    public string Name { get; set; }=string.Empty;
     
-    public string ColorCode { get; set; }=string.Empty;
+    public string Code { get; set; }=string.Empty;
 }

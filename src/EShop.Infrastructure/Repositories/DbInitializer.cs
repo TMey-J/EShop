@@ -328,11 +328,11 @@ public class DbInitializer(
         }
 
         var colors = colorsDto.Select(x =>
-            new Color { ColorName = x.Key.Trim(), ColorCode = x.Value.Trim() }).ToList();
+            new Color { Name = x.Key.Trim(), Code = x.Value.Trim() }).ToList();
         await _color.CreateAllAsync(colors);
         await _color.SaveChangesAsync();
         var mongoColors = colors.Select(x =>
-            new MongoColor { ColorName = x.ColorName, ColorCode = x.ColorCode,Id = x.Id}).ToList();
+            new MongoColor { Name = x.Name, Code = x.Code,Id = x.Id}).ToList();
         await _mongoColor.CreateAllAsync(mongoColors);
         
     }

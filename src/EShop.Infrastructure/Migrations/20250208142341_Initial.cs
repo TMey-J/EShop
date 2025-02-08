@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace EShop.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class make_provice_and_city_id_properies_non_Auto_increment : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,8 +38,8 @@ namespace EShop.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ColorName = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
-                    ColorCode = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    Code = table.Column<string>(type: "nvarchar(7)", maxLength: 7, nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -59,6 +59,21 @@ namespace EShop.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Feature", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Order",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    IsPayed = table.Column<bool>(type: "bit", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,7 +111,6 @@ namespace EShop.Infrastructure.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -143,10 +157,7 @@ namespace EShop.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
                     EnglishTitle = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: false),
-                    BasePrice = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "ntext", nullable: false),
-                    DiscountPercentage = table.Column<byte>(type: "tinyint", nullable: true),
-                    EndOfDiscount = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CategoryId = table.Column<long>(type: "bigint", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
@@ -312,39 +323,18 @@ namespace EShop.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ColorProduct",
-                columns: table => new
-                {
-                    ColorsId = table.Column<long>(type: "bigint", nullable: false),
-                    ProductsId = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ColorProduct", x => new { x.ColorsId, x.ProductsId });
-                    table.ForeignKey(
-                        name: "FK_ColorProduct_Color_ColorsId",
-                        column: x => x.ColorsId,
-                        principalTable: "Color",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ColorProduct_Product_ProductsId",
-                        column: x => x.ProductsId,
-                        principalTable: "Product",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Comment",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ProductId = table.Column<long>(type: "bigint", nullable: false),
-                    Description = table.Column<string>(type: "ntext", nullable: false),
+                    Body = table.Column<string>(type: "nvarchar(max)", maxLength: 2147483647, nullable: false),
                     Rating = table.Column<byte>(type: "tinyint", maxLength: 5, nullable: false),
                     ParentId = table.Column<long>(type: "bigint", nullable: true),
+                    IsConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    CreateDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -385,24 +375,24 @@ namespace EShop.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProductTag",
+                name: "productTags",
                 columns: table => new
                 {
-                    ProductsId = table.Column<long>(type: "bigint", nullable: false),
-                    TagsId = table.Column<long>(type: "bigint", nullable: false)
+                    ProductId = table.Column<long>(type: "bigint", nullable: false),
+                    TagId = table.Column<long>(type: "bigint", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProductTag", x => new { x.ProductsId, x.TagsId });
+                    table.PrimaryKey("PK_productTags", x => new { x.TagId, x.ProductId });
                     table.ForeignKey(
-                        name: "FK_ProductTag_Product_ProductsId",
-                        column: x => x.ProductsId,
+                        name: "FK_productTags_Product_ProductId",
+                        column: x => x.ProductId,
                         principalTable: "Product",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ProductTag_Tag_TagsId",
-                        column: x => x.TagsId,
+                        name: "FK_productTags_Tag_TagId",
+                        column: x => x.TagId,
                         principalTable: "Tag",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -500,10 +490,10 @@ namespace EShop.Infrastructure.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SellerId = table.Column<long>(type: "bigint", nullable: false),
                     ProductId = table.Column<long>(type: "bigint", nullable: false),
                     FeatureName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     FeatureValue = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    SellerId = table.Column<long>(type: "bigint", nullable: true),
                     IsDelete = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
@@ -519,8 +509,7 @@ namespace EShop.Infrastructure.Migrations
                         name: "FK_ProductFeature_Seller_SellerId",
                         column: x => x.SellerId,
                         principalTable: "Seller",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -529,11 +518,21 @@ namespace EShop.Infrastructure.Migrations
                 {
                     SellerId = table.Column<long>(type: "bigint", nullable: false),
                     ProductId = table.Column<long>(type: "bigint", nullable: false),
-                    Count = table.Column<int>(type: "int", nullable: false)
+                    ColorId = table.Column<long>(type: "bigint", nullable: false),
+                    Count = table.Column<short>(type: "smallint", nullable: false),
+                    BasePrice = table.Column<long>(type: "bigint", nullable: false),
+                    DiscountPercentage = table.Column<byte>(type: "tinyint", nullable: false),
+                    EndOfDiscount = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SellerProducts", x => new { x.ProductId, x.SellerId });
+                    table.PrimaryKey("PK_SellerProducts", x => new { x.ProductId, x.SellerId, x.ColorId });
+                    table.ForeignKey(
+                        name: "FK_SellerProducts_Color_ColorId",
+                        column: x => x.ColorId,
+                        principalTable: "Color",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_SellerProducts_Product_ProductId",
                         column: x => x.ProductId,
@@ -545,6 +544,36 @@ namespace EShop.Infrastructure.Migrations
                         column: x => x.SellerId,
                         principalTable: "Seller",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OrderDetail",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<long>(type: "bigint", nullable: false),
+                    ProductId = table.Column<long>(type: "bigint", nullable: false),
+                    SellerId = table.Column<long>(type: "bigint", nullable: false),
+                    ColorId = table.Column<long>(type: "bigint", nullable: false),
+                    Count = table.Column<short>(type: "smallint", nullable: false),
+                    IsDelete = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderDetail", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderDetail_Order_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Order",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OrderDetail_SellerProducts_ProductId_SellerId_ColorId",
+                        columns: x => new { x.ProductId, x.SellerId, x.ColorId },
+                        principalTable: "SellerProducts",
+                        principalColumns: new[] { "ProductId", "SellerId", "ColorId" },
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -562,11 +591,6 @@ namespace EShop.Infrastructure.Migrations
                 name: "IX_City_ProvinceId",
                 table: "City",
                 column: "ProvinceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ColorProduct_ProductsId",
-                table: "ColorProduct",
-                column: "ProductsId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comment_ParentId",
@@ -591,6 +615,16 @@ namespace EShop.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderDetail_OrderId",
+                table: "OrderDetail",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OrderDetail_ProductId_SellerId_ColorId",
+                table: "OrderDetail",
+                columns: new[] { "ProductId", "SellerId", "ColorId" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Product_CategoryId",
                 table: "Product",
                 column: "CategoryId");
@@ -611,9 +645,9 @@ namespace EShop.Infrastructure.Migrations
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ProductTag_TagsId",
-                table: "ProductTag",
-                column: "TagsId");
+                name: "IX_productTags_ProductId",
+                table: "productTags",
+                column: "ProductId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_RoleClaims_RoleId",
@@ -637,6 +671,11 @@ namespace EShop.Infrastructure.Migrations
                 table: "Seller",
                 column: "UserId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_SellerProducts_ColorId",
+                table: "SellerProducts",
+                column: "ColorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SellerProducts_SellerId",
@@ -678,9 +717,6 @@ namespace EShop.Infrastructure.Migrations
                 name: "CategoryFeatures");
 
             migrationBuilder.DropTable(
-                name: "ColorProduct");
-
-            migrationBuilder.DropTable(
                 name: "Comment");
 
             migrationBuilder.DropTable(
@@ -690,19 +726,19 @@ namespace EShop.Infrastructure.Migrations
                 name: "LegalSeller");
 
             migrationBuilder.DropTable(
+                name: "OrderDetail");
+
+            migrationBuilder.DropTable(
                 name: "ProductFeature");
 
             migrationBuilder.DropTable(
                 name: "ProductImages");
 
             migrationBuilder.DropTable(
-                name: "ProductTag");
+                name: "productTags");
 
             migrationBuilder.DropTable(
                 name: "RoleClaims");
-
-            migrationBuilder.DropTable(
-                name: "SellerProducts");
 
             migrationBuilder.DropTable(
                 name: "UserClaims");
@@ -720,19 +756,25 @@ namespace EShop.Infrastructure.Migrations
                 name: "Feature");
 
             migrationBuilder.DropTable(
-                name: "Color");
+                name: "Order");
+
+            migrationBuilder.DropTable(
+                name: "SellerProducts");
 
             migrationBuilder.DropTable(
                 name: "Tag");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
+
+            migrationBuilder.DropTable(
+                name: "Color");
 
             migrationBuilder.DropTable(
                 name: "Product");
 
             migrationBuilder.DropTable(
                 name: "Seller");
-
-            migrationBuilder.DropTable(
-                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Category");

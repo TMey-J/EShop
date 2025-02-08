@@ -16,13 +16,13 @@ public class GetSellersProductQueryHandler(IMongoProductRepository productReposi
         CancellationToken cancellationToken)
     {
         var product=await _product.FindByIdAsync(request.ProductId)
-            ?? throw new NullReferenceException(NameToReplaceInException.Product);
-        var colorCode = request.ColorCode;
+            ?? throw new NotFoundException(NameToReplaceInException.Product);
+        var colorCode = request.Code;
         if (!colorCode.StartsWith('#'))
         {
-            colorCode= '#' + request.ColorCode;
+            colorCode= '#' + request.Code;
         }
-        var color=await _colorRepository.FindByAsync(nameof(MongoColor.ColorCode),colorCode)
+        var color=await _colorRepository.FindByAsync(nameof(MongoColor.Code),colorCode)
             ?? throw new NullReferenceException(NameToReplaceInException.Color);
         var sellers=await _sellerProductRepository.GetAllByProductAndColorIdAsync(product.Id, color.Id);
         

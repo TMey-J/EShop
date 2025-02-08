@@ -80,8 +80,8 @@ namespace EShop.Infrastructure.Repositories.MongoDb
                 join color in _color on sellerProduct.ColorId equals color.Id
                 select new MongoColor()
                 {
-                    ColorCode = color.ColorCode,
-                    ColorName = color.ColorName,
+                    Code = color.Code,
+                    Name = color.Name,
                     Id =color.Id
                 };
             var colors =await MongoQueryable.ToListAsync(colorsIQueryable);

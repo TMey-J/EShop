@@ -10,9 +10,14 @@ using Tag = EShop.Domain.Entities.Tag;
 namespace EShop.Infrastructure.Repositories.MongoDb
 {
     public class MongoOrderRepository(MongoDbContext mongoDb) :
-        MongoGenericRepository<MongoOrder>(mongoDb,MongoCollectionsName.Order), IMongoOrderRepository
+        MongoGenericRepository<MongoOrder>(mongoDb, MongoCollectionsName.Order), IMongoOrderRepository
     {
-        private readonly IMongoCollection<MongoOrder> _order = mongoDb.GetCollection<MongoOrder>(MongoCollectionsName.Order);
-        
+        private readonly IMongoCollection<MongoOrder> _order =
+            mongoDb.GetCollection<MongoOrder>(MongoCollectionsName.Order);
+
+        public async Task<MongoOrder> FindUserUnpaidOrderAsync(long userId)
+        {
+            return await _order.Find(x => x.UserId == userId && !x.IsPayed).SingleOrDefaultAsync();
+        }
     }
 }

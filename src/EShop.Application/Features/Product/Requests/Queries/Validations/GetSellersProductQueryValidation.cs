@@ -6,7 +6,7 @@ public class GetSellersProductQueryValidation: AbstractValidator<GetSellersProdu
 {
     public GetSellersProductQueryValidation()
     {
-        RuleFor(x => x.ColorCode).NotEmpty()
+        RuleFor(x => x.Code).NotEmpty()
             .WithMessage(Messages.Validations.Required);
         RuleFor(x => x.ProductId).GreaterThan(0)
             .WithMessage(Messages.Validations.GreaterThanZero);

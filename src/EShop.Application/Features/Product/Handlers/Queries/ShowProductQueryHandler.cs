@@ -26,7 +26,7 @@ public class ShowProductQueryHandler(IMongoProductRepository product,IMongoCateg
             Features = product.Features,
             Tags = product.Tags,
             Categories = categoryHierarchy,
-            Colors = colors.ToDictionary(x=>x.ColorName,x=>x.ColorCode)
+            Colors = colors.ToDictionary(x=>x.Name,x=>x.Code)
         };
         return new ShowProductQueryResponse(model);
     }

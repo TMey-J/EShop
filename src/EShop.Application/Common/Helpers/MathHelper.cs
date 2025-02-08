@@ -6,4 +6,8 @@ public static class MathHelper
     {
         return discount > 0 ? price - (discount * price / 100) : price;
     }
+    public static uint CalculateTotalSum(List<int> prices)
+    {
+        return (uint)prices.Sum();
+    }
 }

@@ -21,7 +21,7 @@ public class GetAllReservedProductsQueryHandler(
             .GetAllColorsByIdAsync(products.Reserves.Select(x => x.ColorId).ToList());
         foreach (var reserved in products.Reserves)
         {
-            reserved.ColorCode = colors.First(x => x.Id == reserved.ColorId).ColorCode;
+            reserved.ColorCode = colors.First(x => x.Id == reserved.ColorId).Code;
         }
         return products;
     }

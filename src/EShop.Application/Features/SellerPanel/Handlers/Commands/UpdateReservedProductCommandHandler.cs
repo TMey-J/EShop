@@ -36,7 +36,7 @@ public class UpdateReservedProductCommandHandler(
             
             var mongoSellerProduct = new MongoSellerProduct
             {
-                Id = $"{request.ProductId}{request.SellerId}{sellerProduct.Color.ColorCode}",
+                Id = $"{request.ProductId}{request.SellerId}{sellerProduct.Color.Code}",
                 ProductId = request.ProductId,
                 Count = request.Count,
                 BasePrice = request.BasePrice,

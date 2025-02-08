@@ -9,7 +9,7 @@ namespace EShop.Api.Endpoints
             var group = app.MapGroup("api/product").AddEndpointFilter<ApiResultEndpointFilter>();
             
             group.MapGet(nameof(ShowProduct)+"/{id}", ShowProduct);
-            group.MapGet(nameof(GetSellers)+"/{productId}/{colorCode}", GetSellers);
+            group.MapGet(nameof(GetSellers)+"/{productId}/{Code}", GetSellers);
         }
 
         #region Api Bodies
@@ -18,9 +18,9 @@ namespace EShop.Api.Endpoints
             var response= await mediator.Send(new ShowProductQueryRequest(id));
             return TypedResults.Ok(response);
         }
-        private static async Task<IResult> GetSellers(long productId,string colorCode, IMediator mediator)
+        private static async Task<IResult> GetSellers(long productId,string Code, IMediator mediator)
         {
-            var response= await mediator.Send(new GetSellersProductQueryRequest(productId, colorCode));
+            var response= await mediator.Send(new GetSellersProductQueryRequest(productId, Code));
             return TypedResults.Ok(response);
         }
         #endregion

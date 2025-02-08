@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EShop.Infrastructure.Migrations
 {
     [DbContext(typeof(SQLDbContext))]
-    [Migration("20250124060430_add dateTime to comment entity")]
-    partial class adddateTimetocommententity
+    [Migration("20250208142341_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,18 +101,18 @@ namespace EShop.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<string>("ColorCode")
+                    b.Property<string>("Code")
                         .IsRequired()
                         .HasMaxLength(7)
                         .HasColumnType("nvarchar(7)");
 
-                    b.Property<string>("ColorName")
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
@@ -132,8 +132,17 @@ namespace EShop.Infrastructure.Migrations
                         .HasMaxLength(2147483647)
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreateDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsConfirmed")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("ModifiedDateTime")
+                        .HasColumnType("datetime2");
 
                     b.Property<long?>("ParentId")
                         .HasColumnType("bigint");
@@ -480,6 +489,63 @@ namespace EShop.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("LegalSeller");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.Order", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsPayed")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Order");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.OrderDetail", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ColorId")
+                        .HasColumnType("bigint");
+
+                    b.Property<short>("Count")
+                        .HasColumnType("smallint");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("SellerId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId", "SellerId", "ColorId");
+
+                    b.ToTable("OrderDetail");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Product", b =>
@@ -872,6 +938,25 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("Seller");
                 });
 
+            modelBuilder.Entity("EShop.Domain.Entities.OrderDetail", b =>
+                {
+                    b.HasOne("EShop.Domain.Entities.Order", "Order")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EShop.Domain.Entities.SellerProduct", "SellerProduct")
+                        .WithMany("OrderDetails")
+                        .HasForeignKey("ProductId", "SellerId", "ColorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("SellerProduct");
+                });
+
             modelBuilder.Entity("EShop.Domain.Entities.Product", b =>
                 {
                     b.HasOne("EShop.Domain.Entities.Category", "Category")
@@ -1018,6 +1103,11 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("UserTokens");
                 });
 
+            modelBuilder.Entity("EShop.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("OrderDetails");
+                });
+
             modelBuilder.Entity("EShop.Domain.Entities.Product", b =>
                 {
                     b.Navigation("Images");
@@ -1043,6 +1133,11 @@ namespace EShop.Infrastructure.Migrations
                     b.Navigation("ProductFeatures");
 
                     b.Navigation("SellersProducts");
+                });
+
+            modelBuilder.Entity("EShop.Domain.Entities.SellerProduct", b =>
+                {
+                    b.Navigation("OrderDetails");
                 });
 
             modelBuilder.Entity("EShop.Domain.Entities.Tag", b =>

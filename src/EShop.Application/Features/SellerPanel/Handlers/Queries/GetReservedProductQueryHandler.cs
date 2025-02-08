@@ -26,7 +26,7 @@ public class GetReservedProductQueryHandler(
             BasePrice = reserve.BasePrice,
             Title = reserve.Product.Title,
             Image = reserve.Product.Images.First(),
-            ColorCode = color.ColorCode,
+            ColorCode = color.Code,
             DiscountPercentage = reserve.DiscountPercentage,
             EndOfDiscount = reserve.EndOfDiscount
         };

@@ -21,28 +21,28 @@ namespace EShop.Api.Endpoints
         private static async Task<IResult> ReserveProduct(ReserveProductCommandRequest request, IMediator mediator)
         {
             //TODO: Get SellerId from claim
-            request.SellerId = 3;
+            request.SellerId = 1;
             await mediator.Send(request);
             return TypedResults.Ok();
         }
         private static async Task<IResult> UpdateReservedProduct(UpdateReservedProductCommandRequest request, IMediator mediator)
         {
             //TODO: Get SellerId from claim
-            request.SellerId = 3;
+            request.SellerId = 1;
             await mediator.Send(request);
             return TypedResults.Ok();
         }
         private static async Task<IResult> GetAllReserves([FromBody]GetAllReservedProductsQueryRequest request, IMediator mediator)
         {
             //TODO: Get SellerId from claim
-            request.SellerId = 3;
+            request.SellerId = 1;
             var response= await mediator.Send(request);
             return TypedResults.Ok(response);
         }
         private static async Task<IResult> GetReserve(long productId,long colorId, IMediator mediator)
         {
             //TODO: Get SellerId from claim
-            var sellerId= 3;
+            var sellerId= 1;
             var response= await mediator.Send(new GetReservedProductQueryRequest
             {
                 ProductId = productId,

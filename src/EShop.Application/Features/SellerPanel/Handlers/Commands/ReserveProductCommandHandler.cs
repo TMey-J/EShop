@@ -20,15 +20,10 @@ public class ReserveProductCommandHandler(
     public async Task<ReserveProductCommandResponse> Handle(ReserveProductCommandRequest request,
         CancellationToken cancellationToken)
     {
-        if (!await _sellerRepository.IsExistsByAsync(nameof(Seller.Id), request.SellerId))
-        {
-            throw new NotFoundException(NameToReplaceInException.Product);
-        }
-
         var product = await _productRepository.FindByIdAsync(request.ProductId) ??
                       throw new CustomBadRequestException(["محصول موردنظر یافت نشد"]);
         var images = await _productRepository.GetImagesByProductIdAsync(product.Id);
-        var color = await _colorRepository.FindByAsync(nameof(Color.ColorCode), request.ColorCode)
+        var color = await _colorRepository.FindByAsync(nameof(Color.Code), request.ColorCode)
                     ?? throw new NotFoundException(NameToReplaceInException.Color);
 
         if (await _sellerProductRepository.IsExistAsync(request.SellerId, request.ProductId, color.Id))
