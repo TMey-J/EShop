@@ -1,8 +1,7 @@
 ﻿using EShop.Application.Constants;
 using EShop.Application.Contracts.MongoDb;
-using EShop.Application.DTOs;
 using EShop.Application.Model;
-using EShop.Domain.Entities;
+using EShop.Domain.Entities.Mongodb;
 using Newtonsoft.Json;
 
 namespace RabbitmqConsumers.Consumers
@@ -23,30 +22,23 @@ namespace RabbitmqConsumers.Consumers
         
         protected override async Task HandelMessageAsync(string message)
         {
-            var deserializeMessage = JsonConvert.DeserializeObject<MessageModel<ReadCategoryDto>>(message);
+            var deserializeMessage = JsonConvert.DeserializeObject<MessageModel<MongoCategory>>(message);
             if (deserializeMessage?.Data is null)
                 throw new Exception("message is null");
-            var category = new Category()
-            {
-                Id = deserializeMessage.Data.Id,
-                Title = deserializeMessage.Data.Title,
-                IsDelete = deserializeMessage.Data.IsDelete,
-                Picture = deserializeMessage.Data.PictureName,
-                ParentId = deserializeMessage.Data.ParentId,
-            };
+
             switch (deserializeMessage.ActionTypes)
             {
                 case ActionTypes.Create:
-                    await _categoryRepository.CreateAsync(category);
+                    await _categoryRepository.CreateAsync(deserializeMessage.Data);
                     break;
                 case ActionTypes.Update:
-                    await _categoryRepository.Update(category);
+                    await _categoryRepository.Update(deserializeMessage.Data);
                     break;
                 case ActionTypes.Delete:
-                    await _categoryRepository.Delete(category);
+                    await _categoryRepository.Delete(deserializeMessage.Data);
                     break;
                 default:
-                    break;
+                    throw new Exception("Unknown action type");
             }
 
 

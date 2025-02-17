@@ -3,7 +3,7 @@ using static EShop.Application.Features.Authorize.Requests.Commands.LoginCommand
 
 namespace EShop.Application.Features.Authorize.Requests.Commands;
 
-public record LoginCommandRequest() : IRequest<LoginCommandResponde>
+public record LoginCommandRequest() : IRequest<LoginCommandResponse>
 {
     [DisplayName("ایمیل/شماره تلفن")]
     public string EmailOrPhoneNumber { get; set; } = string.Empty;
@@ -11,4 +11,4 @@ public record LoginCommandRequest() : IRequest<LoginCommandResponde>
     [DisplayName("کلمه عبور")]
     public string Password { get; set; } = string.Empty;
 }
-public record LoginCommandResponde(string token);
+public record LoginCommandResponse(string token);

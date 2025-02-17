@@ -1,7 +1,10 @@
-﻿namespace EShop.Application.Features.AdminPanel.Category.Requests.Commands;
+﻿using System.Text.Json.Serialization;
+
+namespace EShop.Application.Features.AdminPanel.Category.Requests.Commands;
 
 public record UpdateCategoryCommandRequest:IRequest<UpdateCategoryCommandResponse>
 {
+    [JsonIgnore]
     [DisplayName("شناسه")]
     public long Id { get; set; }
     

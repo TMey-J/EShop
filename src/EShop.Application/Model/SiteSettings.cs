@@ -18,6 +18,8 @@ public class SiteSettings
     public FilesPath FilesPath { get; set; } = null!;
     public AdminUser AdminUser { get; set; } = null!;
     public Rabbitmq Rabbitmq { get; set; } = null!;
+    
+    public SystemSeller SystemSeller { get; set; } = null!;
     public string DefaultUserAvatar { get; set; } = null!;
 }
 
@@ -67,12 +69,26 @@ public class FilesPath
 {
     public string Category { get; set; } = null!;
     public string UserAvatar { get; set; } = null!;
+    public string SellerLogo { get; set; } = null!;
+    public string ProductImage { get; set; } = null!;
 }
 public class AdminUser
 {
     public string UserName { get; set; } = null!;
     public string EmailOrPhoneNumber { get; set; }=null!;
     public string Password { get; set; }=null!;
+}
+public class SystemSeller
+{
+    public string UserName { get; set; } = null!;
+    public string EmailOrPhoneNumber { get; set; }=null!;
+    public string Password { get; set; }=null!;
+    public string ShopName { get; set; }=string.Empty;
+    public string CityName { get; set; }=string.Empty;
+    public string PostalCode { get; set; }=string.Empty;
+    public string Address { get; set; }=string.Empty;
+    public string NationalId { get; set; }=string.Empty;
+    public string CartOrShebaNumber { get; set; }=string.Empty;
 }
 public class Rabbitmq
 {

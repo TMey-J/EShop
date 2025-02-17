@@ -2,8 +2,10 @@
 
 public record SearchFeatureDto : BaseSearchDto
 {
+    [DisplayName("مرتب کردن بر اساس")]
     public SortingFeatureBy SortingBy { get; set; }
     
+    [DisplayName("نام ویژگی")]
     public string Name { get; init; }=string.Empty;
 }
 

@@ -24,24 +24,9 @@ public static class FileHelpers
             _ => string.Empty
         };
     }
-    public static async Task SaveFileBase64Async(SaveFileBase64Model model)
-    {
-        var filePath = Path.Combine(Directory.GetCurrentDirectory(), model.path);
-        if (!Directory.Exists(filePath))
-            Directory.CreateDirectory(filePath);
-        var fullFilePath = filePath + $"/{model.fileName}.{model.extension}";
-        try
-        {
-            var fileBytes = Convert.FromBase64String(model.fileBase64);
-            await File.WriteAllBytesAsync(fullFilePath, fileBytes);
-
-        }
-        catch (FormatException)
-        {
-            throw new CustomInternalServerException(["file is not base64"]);
-        }
-    }
-    public static double GetFileSizeFromBase64String(this string base64String, bool applyPaddingsRules = false, UnitsOfMeasurement unitsOfMeasurement = UnitsOfMeasurement.MegaByte)
+    public static double GetFileSizeFromBase64String(this string base64String,
+        bool applyPaddingsRules = false,
+        UnitsOfMeasurement unitsOfMeasurement = UnitsOfMeasurement.MegaByte)
     {
         if (string.IsNullOrEmpty(base64String)) return 0;
             
@@ -72,20 +57,4 @@ public static class FileHelpers
         /// </summary>
         MegaByte = 1_048_576
     }
-    public enum MaximumFilesSizeInMegaByte
-    {
-        UserAvatar=2,
-        CategoryPicture=5
-    }
-
-    // private static async Task<string> ConvertImageToBase64(this string imgName, string path)
-    // {
-    //     string imagePath = new(Path.Combine(Directory.GetCurrentDirectory(), path, imgName));
-    //     if (!File.Exists(imagePath))
-    //         throw new CustomInternalServerException(["عکس مورد نظر پیدا نمیشود"]);
-    //
-    //     byte[] imageArray = await File.ReadAllBytesAsync(imagePath.ToString());
-    //     var base64ImageRepresentation = Convert.ToBase64String(imageArray);
-    //     return base64ImageRepresentation;
-    // }
 }

@@ -8,7 +8,7 @@ public record BaseSearchDto
     /// 2=> show only deleted item
     /// </summary>
     [DisplayName("وضعیت حذف شده")]
-    public DeleteStatus DeleteStatus { get; set; }
+    public virtual DeleteStatus DeleteStatus { get; set; }
     /// <summary>
     /// 0=> Ascending
     /// 1=> Descending

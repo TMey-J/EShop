@@ -1,6 +1,4 @@
-﻿using EShop.Domain;
-
-namespace EShop.Infrastructure.Configurations;
+﻿namespace EShop.Infrastructure.Configurations;
 
 public class SellerProductConfiguration:IEntityTypeConfiguration<SellerProduct>
 {
@@ -13,8 +11,12 @@ public class SellerProductConfiguration:IEntityTypeConfiguration<SellerProduct>
         builder.HasOne(sellerProduct => sellerProduct.Seller).
             WithMany(seller => seller.SellersProducts)
             .HasForeignKey(sellerProduct => sellerProduct.SellerId);
+        
+        builder.HasOne(sellerProduct => sellerProduct.Color).
+            WithMany(color => color.SellerProducts)
+            .HasForeignKey(sellerProduct => sellerProduct.ColorId);
 
-        builder.HasKey(key => new { key.ProductId,key.SellerId });
+        builder.HasKey(key => new { key.ProductId,key.SellerId,key.ColorId });
 
         builder.ToTable("SellerProducts");
     }

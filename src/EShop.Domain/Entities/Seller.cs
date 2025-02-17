@@ -7,7 +7,10 @@ namespace EShop.Domain.Entities;
 public class Seller : BaseEntity
 {
     public long UserId { get; set; }
+    [NotMapped]
+    public string UserName { get; set; }=string.Empty;
 
+    public bool IsLegalPerson { get; set; }
     [Required]
     [MaxLength(200)]
     public string ShopName { get; set; }=string.Empty;
@@ -28,16 +31,13 @@ public class Seller : BaseEntity
     [MaxLength(300)]
     public string Address { get; set; }=string.Empty;
 
-    public bool IsDocumentApproved { get; set; }
-
     public bool IsActive { get; set; } = true;
 
-    public DateTime CreatedDateTime { get; set; }
+    public DateTime CreatedDateTime { get; set; }=DateTime.Now;
     
     public DocumentStatus DocumentStatus { get; set; }
-
-    [Display(Name = "دلایل رد مدارک فروشنده")]
-    [Column(TypeName ="ntext")]
+    
+    [MaxLength(1000)]
     public string? RejectReason { get; set; }
     
 
@@ -63,7 +63,7 @@ public enum DocumentStatus : byte
     [Display(Name = "تایید شده")]
     Confirmed,
 
-    [Display(Name = "رد شده در ح    الت اولیه")]
+    [Display(Name = "رد شده در حالت اولیه")]
     Rejected,
 
     [Display(Name = "در انتظار تایید فروشنده سیستم")]

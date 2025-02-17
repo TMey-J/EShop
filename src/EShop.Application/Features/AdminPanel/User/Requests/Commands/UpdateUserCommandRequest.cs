@@ -1,7 +1,10 @@
-﻿namespace EShop.Application.Features.AdminPanel.User.Requests.Commands;
+﻿using System.Text.Json.Serialization;
+
+namespace EShop.Application.Features.AdminPanel.User.Requests.Commands;
 
 public record UpdateUserCommandRequest : IRequest<UpdateUserCommandResponse>
 {
+    [JsonIgnore]
     [DisplayName("شناسه")]
     public long Id { get; set; }
     
@@ -15,7 +18,7 @@ public record UpdateUserCommandRequest : IRequest<UpdateUserCommandResponse>
     public string? Password { get; set; } = string.Empty;
 
     [DisplayName("آواتار")]
-    public string? NewAvatar { get; set; }
+    public string? Avatar { get; set; }
     
     public bool IsActive { get; set; }
     

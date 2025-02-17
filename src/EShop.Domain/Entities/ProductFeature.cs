@@ -4,7 +4,6 @@ namespace EShop.Domain.Entities;
 
 public class ProductFeature:BaseEntity
 {
-    public long SellerId { get; set; }
     public long ProductId { get; set;}
     [Required]
     [MaxLength(100)]
@@ -16,7 +15,6 @@ public class ProductFeature:BaseEntity
     #region Relations
 
     public Product? Product { get; set; }
-    public Seller? Seller { get; set; }
 
     #endregion
     

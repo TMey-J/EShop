@@ -6,6 +6,7 @@ namespace EShop.Infrastructure.Repositories
     public class CategoryRepository(SQLDbContext context) : GenericRepository<Category>(context), ICategoryRepository
     {
         private readonly DbSet<Category> _category = context.Set<Category>();
+        private readonly DbSet<CategoryFeature> _categoryFeatures = context.Set<CategoryFeature>();
 
         public async Task<bool> IsHasChild(Category category)
         {
@@ -23,9 +24,9 @@ namespace EShop.Infrastructure.Repositories
 
             #region Sort
 
-            category = category.CreateOrderByExperssion(search.SortingBy.ToString(), search.SortingAs);
+            category = category.CreateOrderByExpression(search.SortingBy.ToString(), search.SortingAs);
 
-            category = category.CreateDeleteStatusExperssion(nameof(BaseEntity.IsDelete), search.DeleteStatus);
+            category = category.CreateDeleteStatusExpression(nameof(BaseEntity.IsDelete), search.DeleteStatus);
 
             #endregion
 

@@ -7,9 +7,6 @@ public class LegalSeller : BaseEntity
 {
     public long SellerId { get; set; }
 
-    public bool IsRealPerson { get; set; }
-    
-
     [Required]
     [MaxLength(200)]
     public string CompanyName { get; set; }=string.Empty;
@@ -25,8 +22,12 @@ public class LegalSeller : BaseEntity
     [Required]
     [MaxLength(300)]
     public string SignatureOwners { get; set; }=string.Empty;
+    
+    [Required]
+    [MaxLength(24)]
+    public string ShabaNumber { get; set; }=string.Empty;
 
-    public CompanyType? CompanyType { get; set; }
+    public CompanyType CompanyType { get; set; }
 
     #region Relations
 

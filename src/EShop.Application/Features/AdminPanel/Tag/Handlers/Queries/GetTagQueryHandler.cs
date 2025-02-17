@@ -9,9 +9,9 @@ public class GetTagQueryHandler(IMongoTagRepository tag):
 
     public async Task<GetTagQueryResponse> Handle(GetTagQueryRequest request, CancellationToken cancellationToken)
     {
-        var category = await _tag.FindByIdAsync(request.Id)??
+        var tag = await _tag.FindByIdAsync(request.Id)??
                        throw new NotFoundException(NameToReplaceInException.Tag);
         
-        return new GetTagQueryResponse(category.Id,category.Title);
+        return new GetTagQueryResponse(tag.Id,tag.Title,tag.IsConfirmed);
     }
 }

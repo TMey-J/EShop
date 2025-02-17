@@ -2,6 +2,7 @@
 using EShop.Domain.Entities;
 using EShop.Infrastructure.Databases;
 using EShop.Application.Common.Helpers;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace EShop.Infrastructure.Repositories;
 
@@ -21,7 +22,7 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
 
     public async Task<TEntity?> FindByIdAsync(long id)
     {
-        return await _entity.SingleOrDefaultAsync(x => x.Id == id);
+        return await _entity.FindAsync(id);
     }
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()
@@ -39,6 +40,11 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
        await _context.SaveChangesAsync();
     }
 
+    public async Task<IDbContextTransaction> BeginTransactionAsync()
+    {
+        return await _context.Database.BeginTransactionAsync();
+    }
+
     public void SoftDeleteAsync(TEntity entity)
     {
         entity.IsDelete = true;
@@ -51,13 +57,18 @@ public class GenericRepository<TEntity>(SQLDbContext context) : IGenericReposito
     }
     public virtual async Task<bool> IsExistsByAsync(string propertyToFilter, object propertyValue, long? id = null)
     {
-        var exp = ExperssionHelpers.CreateAnyExperssion<TEntity>(propertyToFilter, propertyValue);
+        var exp = ExpressionHelpers.CreateAnyExpression<TEntity>(propertyToFilter, propertyValue);
         return await _entity.Where(x => id == null || x.Id != id).AnyAsync(exp);
+    }
+
+    public async Task<bool> IsExistsByIdAsync(long id)
+    {
+        return await _entity.AnyAsync(x => x.Id == id);
     }
 
     public virtual async Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue)
     {
-        var exp = ExperssionHelpers.CreateFindByExperssion<TEntity>(propertyToFilter, propertyValue);
+        var exp = ExpressionHelpers.CreateFindByExpression<TEntity>(propertyToFilter, propertyValue);
         return await _entity.SingleOrDefaultAsync(exp);
 
     }

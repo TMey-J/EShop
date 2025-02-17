@@ -1,13 +1,15 @@
 ﻿using EShop.Application.Contracts.MongoDb;
+using EShop.Domain.Entities.Mongodb;
 using EShop.Infrastructure.Databases;
 using MongoDB.Driver;
 
 namespace EShop.Infrastructure.Repositories.MongoDb;
 
-public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb) : IMongoGenericRepository<TEntity>
-    where TEntity : BaseEntity
+public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb,string collectionName) :
+    IMongoGenericRepository<TEntity>
+    where TEntity : MongoBaseEntity
 {
-    private readonly IMongoCollection<TEntity> _collection = mongoDb.GetCollection<TEntity>();
+    private readonly IMongoCollection<TEntity> _collection = mongoDb.GetCollection<TEntity>(collectionName);
 
     public async Task CreateAsync(TEntity entity)
     {
@@ -45,9 +47,20 @@ public class MongoGenericRepository<TEntity>(MongoDbContext mongoDb) : IMongoGen
         return await _collection.Find(filter).SingleOrDefaultAsync();
     }
 
+    public async Task<TEntity?> FindByAsync(string propertyToFilter, object propertyValue)
+    {
+        var exp = ExpressionHelpers.CreateFindByExpression<TEntity>(propertyToFilter, propertyValue);
+        var entity=await _collection.FindAsync(exp);
+        return await entity.SingleOrDefaultAsync();
+    }
+
     public async Task<IEnumerable<TEntity>> GetAllAsync()
     {
         return await _collection.Find(_=>true).ToListAsync();
     }
-    
+
+    public async Task<bool> IsExistByIdAsync(long id)
+    {
+        return await _collection.CountDocumentsAsync(x=>x.Id==id) > 0;
+    }
 }

@@ -1,28 +1,4 @@
-﻿using EShop.Application.Contracts.Identity;
-using EShop.Application.Contracts.Services;
-using EShop.Application.Model;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Restaurant.Application.Contracts.Identity;
-using System.Security.Claims;
-using System.Security.Principal;
-using DNTCommon.Web.Core;
-using EShop.Application.Contracts.MongoDb;
-using EShop.Infrastructure.Databases;
-using EShop.Infrastructure.Repositories;
-using EShop.Infrastructure.Repositories.Identity;
-using EShop.Infrastructure.Repositories.MongoDb;
-using EShop.Infrastructure.Services;
-using EShop.Infrastructure.Services.Email;
-using EShop.Infrastructure.Services.Sms;
-
-namespace EShop.Infrastructure
+﻿namespace EShop.Infrastructure
 {
     public static class DependencyInjection
     {
@@ -81,6 +57,13 @@ namespace EShop.Infrastructure
             services.AddScoped<IProvinceRepository, ProvinceRepository>();
             services.AddScoped<ICityRepository, CityRepository>();
             services.AddScoped<IFeatureRepository, FeatureRepository>();
+            services.AddScoped<ISellerRepository, SellerRepository>();
+            services.AddScoped<IProductRepository, ProductRepository>();
+            services.AddScoped<IColorRepository, ColorRepository>();
+            services.AddScoped<ISellerProductRepository, SellerProductRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
+            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            services.AddScoped<IOrderRepository, OrderRepository>();
         }
         private static void ConfigureMongoRepositories(this IServiceCollection services)
         {
@@ -91,6 +74,13 @@ namespace EShop.Infrastructure
             services.AddScoped<IMongoFeatureRepository, MongoFeatureRepository>();
             services.AddScoped<IMongoCategoryFeatureRepository, MongoCategoryFeatureRepository>();
             services.AddScoped<IMongoCategoryRepository, MongoCategoryRepository>();
+            services.AddScoped<IMongoSellerRepository, MongoSellerRepository>();
+            services.AddScoped<IMongoProductRepository, MongoProductRepository>();
+            services.AddScoped<IMongoColorRepository, MongoColorRepository>();
+            services.AddScoped<IMongoSellerProductRepository, MongoSellerProductRepository>();
+            services.AddScoped<IMongoCommentRepository, MongoCommentRepository>();
+            services.AddScoped<IMongoOrderRepository, MongoOrderRepository>();
+            services.AddScoped<IMongoOrderDetailRepository, MongoOrderDetailRepository>();
         }
         private static void AddIdentityServices(this IServiceCollection services)
         {

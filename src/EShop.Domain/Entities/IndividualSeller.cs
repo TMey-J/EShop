@@ -6,8 +6,6 @@ namespace EShop.Domain.Entities;
 
 public class IndividualSeller : BaseEntity
 {
-    #region Properties
-
     public long SellerId { get; set; }
     
     [Required]
@@ -20,8 +18,6 @@ public class IndividualSeller : BaseEntity
     [Required]
     [Column(TypeName = "ntext")]
     public string AboutSeller { get; set; }=string.Empty;
-
-    #endregion
 
     #region Relations
 

@@ -1,7 +1,9 @@
-﻿namespace EShop.Application.Contracts.MongoDb;
+﻿using EShop.Domain.Entities.Mongodb;
+
+namespace EShop.Application.Contracts.MongoDb;
 
 public interface IMongoCategoryFeatureRepository
 {
-    Task CreateAsync(CategoryFeature categoryFeature);
-    Task Delete(CategoryFeature categoryFeature);
+    Task CreateAsync(MongoCategoryFeature categoryFeature);
+    Task Delete(MongoCategoryFeature categoryFeature);
 }

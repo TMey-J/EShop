@@ -7,8 +7,8 @@ public class CategoryFeature
 
     #region Relations
 
-    public Category? Category { get; set; }
-    public Feature? Feature { get; set; }
+    public Category Category { get; set; }
+    public Feature Feature { get; set; }
 
     #endregion
 }
