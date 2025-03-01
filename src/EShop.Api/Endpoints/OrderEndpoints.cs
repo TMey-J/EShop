@@ -12,13 +12,15 @@ namespace EShop.Api.Endpoints
             group.MapPost(nameof(Add), Add);
             group.MapPost(nameof(ChangeCount), ChangeCount);
             group.MapGet(nameof(ShowOrders), ShowOrders);
+            group.MapPost(nameof(Pay), Pay);
+            group.MapPost(nameof(Verify), Verify);
         }
 
         #region Api Bodies
         private static async Task<IResult> Add(AddToOrderCommandRequest request,IMediator mediator)
         {
             //TODO:get userId from claim
-            request.UserId = 3;
+            request.UserId = 1;
             await mediator.Send(request);
             return TypedResults.Ok();
         }
@@ -26,7 +28,7 @@ namespace EShop.Api.Endpoints
         private static async Task<IResult> ChangeCount(ChangeOrderCountCommandRequest request,IMediator mediator)
         {
             //TODO:get userId from claim
-            request.UserId = 3;
+            request.UserId = 1;
             await mediator.Send(request);
             return TypedResults.Ok();
         }
@@ -34,8 +36,20 @@ namespace EShop.Api.Endpoints
         private static async Task<IResult> ShowOrders(IMediator mediator)
         {
             //TODO:get userId from claim
-            var userId = 3;
+            var userId = 1;
             var response= await mediator.Send(new GetAllOrdersQueryRequest{UserId = userId});
+            return TypedResults.Ok(response);
+        }
+        private static async Task<IResult> Pay(PayOrderCommandRequest request,IMediator mediator)
+        {
+            //TODO:get userId from claim
+            request.UserId= 1;
+            var response= await mediator.Send(request);
+            return TypedResults.Ok(response);
+        }
+        private static async Task<IResult> Verify(VerifyOrderPaymentCommandRequest request,IMediator mediator)
+        {
+            var response= await mediator.Send(request);
             return TypedResults.Ok(response);
         }
         #endregion

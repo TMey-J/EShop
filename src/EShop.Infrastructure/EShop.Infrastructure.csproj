@@ -22,11 +22,13 @@
     </PackageReference>
     <PackageReference Include="MimeKit" Version="4.8.0" />
     <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
+    <PackageReference Include="ZarinPal" Version="3.0.1" />
+    <PackageReference Include="ZarinpalSandbox" Version="2.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\EShop.Application\EShop.Application.csproj" />
     <ProjectReference Include="..\EShop.Domain\EShop.Domain.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
 
 </Project>

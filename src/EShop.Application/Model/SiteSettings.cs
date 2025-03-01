@@ -18,8 +18,8 @@ public class SiteSettings
     public FilesPath FilesPath { get; set; } = null!;
     public AdminUser AdminUser { get; set; } = null!;
     public Rabbitmq Rabbitmq { get; set; } = null!;
-    
     public SystemSeller SystemSeller { get; set; } = null!;
+    public PaymentConfig PaymentConfig { get; set; } = null!;
     public string DefaultUserAvatar { get; set; } = null!;
 }
 
@@ -98,4 +98,9 @@ public class Rabbitmq
     public string RoutingKey { get; set; } = null!;
     public string QueueName { get; set; } = null!;
 
+}
+
+public class PaymentConfig
+{
+    public string MerchantId { get; set; } = null!;
 }

@@ -9,4 +9,4 @@ public record GetAllOrdersQueryRequest : IRequest<GetAllOrdersQueryResponse>
     public long UserId { get; set; }
 }
 
-public record GetAllOrdersQueryResponse(List<ShowOrderDetailsDto> Orders,uint TotalSum);
+public record GetAllOrdersQueryResponse(List<ShowOrderDetailsDto> Orders,long TotalSum,long OrderId);

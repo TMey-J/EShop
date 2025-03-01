@@ -18,12 +18,10 @@ public class AddToOrderCommandHandler(
     public async Task<AddToOrderCommandResponse> Handle(AddToOrderCommandRequest request,
         CancellationToken cancellationToken)
     {
-        if (!await _sellerProductRepository.IsExistAsync(request.SellerId,
-                request.ProductId,
-                request.ColorId))
-        {
-            throw new CustomBadRequestException(["این محصول یافت نشد"]);
-        }
+        var sellerProduct = await _sellerProductRepository.FindReserveAsync(request.SellerId,
+                                request.ProductId,
+                                request.ColorId)
+                            ?? throw new CustomBadRequestException(["این محصول فروشنده ای ندارد"]);
 
         var order = await _orderRepository.GetOpenOrderByUserIdAsync(request.UserId);
         if (order is null)
@@ -31,6 +29,7 @@ public class AddToOrderCommandHandler(
             order = new Domain.Entities.Order
             {
                 UserId = request.UserId,
+                TotalSum = MathHelper.CalculatePriceWithDiscount(sellerProduct.BasePrice,sellerProduct.DiscountPercentage),
                 OrderDetails = new List<OrderDetail>
                 {
                     new()
@@ -38,7 +37,7 @@ public class AddToOrderCommandHandler(
                         ProductId = request.ProductId,
                         ColorId = request.ColorId,
                         SellerId = request.SellerId,
-                        Count = request.Quantity
+                        Count = request.Quantity,
                     }
                 }
             };
@@ -51,6 +50,7 @@ public class AddToOrderCommandHandler(
                 {
                     Id = order.Id,
                     UserId = order.UserId,
+                    TotalSum = order.TotalSum
                 };
                 await _rabbitmqPublisherService.PublishMessageAsync<MongoOrder>(new(ActionTypes.Create, mongoOrder),
                     RabbitmqConstants.QueueNames.Order, RabbitmqConstants.RoutingKeys.Order);
@@ -86,7 +86,6 @@ public class AddToOrderCommandHandler(
             {
                 throw new DuplicateException(NameToReplaceInException.Order);
             }
-
             await using var transaction = await _orderDetailRepository.BeginTransactionAsync();
             try
             {
@@ -99,6 +98,8 @@ public class AddToOrderCommandHandler(
                     OrderId = order.Id
                 };
                 await _orderDetailRepository.CreateAsync(orderDetail);
+                order.TotalSum+=MathHelper.CalculatePriceWithDiscount(sellerProduct.BasePrice, sellerProduct.DiscountPercentage);
+                 _orderRepository.Update(order);
                 await _orderDetailRepository.SaveChangesAsync();
 
                 var mongoOrderDetail = new MongoOrderDetail
@@ -113,6 +114,15 @@ public class AddToOrderCommandHandler(
                 await _rabbitmqPublisherService.PublishMessageAsync<MongoOrderDetail>(
                     new(ActionTypes.Create, mongoOrderDetail),
                     RabbitmqConstants.QueueNames.OrderDetail, RabbitmqConstants.RoutingKeys.OrderDetail);
+                var mongoOrder = new MongoOrder()
+                {
+                    Id = order.Id,
+                    UserId = order.UserId,
+                    TotalSum = order.TotalSum
+                };
+                await _rabbitmqPublisherService.PublishMessageAsync<MongoOrder>(
+                    new(ActionTypes.Update, mongoOrder),
+                    RabbitmqConstants.QueueNames.Order, RabbitmqConstants.RoutingKeys.Order);
                 await transaction.CommitAsync(cancellationToken);
             }
             catch

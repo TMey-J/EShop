@@ -17,5 +17,13 @@ namespace EShop.Infrastructure.Repositories
         {
             return await _orderDetail.Where(x => x.OrderId == orderId).ToListAsync();
         }
+
+        public async Task<List<OrderDetail>> GetAllOrderDetailsByOrderIdIncludeSellerProductAsync(long orderId)
+        {
+            return await _orderDetail
+                .Include(x=>x.SellerProduct)
+                .Where(x => x.OrderId == orderId).ToListAsync();
+
+        }
     }
 }

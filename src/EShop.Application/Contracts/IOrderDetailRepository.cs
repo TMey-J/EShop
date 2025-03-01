@@ -4,5 +4,6 @@
     {
         Task ChangeCountOfOrderDetailAsync(long orderDetailId, short count);
         Task<List<OrderDetail>> GetAllOrderDetailsByOrderIdAsync(long orderId);
+        Task<List<OrderDetail>> GetAllOrderDetailsByOrderIdIncludeSellerProductAsync(long orderId);
     }
 }

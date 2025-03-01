@@ -1,4 +1,6 @@
-﻿namespace EShop.Infrastructure
+﻿using EShop.Infrastructure.Services.Payment;
+
+namespace EShop.Infrastructure
 {
     public static class DependencyInjection
     {
@@ -40,11 +42,14 @@
             {
                 services.AddScoped<ISmsSenderService, LocalSmsSenderService>();
                 services.AddScoped<IEmailSenderService, LocalEmailSenderService>();
+                services.AddScoped<IPaymentService, ZarinPalSandboxPaymentService>();
             }
             else
             {
                 services.AddScoped<IEmailSenderService, EmailSenderService>();
                 services.AddScoped<ISmsSenderService, KavenegarSmsSenderService>();
+                services.AddScoped<IPaymentService, ZarinPalPaymentService>();
+
             }
         }
 

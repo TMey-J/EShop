@@ -19,9 +19,7 @@ public class GetAllOrdersQueryHandler(
 
             var orders = await _orderDetailRepository.GetOrderDetailsByOrderIdAsync(order.Id);
             
-            var totalSum=MathHelper.CalculateTotalSum(orders.Select(x=>(int)x.PriceWithDiscount).ToList());
-            
-            return new GetAllOrdersQueryResponse(orders, totalSum);
+            return new GetAllOrdersQueryResponse(orders, order.TotalSum,order.Id);
 
     }
 }
